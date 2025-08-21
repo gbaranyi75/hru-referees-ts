@@ -23,6 +23,8 @@ const SpreadSheetItem = ({
   const [userSelections, setUserSelection] = useState<UserSelection[]>([]);
   const [loading, setLoading] = useState(false);
 
+  console.log(users);
+
   const handleOpenSpreadSheet = (e: React.MouseEvent<HTMLSpanElement>) => {
     e.preventDefault();
     toggle();
@@ -37,7 +39,6 @@ const SpreadSheetItem = ({
     };
     fetchCurrentSelection();
   }, []);
-
 
   if (loading)
     return (
@@ -81,7 +82,13 @@ const SpreadSheetItem = ({
             <tbody>
               {userSelections.map((user, idx) => (
                 <tr key={idx} className="bg-white border-b border-gray-300">
-                  <th className="p-2 text-center">{user.username}</th>
+                  {users.map((dbUser, idx) =>
+                    dbUser.clerkUserId === user.clerkUserId ? (
+                      <th key={idx} className="p-2 text-center">
+                        {dbUser.username}
+                      </th>
+                    ) : null
+                  )}
                   {currentDates.map((date) => (
                     <td key={date} className="px-1 text-center">
                       <div className="flex justify-center">
