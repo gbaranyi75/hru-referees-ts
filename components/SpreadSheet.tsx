@@ -2,22 +2,16 @@
 import { useState, useEffect } from "react";
 import SpreadSheetItem from "./SpreadSheetItem";
 import { fetchCalendars } from "@/lib/actions/fetchCalendars";
-//import { fetchUsers } from "@/lib/actions/fetchUsers";
 import { Calendar } from "@/types/types";
 import { User } from "@/types/types";
 
 const SpreadSheet = ({ users }: { users: User[] }) => {
   const [isOpen, setIsOpen] = useState(0);
   const [calendars, setCalendars] = useState<Calendar[]>([]);
-  //const [users, setUsers] = useState<User[]>([]);
   const toggleOpen = (id: number) => () =>
     setIsOpen((isOpen) => (isOpen === id ? 0 : id));
-  /* const fetchUsersData = async () => {
-    const fetchedUsers = await fetchUsers();
-    if (fetchedUsers) {
-      setUsers(fetchedUsers);
-    }
-  } */ const fetchCalendarsData = async () => {
+  
+  const fetchCalendarsData = async () => {
     const fetchedCalendars = await fetchCalendars();
     if (fetchedCalendars) {
       setCalendars(fetchedCalendars);
@@ -26,7 +20,6 @@ const SpreadSheet = ({ users }: { users: User[] }) => {
 
   useEffect(() => {
     fetchCalendarsData();
-    //fetchUsersData();
   }, []);
 
   return (
