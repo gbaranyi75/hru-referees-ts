@@ -6,7 +6,7 @@ export const getSessionUser = async () => {
     const user = await currentUser();
 
     if (!userId || !user) {
-      console.log('You must be logged in to access more content!');
+      console.log('No logged in user right now');
     }
 
     return {

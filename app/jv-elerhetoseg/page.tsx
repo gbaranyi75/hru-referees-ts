@@ -1,5 +1,6 @@
 import AddMatchDays from "@/components/AddMatchDays";
 import PageLayout from "@/components/common/PageLayout";
+import PageTitle from "@/components/common/PageTitle";
 import { fetchCalendars } from "@/lib/actions/fetchCalendars";
 import { fetchProfile } from "@/lib/actions/fetchProfile";
 import { convertToJSON } from "@/lib/utils/convertToJSON";
@@ -12,7 +13,7 @@ const MatchDaysPage = async () => {
 
   return (
     <PageLayout>
-      <h1 className="text-2xl font-bold mb-2">Elérhetőség megadása</h1>
+      <PageTitle title="Elérhetőség megadása" />
       <AddMatchDays calendars={calendars} profile={profile} />
     </PageLayout>
   );

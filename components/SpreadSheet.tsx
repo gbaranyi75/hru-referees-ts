@@ -10,7 +10,7 @@ const SpreadSheet = ({ users }: { users: User[] }) => {
   const [calendars, setCalendars] = useState<Calendar[]>([]);
   const toggleOpen = (id: number) => () =>
     setIsOpen((isOpen) => (isOpen === id ? 0 : id));
-  
+
   const fetchCalendarsData = async () => {
     const fetchedCalendars = await fetchCalendars();
     if (fetchedCalendars) {
@@ -22,20 +22,20 @@ const SpreadSheet = ({ users }: { users: User[] }) => {
     fetchCalendarsData();
   }, []);
 
+  if (!calendars) return <div>Loading...</div>;
+
   return (
-    <section>
-      <div className="w-full mb-5">
-        {calendars.map((data: Calendar, index: number) => (
-          <SpreadSheetItem
-            key={index}
-            calendar={data}
-            users={users}
-            isOpen={isOpen === index}
-            toggle={toggleOpen(index)}
-          />
-        ))}
-      </div>
-    </section>
+    <div className="col-span-12">
+      {calendars.map((data: Calendar, index: number) => (
+        <SpreadSheetItem
+          key={index}
+          calendar={data}
+          users={users}
+          isOpen={isOpen === index}
+          toggle={toggleOpen(index)}
+        />
+      ))}
+    </div>
   );
 };
 export default SpreadSheet;
