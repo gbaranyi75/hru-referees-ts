@@ -6,11 +6,12 @@ export const checkUser = async () => {
   await connectDB();
   try {
     const user = await currentUser();
+    const clerk = await clerkClient(); // Get the ClerkClient instance
+    const response = await clerk.users.getUserList();
+
     if (!user) return null;
     if (!user.publicMetadata.role) {
-      await (
-        await clerkClient()
-      ).users.updateUserMetadata(user.id, {
+      await clerk.users.updateUserMetadata(user.id, {
         publicMetadata: {
           role: "user",
         },
@@ -34,6 +35,6 @@ export const checkUser = async () => {
     return newUser;
   } catch (error) {
     console.error(error);
-    return new Error(error instanceof Error? error.message : String(error)) as any;
+    return new Error(error instanceof Error ? error.message : String(error)) as any;
   }
 };

@@ -1,8 +1,8 @@
 import SpreadSheet from "@/components/SpreadSheet";
 import PageLayout from "@/components/common/PageLayout";
+import PageTitle from "@/components/common/PageTitle";
 import { fetchUsers } from "@/lib/actions/fetchUsers";
 import { convertToJSON } from "@/lib/utils/convertToJSON";
-import { User } from "@/types/types";
 
 const SpreadSheetPage = async () => {
   const usersData = await fetchUsers();
@@ -10,9 +10,7 @@ const SpreadSheetPage = async () => {
 
   return (
     <PageLayout>
-      <h1 className="text-2xl font-bold mb-6 md:mb-10">
-        Elérhető játékvezetők
-      </h1>
+      <PageTitle title="Elérhető játékvezetők" />
       <SpreadSheet users={users} />
     </PageLayout>
   );

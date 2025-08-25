@@ -102,7 +102,7 @@ const AddMatchDaysItem = ({
   if (loading) return <Spinner />;
 
   return (
-    <div className="flex flex-col border-b md:mx-6 mt-5 bg-white text-gray-600  drop-shadow-md hover:drop-shadow-xl text-center justify-center z-0">
+    <div className="flex flex-col border rounded-xl border-gray-200 mt-5 bg-white text-gray-600 text-center justify-center z-0">
       <div className="flex md:mx-36 py-6 bg-white text-center justify-center">
         <span>
           <h2 className="text-lg mr-1 font-semibold">{eventName}</h2>

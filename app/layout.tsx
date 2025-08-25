@@ -6,7 +6,7 @@ import SideBarWrapper from "@/components/SideBarWrapper";
 import { ToastContainer } from "react-toastify";
 import { ClerkProvider } from "@clerk/nextjs";
 import { huHU } from "@clerk/localizations";
-import { Analytics } from "@vercel/analytics/next"
+import { Analytics } from "@vercel/analytics/next";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -24,17 +24,16 @@ export default function RootLayout({
     <ClerkProvider localization={huHU}>
       <html lang="en">
         <body>
-          <div className="flex">
+          <div className="min-h-screen xl:flex">
             <SideBarWrapper />
-            <main className="flex-1">
-              <div className="flex flex-col min-h-screen md:ml-64">
-                <Navbar />
-                <NavbarMobileMenu />
-                <div className="bg-gray-100 flex-grow">{children}</div>
-                <Footer />
-                {/* <Analytics /> */}
+            <div className="flex-1 md:ml-64">
+              <Navbar />
+              <NavbarMobileMenu />
+              <div className="bg-gray-100 p-4 mx-auto max-w-(--breakpoint-2xl) md:p-6 text-gray-600">
+                {children}
               </div>
-            </main>
+              {/* <Analytics /> */}
+            </div>
             <ToastContainer position="bottom-center" autoClose={2000} />
           </div>
         </body>
