@@ -1,5 +1,5 @@
 "use client";
-import React, { Suspense } from "react";
+import React from "react";
 import { usePathname } from "next/navigation";
 import { NAV_LINKS, PROFILE_LINKS } from "@/lib/utils/links";
 import Link from "next/link";
@@ -68,7 +68,7 @@ const SideBar = ({ role }: { role: string }) => {
                     <Link
                       href="/dashboard/calendar"
                       className={`flex flex-row space-x-3 text-gray-600 items-center p-2 rounded-lg hover:bg-zinc-200 ${
-                        pathname === "/dashboard/calendar" ? "bg-zinc-200" : ""
+                        pathname === "/dashboard/calendar" ? "text-indigo-700 bg-blue-100" : ""
                       }`}
                     >
                       <Icon
@@ -102,7 +102,7 @@ const SideNavItem = ({ item }: { item: NavLink }) => {
         <Link
           href={item.path}
           className={`flex flex-row w-full p-2 space-x-3 text-center text-sm text-gray-600 items-center rounded-lg hover:bg-zinc-200
-          ${isActive ? "bg-zinc-200" : "bg-white"}`}
+          ${isActive ? "text-indigo-700 bg-blue-100" : "bg-white"}`}
         >
           {item.icon}
           <span>{item.label}</span>

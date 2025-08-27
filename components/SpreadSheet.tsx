@@ -4,6 +4,7 @@ import SpreadSheetItem from "./SpreadSheetItem";
 import { fetchCalendars } from "@/lib/actions/fetchCalendars";
 import { Calendar } from "@/types/types";
 import { User } from "@/types/types";
+import Skeleton from "./common/Skeleton";
 
 const SpreadSheet = ({ users }: { users: User[] }) => {
   const [isOpen, setIsOpen] = useState(0);
@@ -22,7 +23,10 @@ const SpreadSheet = ({ users }: { users: User[] }) => {
     fetchCalendarsData();
   }, []);
 
-  if (!calendars) return <div>Loading...</div>;
+  if (!calendars)
+    return (
+      <Skeleton className="flex flex-col border-b border-gray-300 mx-6 mt-5 h-12 bg-white text-gray-600 text-center drop-shadow-md hover:drop-shadow-xl justify-center z-0" />
+    );
 
   return (
     <div className="col-span-12">

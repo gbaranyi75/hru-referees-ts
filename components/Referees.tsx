@@ -11,7 +11,7 @@ const Referees = async () => {
   return (
     <section>
       <div className="m-auto mt-5">
-        <div className=" border border-gray-200 rounded-xl overflow-hidden">
+        <div className="rounded-xl overflow-hidden">
           {users ? (
             <RefereesTable referees={users} />
           ) : (

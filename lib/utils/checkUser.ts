@@ -8,6 +8,7 @@ export const checkUser = async () => {
     const user = await currentUser();
     const clerk = await clerkClient(); // Get the ClerkClient instance
     const response = await clerk.users.getUserList();
+    console.log(user)
 
     if (!user) return null;
     if (!user.publicMetadata.role) {
@@ -31,6 +32,11 @@ export const checkUser = async () => {
       clerkUserId: user.id,
       username: `${user.lastName} ${user.firstName}`,
       image: user.imageUrl,
+      address: { city: '-', country: '-' },
+      status: '-',
+      facebookUrl: 'https://www.facebook.com/',
+      instagramUrl: 'https://www.instagram.com/',
+      phoneNumber: '0000-0000000000',
     });
     return newUser;
   } catch (error) {
