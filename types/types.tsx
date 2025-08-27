@@ -34,4 +34,14 @@ export type User = {
   email: string;
   clerkUserId: string;
   image: string;
+  address: Address;
+  status: string;
+  facebookUrl?: string;
+  instagramUrl?: string; 
+  phoneNumber?: string;
+}
+
+export type Address = {
+  city: string;
+  country: string;
 }
