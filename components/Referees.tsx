@@ -1,7 +1,6 @@
 import { User } from "@/types/types";
 import { fetchUsers } from "@/lib/actions/fetchUsers";
 import { convertToJSON } from "@/lib/utils/convertToJSON";
-import Skeleton from "./common/Skeleton";
 import RefereesTable from "./RefereesTable";
 
 const Referees = async () => {
@@ -12,11 +11,7 @@ const Referees = async () => {
     <section>
       <div className="m-auto mt-5">
         <div className="rounded-xl overflow-hidden">
-          {users ? (
-            <RefereesTable referees={users} />
-          ) : (
-            <Skeleton className="" />
-          )}
+          <RefereesTable refereesData={users} />
         </div>
       </div>
     </section>
