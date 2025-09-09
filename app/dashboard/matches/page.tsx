@@ -1,24 +1,25 @@
-import Link from "next/link";
-import CardLayout from "@/components/CardLayout";
-import OutlinedButton from "@/components/common/OutlinedButton";
+import MatchesNew from "@/components/MatchesNew";
+import PageLayout from "@/components/common/PageLayout";
+import PageTitle from "@/components/common/PageTitle";
+import { User } from "@/types/types";
+import { fetchUsers } from "@/lib/actions/fetchUsers";
+import { convertToJSON } from "@/lib/utils/convertToJSON";
+import MatchesEdit from "@/components/MatchesEdit";
 
-const MatchesPage = () => {
+const MatchesPage = async () => {
+  const usersData = await fetchUsers();
+  const users: User[] = await convertToJSON(usersData);
+
   return (
-    <div className="w-full flex flex-col md:flex-row bg-blue-50">
-      <div className="w-full">
-        <CardLayout>
-          <Link href="/dashboard/matches/new" className="my-6">
-            <OutlinedButton text={"Új mérkőzés létrehozása"} />
-          </Link>
-        </CardLayout>
-        <CardLayout>
-          <Link href="/dashboard/matches/edit" className="my-6">
-            <OutlinedButton text={"Mérkőzések szerkesztése"} />
-          </Link>
-        </CardLayout>
-        <div></div>
+    <PageLayout>
+      <PageTitle title="Mérkőzések létrehozása, szerkesztése" />
+      <div className="rounded-2xl border border-gray-200 bg-white p-5 mt-5">
+        <div className="space-y-6">
+          <MatchesNew referees={users} />
+          <MatchesEdit referees={users} />
+        </div>
       </div>
-    </div>
+    </PageLayout>
   );
 };
 

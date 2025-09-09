@@ -1,7 +1,7 @@
 import { Icon } from "@iconify/react";
-import { NavLink, ProfileLink } from "@/types/types";
+import { NavItem } from "@/types/types";
 
-export const NAV_LINKS: NavLink[] = [
+export const NAV_LINKS: NavItem[] = [
   {
     path: "/",
     label: "Főoldal",
@@ -26,26 +26,40 @@ export const NAV_LINKS: NavLink[] = [
     type: "public",
     icon: <Icon icon="lucide:tv" width="20" height="20" />,
   },
-  // { path: "/", label: "Később...", type: "private" },
 ];
 
-export const PROFILE_LINKS: ProfileLink[] = [
+export const PROFILE_LINKS: NavItem[] = [
   {
     path: "/profil",
     label: "Profilom",
     type: "user",
     icon: <Icon icon="lucide:user-round" width="20" height="20" />,
   },
-  /* {
-    path: "/dashboard/calendar",
-    label: "Admin Dashboard",
-    type: "admin",
-    icon: <Icon icon="lucide:layout-dashboard" width="20" height="20" />,
-  }, */
   {
     path: "/jv-elerhetoseg",
     label: "Elérhetőség megadása",
     type: "user",
     icon: <Icon icon="lucide:calendar-days" width="20" height="20" />,
+  },
+ {
+    path: "/dokumentumok",
+    label: "Dokumentumok",
+    type: "user",
+    icon: <Icon icon="lucide:dock" width="20" height="20" />, 
+  },
+];
+
+export const ADMIN_LINKS: NavItem[] = [
+  {
+    label: "Admin Dashboard",
+    type: "admin",
+    path: "/dashboard",
+    icon: <Icon icon="lucide:layout-dashboard" width="20" height="20" />,
+    subItems: [
+      { label: "Táblázat", path: "/dashboard/calendar" },
+      { label: "Mérkőzések", path: "/dashboard/matches" },
+      { label: "Játékvezetők", path: "/dashboard/jatekvezetok" },
+      { label: "Videók", path: "/dashboard/videos" },
+    ],
   },
 ];

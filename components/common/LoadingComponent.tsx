@@ -13,7 +13,7 @@ const LoadingComponent = ({
         <svg
           aria-hidden="true"
           role="status"
-          className="inline w-5 h-5 me-3 text-gray-400 animate-spin dark:text-gray-600"
+          className="inline w-5 h-5 me-3 text-gray-400 animate-spin"
           viewBox="0 0 100 101"
           fill="none"
           xmlns="http://www.w3.org/2000/svg"

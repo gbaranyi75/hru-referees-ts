@@ -1,88 +1,136 @@
 "use client";
 import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
-import Select from "react-select";
-import Calendar from "react-calendar";
+import Select, { SelectOption } from "./common/Select";
 import { toast } from "react-toastify";
-import {
-  teams,
-  types,
-  genderOptions,
-  ages,
-  venues,
-  hours,
-} from "@/constants/matchData";
+import { Icon } from "@iconify/react/dist/iconify.js";
+import { createMatch } from "@/lib/actions/createMatch";
+import { Match, MatchOfficial, User } from "@/types/types";
+import { hours } from "@/constants/matchUtils";
+import teams from "@/constants/matchData/teams.json";
+import types from "@/constants/matchData/matchTypes.json";
+import genderOptions from "@/constants/matchData/genderOptions.json";
+import ages from "@/constants/matchData/ages.json";
+import venues from "@/constants/matchData/venues.json";
 import OutlinedButton from "./common/OutlinedButton";
 import PrimaryButton from "./common/PrimaryButton";
-import DisabledButton from "./common/DisabledButton";
-import {createMatch} from "@/lib/actions/createMatch";
-import Spinner from "./common/Spinner";
-import { User } from "@/types/types";
+import Label from "./common/Label";
+import { DayPicker, getDefaultClassNames } from "react-day-picker";
+import { hu } from "react-day-picker/locale";
+import "react-day-picker/dist/style.css";
 
 const defaultFormFields = {
-  home: "",
-  away: "",
-  type: "",
-  gender: "",
-  age: "",
-  venue: "",
-  referee: {},
-  referees: [],
-  assist1: {},
-  assist2: {},
-  controllers: [],
-  date: "",
-  time: "",
+  type: "" as string,
+  home: "" as string,
+  away: "" as string,
+  gender: "" as string,
+  age: "" as string,
+  venue: "" as string,
+  referee: {} as MatchOfficial,
+  referees: [] as MatchOfficial[],
+  assist1: {} as MatchOfficial,
+  assist2: {} as MatchOfficial,
+  controllers: [] as MatchOfficial[],
+  date: "" as string,
+  time: "" as string,
 };
 
-const MatchesNew = ({ users }: {users: User[]}) => {
-
-  const [formFields, setFormFields] = useState(defaultFormFields);
-  const [refList, setRefList] = useState([]);
-  const [edited, setEdited] = useState(false);
-  const [selectedDate, setSelectedDate] = useState();
-  const [selectedType, setSelectedType] = useState();
+const MatchesNew = ({ referees }: { referees: User[] }) => {
+  const [formFields, setFormFields] = useState<Match>(defaultFormFields);
+  const [typeValue, setTypeValue] = useState<SelectOption | undefined>(
+    {} as SelectOption
+  );
+  const [homeValue, setHomeValue] = useState<SelectOption | undefined>(
+    {} as SelectOption
+  );
+  const [awayValue, setAwayValue] = useState<SelectOption | undefined>(
+    {} as SelectOption
+  );
+  const [genderValue, setGenderValue] = useState<SelectOption | undefined>(
+    {} as SelectOption
+  );
+  const [ageValue, setAgeValue] = useState<SelectOption | undefined>(
+    {} as SelectOption
+  );
+  const [venueValue, setVenueValue] = useState<SelectOption | undefined>(
+    {} as SelectOption
+  );
+  const [refereeValue, setRefereeValue] = useState<SelectOption | undefined>(
+    {} as SelectOption
+  );
+  const [assist1Value, setAssist1Value] = useState<SelectOption | undefined>(
+    {} as SelectOption
+  );
+  const [assist2Value, setAssist2Value] = useState<SelectOption | undefined>(
+    {} as SelectOption
+  );
+  const [controllersValue, setControllersValue] = useState<SelectOption[]>(
+    [] as SelectOption[]
+  );
+  const [refereesValue, setRefereesValue] = useState<SelectOption[]>(
+    [] as SelectOption[]
+  );
+  const [timeValue, setTimeValue] = useState<SelectOption | undefined>(
+    {} as SelectOption
+  );
+  const [dateValue, setDateValue] = useState<string | undefined>("" as string);
+  const [selected, setSelected] = useState<Date | undefined>(undefined);
+  const [createNewOpen, setCreateNewOpen] = useState(false);
+  const [calendarOpen, setCalendarOpen] = useState(false);
   const [isSingleMatch, setIsSingleMatch] = useState(true);
-  const [refereesList, setRefereesList] = useState(null);
-  const [controllersList, setControllersList] = useState(null);
-  const [refArray, setRefArray] = useState([]);
-  const [showCalendar, setShowCalendar] = useState(false);
-  const [hoursArr, setHoursArr] = useState();
+  const [isSuccess, setIsSuccess] = useState(false);
   const {
-    home,
-    away,
-    type,
-    gender,
-    age,
-    venue,
-    referee,
-    assist1,
-    assist2,
-    controllers,
-    date,
-    time,
-  } = formFields;
-
-  const router = useRouter();
-
-  const handleCalendarOpen = (e) => {
-    e.preventDefault();
-    setShowCalendar((state) => !state);
+    home = "",
+    away = "",
+    type = "",
+    gender = "",
+    age = "",
+    venue = "",
+    referee = {} as User,
+    assist1 = {} as User,
+    assist2 = {} as User,
+    controllers = [],
+    date = "",
+    time = "",
+  } = formFields || {};
+  const dateFormatOptions: Intl.DateTimeFormatOptions = {
+    year: "numeric",
+    month: "numeric",
+    day: "numeric",
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  const defaultClassNames = getDefaultClassNames();
 
+  const transformDateFormat = (date: Date) => {
+    return date.toLocaleDateString("hu-HU", dateFormatOptions);
+  };
+
+  useEffect(() => {
+    if (selected) {
+      const dateString = transformDateFormat(selected).toString();
+      setDateValue(dateString);
+      setFormFields({
+        ...formFields,
+        date: dateString || "",
+      });
+    }
+  }, [selected]);
+
+  const handleCalendarOpen = () => {
+    setCalendarOpen((state) => !state);
+  };
+
+  const handleSubmit = async () => {
     // test type
     if (type === "7s" || type === "UP torna") {
       if (date !== "" && time !== "" && venue !== "") {
         try {
-          await createMatch(formFields);
+          const res = await createMatch(formFields);
           resetFormFields();
-          //resetEditMode();
-          router.push("/dashboard/matches");
+          const success = res instanceof Error ? false : res.success;
+          if (success) setIsSuccess(true);
+          toast.success("Sikeres mentés");
         } catch (error) {
-          console.error(error.message);
+          console.error(error);
         }
       } else {
         toast.error("Kérlek, tölts ki minden kötelező mezőt");
@@ -93,21 +141,32 @@ const MatchesNew = ({ users }: {users: User[]}) => {
         return;
       }
       if (
-        (referee !== "" && assist1 !== "" && referee === assist1) ||
-        (referee !== "" && assist2 !== "" && referee === assist2) ||
-        (assist2 !== "" && assist1 !== "" && assist2 === assist1)
+        (referee.username !== "" &&
+          assist1.username !== "" &&
+          referee.username === assist1.username) ||
+        (referee.username !== "" &&
+          assist2.username !== "" &&
+          referee.username === assist2.username) ||
+        (!assist2.username &&
+          !assist1.username &&
+          assist2.username === assist1.username)
       ) {
         toast.error("A nevek nem egyezhetnek meg");
         return;
       }
-      if (
-        controllers.includes(referee) ||
-        controllers.includes(assist1) ||
-        controllers.includes(assist2)
-      ) {
-        toast.error("A nevek nem egyezhetnek meg");
-        return;
+      if (controllers.length > 0) {
+        controllers.map((c) => {
+          if (
+            c.username === referee.username ||
+            c.username === assist1.username ||
+            c.username === assist2.username
+          ) {
+            toast.error("A nevek nem egyezhetnek meg");
+            return;
+          }
+        });
       }
+
       if (
         home !== "" &&
         away !== "" &&
@@ -116,12 +175,13 @@ const MatchesNew = ({ users }: {users: User[]}) => {
         venue !== ""
       ) {
         try {
-          await createMatch(formFields);
-          router.push("/dashboard/matches");
-          //resetFormFields();
-          //resetEditMode();
+          const res = await createMatch(formFields);
+          const success = res instanceof Error ? false : res.success;
+          if (success) setIsSuccess(true);
+          toast.success("Sikeres mentés");
+          resetFormFields();
         } catch (error) {
-          console.error(error.message);
+          console.error(error);
         }
       } else {
         toast.error("Kérlek, tölts ki minden kötelező mezőt");
@@ -129,400 +189,362 @@ const MatchesNew = ({ users }: {users: User[]}) => {
     }
   };
 
-  const exitEditMode = () => {
-    router.push("/dashboard/matches");
-  };
-
   const resetFormFields = () => {
     setFormFields(defaultFormFields);
   };
 
-  const handleDateChange = () => {
-    setFormFields({ ...formFields, date: selectedDate });
+  const toggleCreateNew = () => {
+    setCreateNewOpen(!createNewOpen);
+    //resetToBase();
   };
-
-  const handleChange = (data) => {
-    if (data.name === "type") setSelectedType(data.value);
-    setFormFields({ ...formFields, [data.name]: data.value });
-    setEdited(true);
-  };
-
-  const handleRefChange = (data) => {
-    const refObject = {
-      userName: data.value,
-      userId: data.id,
-    };
-    if (data.name === "referee") {
-      setFormFields({
-        ...formFields,
-        referee: refObject,
-      });
-    } else if (data.name === "assist1") {
-      setFormFields({
-        ...formFields,
-        assist1: refObject,
-      });
-    } else if (data.name === "assist2") {
-      setFormFields({
-        ...formFields,
-        assist2: refObject,
-      });
-    }
-  };
-
-  const handleSelectRefs = (data) => {
-    setRefereesList(data);
-    let refs = [];
-    data.map((ref) => {
-      return refs.push({ userName: ref.value, userId: ref.id });
-    });
-    setFormFields({ ...formFields, referees: refs });
-  };
-
-  const handleSelectControllers = (data) => {
-    console.log(data);
-    setControllersList(data);
-    let refs = [];
-    data.map((ref) => {
-      return refs.push({ userName: ref.value, userId: ref.id });
-    });
-    setFormFields({ ...formFields, controllers: refs });
-  };
-
-  const createRefArray = () => {
-    setRefArray(
-      refList.map((ref) => ({
-        label: ref.displayName,
-        value: ref.displayName,
-        id: ref._id,
-      }))
-    );
-  };
-
-  const createHoursArray = () => {
-    let hoursList = [];
-    hours.map((hour) => hoursList.push({ name: hour }));
-    setHoursArr(hoursList);
-  };
-
-  useEffect(() => {
-    handleDateChange();
-  }, [selectedDate]);
-
-  useEffect(() => {
-    if (formFields.type === "7s" || formFields.type === "UP torna") {
-      setIsSingleMatch(false);
-      createRefArray();
-    } else {
-      setIsSingleMatch(true);
-      createRefArray();
-    }
-  }, [selectedType]);
-
-  useEffect(() => {
-    setRefList((prev) => users);
-    setRefArray(
-      users.map((ref) => ({
-        label: ref.username,
-        value: ref.username,
-        id: ref._id,
-      }))
-    );
-    createHoursArray();
-  }, [users]);
-
-  if (!users) return <Spinner />;
 
   return (
-    <div className="mt-5  mb-6 lg:mx-16 md:mt-0 bg-white md:text-left">
-      <form onSubmit={handleSubmit}>
-        <div className="overflow-hidden sm:rounded-md">
-          <div className="px-4 py-5 bg-white sm:p-6">
-            <div className="md:grid grid-cols-2 gap-6">
-              <div className="mb-6 md:mb-0">
-                <div className="block text-sm font-medium text-gray-700">
-                  Típus:
-                </div>
-                <Select
-                  className="mt-1 text-sm text-gray-700"
-                  placeholder="--Válassz típust--"
-                  onChange={handleChange}
-                  options={types.map((n) => ({
-                    label: n.name,
-                    value: n.name,
-                    name: "type",
-                  }))}
-                />
-              </div>
-              {isSingleMatch && (
-                <>
-                  <div className="mb-6 md:mb-0">
-                    <label
-                      htmlFor="home"
-                      className="block text-sm font-medium text-gray-700"
-                    >
-                      Hazai:
-                    </label>
-                    <Select
-                      className="mt-1 text-sm text-gray-700"
-                      placeholder="--Válassz egyesületet--"
-                      onChange={handleChange}
-                      options={teams.map((n) => ({
-                        label: n.name,
-                        value: n.name,
-                        name: "home",
-                      }))}
-                    />
-                  </div>
-
-                  <div className="mb-6 md:mb-0">
-                    <label
-                      htmlFor="away"
-                      className="block text-sm font-medium text-gray-700"
-                    >
-                      Vendég:
-                    </label>
-                    <Select
-                      className="mt-1 text-sm text-gray-700"
-                      placeholder="--Válassz egyesületet--"
-                      onChange={handleChange}
-                      options={teams.map((n) => ({
-                        label: n.name,
-                        value: n.name,
-                        name: "away",
-                      }))}
-                    />
-                  </div>
-                </>
-              )}
-              <div className="mb-6 md:mb-0">
-                <label
-                  htmlFor="gender"
-                  className="block text-sm font-medium text-gray-700"
-                >
-                  Neme:
-                </label>
-                <Select
-                  className="mt-1 text-sm text-gray-700"
-                  placeholder="--Válassz nemet--"
-                  onChange={handleChange}
-                  options={genderOptions.map((n) => ({
-                    label: n.name,
-                    value: n.name,
-                    name: "gender",
-                  }))}
-                />
-              </div>
-              <div className="mb-6 md:mb-0">
-                <label
-                  htmlFor="age"
-                  className="block text-sm font-medium text-gray-700"
-                >
-                  Korosztály:
-                </label>
-                <Select
-                  className="mt-1 text-sm text-gray-700"
-                  placeholder="--Válassz korosztályt--"
-                  onChange={handleChange}
-                  options={ages.map((n) => ({
-                    label: n.name,
-                    value: n.name,
-                    name: "age",
-                  }))}
-                />
-              </div>
-              <div className="mb-6 md:mb-0">
-                <label
-                  htmlFor="venue"
-                  className="block text-sm font-medium text-gray-700"
-                >
-                  Helyszín:
-                </label>
-                <Select
-                  className="mt-1 text-sm text-gray-700"
-                  placeholder="--Válassz helyszínt--"
-                  onChange={handleChange}
-                  options={venues.map((n) => ({
-                    label: n.name,
-                    value: n.name,
-                    name: "venue",
-                  }))}
-                />
-              </div>
-              {isSingleMatch && (
-                <>
-                  <div className="mb-6 md:mb-0">
-                    <label
-                      htmlFor="referee"
-                      className="block text-sm font-medium text-gray-700"
-                    >
-                      Játékvezető:
-                    </label>
-                    <Select
-                      className="mt-1 text-sm text-gray-700"
-                      placeholder="--Válassz a listából--"
-                      onChange={handleRefChange}
-                      options={users.map((ref) => ({
-                        label: ref.username,
-                        value: ref.username,
-                        id: ref._id,
-                        name: "referee",
-                      }))}
-                    />
-                  </div>
-                  <div className="mb-6 md:mb-0">
-                    <label
-                      htmlFor="assist1"
-                      className="block text-sm font-medium text-gray-700"
-                    >
-                      Asszisztens 1:
-                    </label>
-                    <Select
-                      className="mt-1 text-sm text-gray-700"
-                      placeholder="--Válassz a listából--"
-                      onChange={handleRefChange}
-                      options={users.map((ref) => ({
-                        label: ref.username,
-                        value: ref.username,
-                        id: ref._id,
-                        name: "assist1",
-                      }))}
-                    />
-                  </div>
-                  <div className="mb-6 md:mb-0">
-                    <label
-                      htmlFor="assist2"
-                      className="block text-sm font-medium text-gray-700"
-                    >
-                      Asszisztens 2:
-                    </label>
-                    <Select
-                      className="mt-1 text-sm text-gray-700"
-                      placeholder="--Válassz a listából--"
-                      onChange={handleRefChange}
-                      options={users.map((ref) => ({
-                        label: ref.username,
-                        value: ref.username,
-                        id: ref._id,
-                        name: "assist2",
-                      }))}
-                    />
-                  </div>
-
-                  <div className="mb-6 md:mb-0">
-                    <div className="block text-sm font-medium text-gray-700">
-                      Ellenőr(ök):
-                    </div>
-                    <Select
-                      value={controllersList}
-                      className="mt-1 text-sm text-gray-700"
-                      placeholder="--Válassz a listából--"
-                      isMulti
-                      onChange={handleSelectControllers}
-                      options={refArray}
-                    />
-                  </div>
-                </>
-              )}
-
-              <div
-                className={
-                  !isSingleMatch
-                    ? "md:w-1/2 col-span-2 text-center mx-auto mb-6 md:mb-0"
-                    : "flex flex-col justify-center mb-6 md:mb-0"
-                }
-              >
-                <label className="block text-sm font-medium text-gray-700">
-                  Dátum kiválasztása:
-                </label>
-                <input
-                  type="text"
-                  name="eventName"
-                  placeholder="---Válassz dátumot---"
-                  value={selectedDate}
-                  id="eventName"
-                  autoComplete="eventName"
-                  className="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                  onChange={handleChange}
-                />
-              </div>
-              <div className="col-span-2 text-center mb-6 md:mb-0">
-                <div className="mb-4">
-                  <OutlinedButton
-                    text={"Mutasd a naptárt"}
-                    onClick={handleCalendarOpen}
-                  />
-                </div>
-                {showCalendar && (
-                  <Calendar
-                    onChange={(date) => {
-                      setSelectedDate(
-                        new Date(date).toISOString().slice(0, 10)
-                      );
-                      //setEdited(true);
-                    }}
-                    value={date}
-                    onClickDay={() => setShowCalendar(false)}
-                  />
-                )}
-              </div>
-              <div
-                className={
-                  isSingleMatch ? "w-1/2 col-span-2 mx-auto" : "mb-6 md:mb-0"
-                }
-              >
-                <label
-                  htmlFor="time"
-                  className="block text-sm font-medium text-gray-700"
-                >
-                  Időpont:
-                </label>
-                <Select
-                  className="mt-1 text-sm text-gray-700"
-                  placeholder="--Válassz a listából--"
-                  //isMulti
-                  onChange={handleChange}
-                  options={hoursArr.map((n) => ({
-                    label: n.name,
-                    value: n.name,
-                    name: "time",
-                  }))}
-                />
-              </div>
-              {!isSingleMatch && (
-                <div>
-                  <div className="block text-sm font-medium text-gray-700">
-                    Játékvezetők:
-                  </div>
-                  <Select
-                    value={refereesList}
-                    className="mt-1 text-sm text-gray-700"
-                    placeholder="--Válassz játékvezetőt--"
-                    isMulti
-                    onChange={handleSelectRefs}
-                    options={refArray}
-                  />
-                </div>
-              )}
-            </div>
-          </div>
-          <div className="mt-5 md:mt-10 px-4 py-3 text-center sm:px-6">
-            {edited ? (
-              <PrimaryButton type={"submit"} text={"Mentem a módosításokat"} />
-            ) : (
-              <DisabledButton text={"Mentem a módosításokat"} />
-            )}
-          </div>
-          <div className="mb-5 md:mb-10 px-4 py-3 text-center sm:px-6">
-            <OutlinedButton
-              onClick={exitEditMode}
-              type={"button"}
-              text={"Mégse"}
-            />
-          </div>
+    <>
+      <div className="p-5 border border-gray-200 rounded-2xl lg:p-6 text-gray-600">
+        <div className="flex flex-col gap-5 xl:flex-row xl:items-center xl:justify-between">
+          <h2 className="text-lg font-semibold text-gray-600">
+            Új mérkőzés létrehozása
+          </h2>
+          <button
+            onClick={toggleCreateNew}
+            className="flex w-full items-center justify-center gap-2 rounded-full border border-gray-300 bg-white px-4 py-3 text-sm font-medium text-gray-700 shadow-theme-xs hover:bg-gray-50 hover:text-gray-800  lg:inline-flex lg:w-auto"
+          >
+            <span className="">
+              <Icon icon="lucide:plus" width="20" height="20" />
+            </span>
+            Létrehozás
+          </button>
         </div>
-      </form>
-    </div>
+
+        {createNewOpen && (
+          <form className="flex flex-col">
+            <div className="mt-8">
+              <div className="grid grid-cols-1 gap-x-10 gap-y-5 xl:grid-cols-2">
+                <div className="col-span-2 lg:col-span-1">
+                  <Label>Verseny típus:</Label>
+                  <Select
+                    options={types.map((n) => ({
+                      label: n.name,
+                      value: n.name,
+                      name: "type",
+                    }))}
+                    placeholder="--Válassz típust--"
+                    onChange={(o) => {
+                      setTypeValue(o);
+                      setFormFields({
+                        ...formFields,
+                        type: String(o?.value) || "",
+                      });
+                      if (o?.value === "7s" || o?.value === "UP torna") {
+                        setIsSingleMatch(false);
+                      }
+                    }}
+                    value={typeValue}
+                  />
+                </div>
+                <div className="col-span-2 lg:col-span-1">
+                  <Label>Neme:</Label>
+                  <Select
+                    options={genderOptions.map((n) => ({
+                      label: n.name,
+                      value: n.name,
+                      name: "gender",
+                    }))}
+                    placeholder="--Válassz nemet--"
+                    onChange={(o) => {
+                      setGenderValue(o);
+                      setFormFields({
+                        ...formFields,
+                        gender: String(o?.value) || "",
+                      });
+                    }}
+                    value={genderValue}
+                  />
+                </div>
+                <div className="col-span-2 lg:col-span-1">
+                  <Label>Korosztály:</Label>
+                  <Select
+                    options={ages.map((n) => ({
+                      label: n.name,
+                      value: n.name,
+                      name: "age",
+                    }))}
+                    placeholder="--Válassz korosztályt--"
+                    onChange={(o) => {
+                      setAgeValue(o);
+                      setFormFields({
+                        ...formFields,
+                        age: String(o?.value),
+                      });
+                    }}
+                    value={ageValue}
+                  />
+                </div>
+                <div className="col-span-2 lg:col-span-1">
+                  <Label>Helyszín:</Label>
+                  <Select
+                    options={venues.map((n) => ({
+                      label: n.name,
+                      value: n.name,
+                      name: "venue",
+                    }))}
+                    placeholder="--Válassz helyszínt--"
+                    onChange={(o) => {
+                      setVenueValue(o);
+                      setFormFields({
+                        ...formFields,
+                        venue: String(o?.value),
+                      });
+                    }}
+                    value={venueValue}
+                  />
+                </div>
+                {isSingleMatch && (
+                  <>
+                    <div className="col-span-2 lg:col-span-1">
+                      <Label>Hazai:</Label>
+                      <Select
+                        options={teams.map((n) => ({
+                          label: n.name,
+                          value: n.name,
+                          name: "home",
+                        }))}
+                        placeholder="--Válassz csapatot--"
+                        onChange={(o) => {
+                          setHomeValue(o);
+                          setFormFields({
+                            ...formFields,
+                            home: String(o?.value),
+                          });
+                        }}
+                        value={homeValue}
+                      />
+                    </div>
+                    <div className="col-span-2 lg:col-span-1">
+                      <Label>Vendég:</Label>
+                      <Select
+                        options={teams.map((n) => ({
+                          label: n.name,
+                          value: n.name,
+                          name: "away",
+                        }))}
+                        placeholder="--Válassz csapatot--"
+                        onChange={(o) => {
+                          setAwayValue(o);
+                          setFormFields({
+                            ...formFields,
+                            away: String(o?.value),
+                          });
+                        }}
+                        value={awayValue}
+                      />
+                    </div>
+                    <div className="col-span-2 lg:col-span-1">
+                      <Label>Játékvezető:</Label>
+                      <Select
+                        options={referees.map((n) => ({
+                          label: n.username,
+                          value: n.username,
+                          id: n.clerkUserId,
+                          name: "referee",
+                        }))}
+                        placeholder="--Válassz játékvezetőt--"
+                        onChange={(o) => {
+                          setRefereeValue(o);
+                          setFormFields({
+                            ...formFields,
+                            referee: {
+                              username: String(o?.value),
+                              clerkUserId: o?.id || "",
+                            },
+                          });
+                        }}
+                        value={refereeValue}
+                      />
+                    </div>
+                    <div className="col-span-2 lg:col-span-1">
+                      <Label>Asszisztens 1:</Label>
+                      <Select
+                        options={referees.map((n) => ({
+                          label: n.username,
+                          value: n.username,
+                          id: n.clerkUserId,
+                          name: "assist1",
+                        }))}
+                        placeholder="--Válassz asszisztenst--"
+                        onChange={(o) => {
+                          setAssist1Value(o);
+                          setFormFields({
+                            ...formFields,
+                            assist1: {
+                              username: String(o?.value),
+                              clerkUserId: o?.id || "",
+                            },
+                          });
+                        }}
+                        value={assist1Value}
+                      />
+                    </div>
+                    <div className="col-span-2 lg:col-span-1">
+                      <Label>Asszisztens 2:</Label>
+                      <Select
+                        options={referees.map((n) => ({
+                          label: n.username,
+                          value: n.username,
+                          id: n.clerkUserId,
+                          name: "assist2",
+                        }))}
+                        placeholder="--Válassz asszisztenst--"
+                        onChange={(o) => {
+                          setAssist2Value(o);
+                          setFormFields({
+                            ...formFields,
+                            assist2: {
+                              username: String(o?.value),
+                              clerkUserId: o?.id || "",
+                            },
+                          });
+                        }}
+                        value={assist2Value}
+                      />
+                    </div>
+                    <div className="col-span-2 lg:col-span-1">
+                      <Label>Ellenőr(ök):</Label>
+                      <Select
+                        multiple
+                        options={referees.map((n) => ({
+                          label: n.username,
+                          value: n.username,
+                          id: n.clerkUserId,
+                          name: "controllers",
+                        }))}
+                        placeholder="--Válassz ellenőrt--"
+                        onChange={(o) => {
+                          setControllersValue(o);
+                          setFormFields({
+                            ...formFields,
+                            controllers: o.map((i) => ({
+                              username: String(i.value), // Ensure username is a string
+                              clerkUserId: i.id || "", // Provide a fallback to an empty string
+                            })),
+                          });
+                        }}
+                        value={controllersValue}
+                      />
+                    </div>
+                  </>
+                )}
+                {!isSingleMatch && (
+                  <div className="col-span-2 lg:col-span-1">
+                    <Label>Játékvezetők:</Label>
+                    <Select
+                      multiple
+                      placeholder="--Válassz játékvezetőket--"
+                      options={referees.map((n) => ({
+                        label: n.username,
+                        value: n.username,
+                        id: n.clerkUserId,
+                        name: "referees",
+                      }))}
+                      onChange={(o) => {
+                        setRefereesValue(o);
+                        setFormFields({
+                          ...formFields,
+                          referees: o.map((i) => ({
+                            username: String(i.value), // Ensure username is a string
+                            clerkUserId: i.id || "", // Provide a fallback to an empty string
+                          })),
+                        });
+                      }}
+                      value={refereesValue}
+                    />
+                  </div>
+                )}
+                <div className="col-span-2 lg:col-span-1">
+                  <Label>Időpont:</Label>
+                  <Select
+                    options={hours.map((n) => ({
+                      label: n,
+                      value: n,
+                      name: "time",
+                    }))}
+                    placeholder="--Válassz időpontot--"
+                    onChange={(o) => {
+                      setTimeValue(o);
+                      setFormFields({ ...formFields, time: String(o?.value) });
+                    }}
+                    value={timeValue}
+                  />
+                </div>
+                <div className="col-span-2 lg:col-span-1">
+                  <Label>Dátum:</Label>
+                  <div
+                    onBlur={handleCalendarOpen}
+                    onClick={handleCalendarOpen}
+                    className="flex overscroll-contain relative h-11 w-full appearance-none rounded-lg border border-gray-300  px-4 py-2.5 text-sm shadow-theme-xs placeholder:text-gray-400 focus:border-blue-500 focus:outline-hidden focus:ring-2 focus:ring-blue-300"
+                  >
+                    <span className="flex flex-1 flex-wrap gap-2 text-gray-600  overflow-hidden">
+                      {dateValue ? dateValue : "---Válassz dátumot---"}
+                    </span>
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        e.preventDefault();
+                        setDateValue("" as string);
+                      }}
+                      className="cursor-pointer text text-gray-300"
+                    >
+                      &times;
+                    </button>
+                    <div className="bg-gray-300 self-stretch w-[2px] ml-2.5"></div>
+                    <div className="flex my-auto items-center text-gray-300 pl-2 pt-0.5">
+                      <Icon icon="lucide:chevron-down" width="20" height="20" />
+                    </div>
+                  </div>
+                  {calendarOpen && (
+                    <div className="flex justify-center mx-auto mt-1 mb-6 text-sm font-medium text-gray-700">
+                      <DayPicker
+                        locale={hu}
+                        id="day-picker"
+                        mode="single"
+                        animate
+                        navLayout="around"
+                        timeZone="Europe/Budapest"
+                        showOutsideDays={true}
+                        className={"p-3"}
+                        selected={selected}
+                        onSelect={setSelected}
+                        classNames={{
+                          root: `${defaultClassNames.root} border border-gray-200 rounded-xl p-5`,
+                          caption_label: `${defaultClassNames.caption_label} text-base font-medium capitalize`,
+                          weekday: `${defaultClassNames.weekday} uppercase text-sm`,
+                          today: "border border-amber-500",
+                          selected:
+                            "bg-amber-500  rounded rounded-full text-white bg-primary text-primary-foreground hover:bg-primary hover:text-primary-foreground focus:bg-primary focus:text-primary-foreground",
+                        }}
+                      />
+                    </div>
+                  )}
+                </div>
+              </div>
+              <div className="mt-5 md:mt-10 px-4 py-3 text-center sm:px-6">
+                <PrimaryButton
+                  onClick={handleSubmit}
+                  text={"Mentem a módosításokat"}
+                />
+              </div>
+              <div className="mb-5 md:mb-10 px-4 py-3 text-center sm:px-6">
+                <OutlinedButton
+                  onClick={toggleCreateNew}
+                  type={"button"}
+                  text={"Mégse"}
+                />
+              </div>
+            </div>
+          </form>
+        )}
+      </div>
+    </>
   );
 };
 

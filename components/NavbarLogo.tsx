@@ -4,7 +4,7 @@ import logo from "@/assets/images/hru-logo_sm.png";
 
 const NavbarLogo = () => {
   return (
-    <Link className="flex h-14 flex-shrink-0 items-center" href="/">
+    <Link className="flex h-16 flex-shrink-0 items-center" href="/">
       <Image
         className="h-12 w-auto"
         src={logo}

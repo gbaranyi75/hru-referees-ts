@@ -1,0 +1,50 @@
+[
+  {
+    "id": 0,
+    "name": "Donau"
+  },
+  {
+    "id": 1,
+    "name": "Exiles"
+  },
+  {
+    "id": 2,
+    "name": "Vitézek"
+  },
+  {
+    "id": 3,
+    "name": "Gorillák"
+  },
+  {
+    "id": 4,
+    "name": "Honfoglalók"
+  },
+  {
+    "id": 5,
+    "name": "KARC"
+  },
+  {
+    "id": 6,
+    "name": "DEAC"
+  },
+  {
+    "id": 7,
+    "name": "Kosok"
+  },
+  {
+    "id": 8,
+    "name": "Fehérvár"
+  },
+  {
+    "id": 9,
+    "name": "FWSE"
+  },
+  {
+    "id": 10,
+    "name": "Oroszlánok"
+  },
+  {
+    "id": 11,
+    "name": "Celtic"
+  }
+]

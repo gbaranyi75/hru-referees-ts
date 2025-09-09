@@ -1,0 +1,14 @@
+[
+  { "id": 0, "name": "Budapest" },
+  { "id": 1, "name": "Gyömrő" },
+  { "id": 2, "name": "Százhalombatta" },
+  { "id": 3, "name": "Esztergom" },
+  { "id": 4, "name": "Kecskemét" },
+  { "id": 5, "name": "Nagykőrös" },
+  { "id": 6, "name": "Szentes" },
+  { "id": 7, "name": "Szeged" },
+  { "id": 8, "name": "Székesfehérvár" },
+  { "id": 9, "name": "Debrecen" },
+  { "id": 10, "name": "Sopron" },
+  { "id": 11, "name": "Bécs" }
+]

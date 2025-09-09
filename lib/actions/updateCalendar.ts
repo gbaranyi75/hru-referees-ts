@@ -2,7 +2,7 @@
 import connectDB from "@/config/database";
 import Calendar from "@/models/Calendar";
 
-export const updateCalendar = async (calendarId: string, data: { name: string, days: string[] }) => {
+export const updateCalendar = async (calendarId: string | undefined, data: { name: string, days: string[] }) => {
   await connectDB();
 
   try {

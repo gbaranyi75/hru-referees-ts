@@ -1,37 +1,39 @@
 "use client";
-import { useState, useEffect } from "react";
-import ReactCalendar from "react-calendar";
+import { useState, useEffect, useCallback } from "react";
+import { toast } from "react-toastify";
+import { DayPicker, getDefaultClassNames } from "react-day-picker";
+import { hu } from "react-day-picker/locale";
 import { MdOutlineExpandMore, MdOutlineExpandLess } from "react-icons/md";
 import DisabledButton from "@/components/common/DisabledButton";
 import PrimaryButton from "@/components/common/PrimaryButton";
 import OutlinedButton from "@/components/common/OutlinedButton";
 import DeleteButton from "./common/DeleteButton";
-import { updateCalendarData, deleteCalendar } from "@/lib/utils/requests";
+import Input from "@/components/common/InputField";
+import Label from "@/components/common/Label";
+import { deleteCalendar } from "@/lib/actions/deleteCalendar";
 import { updateCalendar } from "@/lib/actions/updateCalendar";
-import { useRouter } from "next/navigation";
 import { Calendar } from "@/types/types";
-import { Value } from "react-calendar/dist/shared/types.js";
 
 const CalendarItem = ({
   calendar,
   isOpen,
   toggle,
+  toggleEditMode,
+  fetchCalendarsData,
 }: {
   calendar: Calendar;
   isOpen: boolean;
   toggle: () => void;
+  toggleEditMode: () => void;
+  fetchCalendarsData: () => void;
 }) => {
-  const currentDates = calendar.days;
-  const [dates, setDates] = useState(currentDates);
-  const [eventName, setEventName] = useState(calendar.name);
+  const [dates, setDates] = useState<string[]>(calendar.days);
+  const [eventName, setEventName] = useState(calendar.name as string);
   const [edited, setEdited] = useState(false);
   const [showError, setShowError] = useState(false);
-  const [date, setDate] = useState(new Date());
-  const [updateCalendarData, setUpdateCalendarData] = useState({
-    name: eventName,
-    days: dates,
-  });
-  const days = dates;
+  const [showErrorDate, setShowErrorDate] = useState(false);
+  const [showErrorName, setShowErrorName] = useState(false);
+  const [selected, setSelected] = useState<Date[] | undefined>([]);
   const calendarId = calendar._id;
   const dateFormatOptions: Intl.DateTimeFormatOptions = {
     year: "numeric",
@@ -39,27 +41,40 @@ const CalendarItem = ({
     day: "numeric",
   };
 
-  const router = useRouter();
+  const defaultClassNames = getDefaultClassNames();
 
   const handleOpenCalendar = (e: React.MouseEvent<HTMLSpanElement>) => {
     e.preventDefault();
     toggle();
   };
 
-  const exitEditMode = () => {
-    router.push("/dashboard/calendar");
+  const handleEventNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.value !== "") {
+      setEdited(true);
+    }
+    setEventName(e.target.value);
   };
 
-  const handleSubmit = async (e: React.MouseEvent<HTMLSpanElement>) => {
-    //e.preventDefault();
+  const transformDateFormat = (date: Date) => {
+    return date.toLocaleDateString("hu-HU", dateFormatOptions);
+  };
+
+  useEffect(() => {
+    setShowError(false);
+  }, [dates]);
+
+  /* Server Actions */
+  const handleUpdate = useCallback(async () => {
     if (dates.length !== 0 && eventName !== "") {
+      const updatedCalendar = { name: eventName, days: dates };
       try {
-        const res = await updateCalendar(calendarId, updateCalendarData);
-        const success = res instanceof Error? false : res.success;
+        const res = await updateCalendar(calendarId, updatedCalendar);
+        const success = res instanceof Error ? false : res.success;
         if (success) {
-          exitEditMode();
-          setDates([]);
-          setEventName("");
+          resetToBase();
+          toggleEditMode();
+          fetchCalendarsData();
+          toast.success("Sikeres mentés");
         }
       } catch (error) {
         console.error(error);
@@ -67,42 +82,52 @@ const CalendarItem = ({
     } else {
       setShowError(true);
     }
-  };
+  }, [eventName, dates]);
 
   const handleDeleteCalendar = async (e: React.MouseEvent<HTMLSpanElement>) => {
     e.preventDefault();
     try {
-      const res = await deleteCalendar(calendarId)
-      const success = res instanceof Error? false : res.success;
+      const res = await deleteCalendar(calendarId);
+      const success = res instanceof Error ? false : res.success;
       if (success) {
-        exitEditMode();
+        toggleEditMode();
+        fetchCalendarsData();
+        toast.success("Sikeres törlés");
       }
     } catch (error) {
       console.error(error);
     }
   };
 
-  const transformDateFormat = (date: Date) => {
-    return date.toLocaleDateString("hu-HU", dateFormatOptions);
-  };
+  /* Initializing current data from DB  */
+  useEffect(() => {
+    let currentDays: Date[] = [];
+    calendar.days.map((day) => currentDays.push(new Date(day)));
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setEventName(e.target.value);
-    setUpdateCalendarData((prevState) => ({
-      ...prevState,
-      name: e.target.value,
-    }));
-    if (e.target.value !== "") {
-      setEdited(true);
-    }
-  };
+    setSelected(currentDays);
+  }, []);
 
   useEffect(() => {
-    setShowError(false);
-  }, [dates]);
+    let days: string[] = [];
+    if (selected?.length !== 0) setEdited(true);
+    selected?.forEach((date) => {
+      days.push(transformDateFormat(date).toString());
+      days.sort();
+    });
+    setDates(days);
+  }, [selected]);
+
+  /* Util functions */
+  const resetToBase = () => {
+    setDates([]);
+    setEventName("");
+    setSelected([]);
+    setEdited(false);
+    setShowErrorName(false);
+  };
 
   return (
-    <div className="flex flex-col border-b mx-6 mt-6 bg-white text-gray-600 text-center drop-shadow-md hover:drop-shadow-xl justify-center z-0">
+    <div className="flex flex-col my-5 rounded-2xl border border-gray-200 bg-white text-gray-600 text-center justify-center z-0">
       <div className="flex md:mx-36 py-6 bg-white text-center justify-center">
         <span>
           <h2 className="text-lg mr-1 font-semibold">{eventName}</h2>
@@ -117,137 +142,95 @@ const CalendarItem = ({
       </div>
 
       {isOpen && (
-        <div className="mt-5 md:mx-32 md:mt-0 bg-white md:text-left">
-          <form onClick={handleSubmit}>
-            <div className="overflow-hidden sm:rounded-md">
-              <div className="px-4 py-5 bg-white sm:p-6">
-                <div className="grid grid-cols-6 gap-6 mb-6">
-                  <div className="col-span-6">
-                    <label
-                      htmlFor="eventName"
-                      className="block mb-2 text-sm font-medium text-gray-700"
-                    >
-                      Esemény neve
-                    </label>
-                    <input
-                      type="text"
-                      name="eventName"
-                      value={eventName}
-                      id="eventName"
-                      autoComplete="eventName"
-                      className="px-4 py-3 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-solid border border-indigo-50 rounded-md"
-                      onChange={handleChange}
-                    />
+        <form className="flex flex-col px-4">
+          <div className="mt-8">
+            <div className="grid grid-cols-1 gap-x-10 gap-y-5 xl:grid-cols-2">
+              <div className="col-span-2 lg:col-span-1">
+                <Label htmlFor="eventName">Esemény neve</Label>
+                <Input
+                  type="text"
+                  defaultValue={calendar.name}
+                  onChange={handleEventNameChange}
+                />
+
+                {showErrorName && (
+                  <div className="flex flex-col md:justify-center">
+                    <p className="mt-2 text-sm text-center text-red-600">
+                      Kérlek, add meg a nevet
+                    </p>
                   </div>
-                </div>
-                <div className="flex flex-col md:justify-center">
-                  <label className="mb-2 mt-6 text-sm font-medium text-gray-700">
-                    Időpontok kiválasztása:
-                  </label>
-                  <ReactCalendar
-                    onChange={(date: Value) => {
-                      setDate(date);
-                      setEdited(true);
-                    }}
-                    value={date}
-                    formatDay={(date: Date) => {
-                      return transformDateFormat(date);
-                    }}
-                    onClickDay={(date) => {
-                      if (dates.includes(transformDateFormat(date).toString())) {
-                        setDates(dates);
-                      } else {
-                        days.push(transformDateFormat(date).toString());
-                        days.sort();
-                        setDates(days, ...dates);
-                        setUpdateCalendarData((prevState) => ({
-                          ...prevState,
-                          days: days,
-                        }));
-                      }
+                )}
+              </div>
+              <div className="flex flex-col col-span-2 lg:col-span-1 items-center justify-center">
+                <Label>Időpontok kiválasztása:</Label>
+
+                <div className="flex justify-center mx-auto mb-6 text-sm font-medium text-gray-700">
+                  <DayPicker
+                    locale={hu}
+                    mode="multiple"
+                    animate
+                    navLayout="around"
+                    timeZone="Europe/Budapest"
+                    showOutsideDays={true}
+                    className={"p-3"}
+                    selected={selected}
+                    onSelect={setSelected}
+                    classNames={{
+                      root: `${defaultClassNames.root} border border-gray-200 rounded-xl p-5`,
+                      caption_label: `${defaultClassNames.caption_label} text-base font-medium capitalize`,
+                      weekday: `${defaultClassNames.weekday} uppercase text-sm`,
+                      today: "border border-amber-500",
+                      selected:
+                        "bg-amber-500  rounded rounded-full text-white bg-primary text-primary-foreground hover:bg-primary hover:text-primary-foreground focus:bg-primary focus:text-primary-foreground",
                     }}
                   />
-                  <div className="flex md:flex-row flex-col flex-wrap">
-                    {dates.map((day, idx) => {
-                      return (
-                        <div className="flex my-1" key={idx}>
-                          <span
-                            id="badge-dismiss-dark"
-                            className="inline-flex items-center px-3 py-1 me-2 text-sm text-gray-600 bg-gray-300 rounded-full"
-                          >
-                            {day}
-                            <button
-                              type="button"
-                              className="inline-flex items-center p-1 ms-2 text-sm text-gray-600 bg-transparent rounded-sm hover:bg-gray-400 hover:text-gray-50"
-                              data-dismiss-target="#badge-dismiss-dark"
-                              aria-label="Remove"
-                              onClick={() => {
-                                const modifiedArray = dates.filter(
-                                  (day) => dates.indexOf(day) !== idx
-                                );
-                                setDates(modifiedArray);
-                                setUpdateCalendarData((prevState) => ({
-                                  ...prevState,
-                                  days: modifiedArray,
-                                }));
-                                setEdited(true);
-                              }}
-                            >
-                              <svg
-                                className="w-2 h-2"
-                                aria-hidden="true"
-                                xmlns="http://www.w3.org/2000/svg"
-                                fill="none"
-                                viewBox="0 0 14 14"
-                              >
-                                <path
-                                  stroke="currentColor"
-                                  strokeLinecap="round"
-                                  strokeLinejoin="round"
-                                  strokeWidth="2"
-                                  d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"
-                                />
-                              </svg>
-                              <span className="sr-only">Remove date</span>
-                            </button>
-                          </span>
-                        </div>
-                      );
-                    })}
-                  </div>
-                  {showError && (
-                    <p className="mt-2 text-sm text-center text-red-600">
-                      Kérlek, add meg a dátumokat!
-                    </p>
-                  )}
-                </div>
-                <div className="flex flex-col-reverse md:flex-row justify-between mt-5">
-                  <div className="px-4 py-3 md:pl-0 text-center sm:px-6">
-                    <OutlinedButton
-                      text={"Mégsem"}
-                      type={"button"}
-                      onClick={exitEditMode}
-                    />
-                  </div>
-                  <div className="px-4 py-3 text-center sm:px-6">
-                    <DeleteButton
-                      type={"button"}
-                      onClick={handleDeleteCalendar}
-                      text={"Esemény törlése"}
-                    />
-                  </div>
-                  <div className="px-4 py-3 md:pr-0 text-center sm:px-6">
-                    {edited ? (
-                      <PrimaryButton type={"submit"} text={"Mentés"} />
-                    ) : (
-                      <DisabledButton text={"Mentés"} />
-                    )}
-                  </div>
                 </div>
               </div>
             </div>
-          </form>
-        </div>
+            <div className="grid grid-cols-1 gap-x-10 gap-y-5 mt-5">
+              <div className="flex flex-row flex-wrap justify-center">
+                {dates.map((day, idx) => {
+                  return (
+                    <div className="flex my-1" key={idx}>
+                      <span className="inline-flex items-center px-3 py-1 me-2 text-sm text-white bg-amber-500 rounded-full">
+                        {day}
+                      </span>
+                    </div>
+                  );
+                })}
+              </div>
+              {showErrorDate && (
+                <p className="mt-2 text-sm text-center text-red-600">
+                  Kérlek, add meg a dátumokat!
+                </p>
+              )}
+            </div>
+
+            <div className="flex flex-col-reverse lg:flex-row lg:justify-around my-5">
+              <div className="px-4 py-3 text-center sm:px-6">
+                <DeleteButton
+                  type={"button"}
+                  onClick={handleDeleteCalendar}
+                  text={"Esemény törlése"}
+                />
+              </div>
+              <div className="px-4 py-3 text-center sm:px-6">
+                <OutlinedButton
+                  text={"Mégse"}
+                  type={"button"}
+                  onClick={toggleEditMode}
+                />
+              </div>
+              <div className="px-4 py-3 text-center sm:px-6">
+                {edited ? (
+                  <PrimaryButton onClick={handleUpdate} text="Módosítás" />
+                ) : (
+                  <DisabledButton text={"Módosítás"} />
+                )}
+              </div>
+            </div>
+          </div>
+        </form>
       )}
     </div>
   );

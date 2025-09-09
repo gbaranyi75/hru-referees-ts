@@ -1,50 +1,68 @@
 "use client";
-import { useState, useEffect } from "react";
-import Calendar from "react-calendar";
+import React, { useState, useEffect, useCallback } from "react";
+import { useSession } from "@clerk/nextjs";
 import { toast } from "react-toastify";
-
+import { DayPicker, getDefaultClassNames } from "react-day-picker";
+import { hu } from "react-day-picker/locale";
+import { Icon } from "@iconify/react/dist/iconify.js";
+import Input from "@/components/common/InputField";
+import Label from "@/components/common/Label";
 import DisabledButton from "@/components/common/DisabledButton";
 import PrimaryButton from "@/components/common/PrimaryButton";
 import OutlinedButton from "@/components/common/OutlinedButton";
-import { useRouter } from "next/navigation";
-import { useSession } from "@clerk/nextjs";
 import { createNewCalendar } from "@/lib/actions/createCalendar";
+import "react-day-picker/dist/style.css";
 
 const CalendarNew = () => {
   const { session } = useSession();
-  const [dates, setDates] = useState([]);
-  const [eventName, setEventName] = useState("");
+  const [dates, setDates] = useState<string[]>([]);
+  const [eventName, setEventName] = useState("" as string);
   const [edited, setEdited] = useState(false);
+  const [selected, setSelected] = useState<Date[] | undefined>([]);
+  const [createNewOpen, setCreateNewOpen] = useState(false);
   const [showErrorName, setShowErrorName] = useState(false);
   const [showErrorDate, setShowErrorDate] = useState(false);
-  const [date, setDate] = useState(new Date());
-  const [newCalendar, setNewCalendar] = useState({
-    name: "",
-    days: [],
-  });
-  const router = useRouter();
-  const days = dates;
-  const dateFormatOptions = {
+  const dateFormatOptions: Intl.DateTimeFormatOptions = {
     year: "numeric",
     month: "numeric",
     day: "numeric",
   };
+  const defaultClassNames = getDefaultClassNames();
 
-  const exitEditMode = () => {
-    toast.success("Sikeres mentés");
-    router.push("/dashboard/calendar");
+  const handleEventNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.value !== "") {
+      setEdited(true);
+    }
+    setEventName(e.target.value);
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  const transformDateFormat = (date: Date) => {
+    return date.toLocaleDateString("hu-HU", dateFormatOptions);
+  };
+
+  useEffect(() => {
+    setShowErrorDate(false);
+  }, [dates]);
+
+  const toggleCreateNew = () => {
+    setCreateNewOpen(!createNewOpen);
+    resetToBase();
+  };
+
+  const handleSave = useCallback(async () => {
     if (dates.length !== 0 && eventName !== "") {
+      const newCalendar = { name: eventName, days: dates };
       try {
         if (!session) {
           return;
         }
-        await createNewCalendar(newCalendar).then(exitEditMode());
-        setDates([]);
-        setEventName("");
+        const res = await createNewCalendar(newCalendar);
+        const success = res instanceof Error ? false : res.success;
+        if (success) {
+          setCreateNewOpen(!createNewOpen);
+          resetToBase();
+          toast.success("Sikeres mentés");
+        }
       } catch (error) {
         console.error(error);
       }
@@ -53,132 +71,97 @@ const CalendarNew = () => {
     } else if (dates.length === 0) {
       setShowErrorDate(true);
     }
-  };
-
-  const handleChange = (e) => {
-    setEventName(e.target.value);
-    setNewCalendar((prevState) => ({ ...prevState, name: e.target.value }));
-    if (e.target.value !== "") {
-      setEdited(true);
-    }
-  };
-
-  const transformDateFormat = (date) => {
-    return date.toLocaleDateString("hu-HU", dateFormatOptions);
-  };
+  }, [eventName, dates]);
 
   useEffect(() => {
-    setShowErrorDate(false);
-  }, [dates]);
+    let days: string[] = [];
+    if (selected?.length !== 0) setEdited(true);
+    selected?.forEach((date) => {
+      days.push(transformDateFormat(date).toString());
+      days.sort();
+    });
+    setDates(days);
+  }, [selected]);
 
-  useEffect(() => {
+  const resetToBase = () => {
+    setDates([]);
+    setEventName("");
+    setSelected([]);
+    setEdited(false);
     setShowErrorName(false);
-  }, [eventName]);
+  };
 
   return (
-    <div className="mt-5 md:mx-32 md:mt-0 bg-white md:text-left">
-      <form onSubmit={handleSubmit} action="POST">
-        <div className="overflow-hidden sm:rounded-md">
-          <div className="px-4 py-5 bg-white sm:p-6">
-            <div className="grid grid-cols-6 gap-6">
-              <div className="col-span-6">
-                <label
-                  htmlFor="eventName"
-                  className="block text-sm font-medium text-gray-700"
-                >
-                  Esemény neve
-                </label>
-                <input
+    <div className="p-5 border border-gray-200 rounded-2xl lg:p-6">
+      <div className="flex flex-col gap-5 xl:flex-row xl:items-center xl:justify-between">
+        <h2 className="text-lg font-semibold text-gray-600">
+          Új táblázat létrehozása
+        </h2>
+        <button
+          onClick={toggleCreateNew}
+          className="flex w-full items-center justify-center gap-2 rounded-full border border-gray-300 bg-white px-4 py-3 text-sm font-medium text-gray-700 shadow-theme-xs hover:bg-gray-50 hover:text-gray-800  lg:inline-flex lg:w-auto"
+        >
+          <span className="">
+            <Icon icon="lucide:plus" width="20" height="20" />
+          </span>
+          Létrehozás
+        </button>
+      </div>
+      {createNewOpen && (
+        <form className="flex flex-col">
+          <div className="mt-8">
+            <div className="grid grid-cols-1 gap-x-10 gap-y-5 xl:grid-cols-2">
+              <div className="col-span-2 lg:col-span-1">
+                <Label htmlFor="eventName">Esemény neve</Label>
+                <Input
                   type="text"
-                  name="eventName"
-                  value={eventName}
                   id="eventName"
-                  autoComplete="eventName"
-                  className="mt-1 px-4 py-3 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-solid border border-indigo-50 rounded-md"
-                  onChange={handleChange}
+                  defaultValue={""}
+                  onChange={handleEventNameChange}
                 />
+
+                {showErrorName && (
+                  <div className="flex flex-col md:justify-center">
+                    <p className="mt-2 text-sm text-center text-red-600">
+                      Kérlek, add meg a nevet
+                    </p>
+                  </div>
+                )}
+              </div>
+              <div className="flex flex-col col-span-2 lg:col-span-1 items-center justify-center">
+                <Label htmlFor="day-picker">Időpontok kiválasztása:</Label>
+
+                <div className="flex justify-center mx-auto mb-6 text-sm font-medium text-gray-700">
+                  <DayPicker
+                    locale={hu}
+                    id="day-picker"
+                    mode="multiple"
+                    animate
+                    navLayout="around"
+                    timeZone="Europe/Budapest"
+                    showOutsideDays={true}
+                    className={"p-3"}
+                    selected={selected}
+                    onSelect={setSelected}
+                    classNames={{
+                      root: `${defaultClassNames.root} border border-gray-200 rounded-xl p-5`,
+                      caption_label: `${defaultClassNames.caption_label} text-base font-medium capitalize`,
+                      weekday: `${defaultClassNames.weekday} uppercase text-sm`,
+                      today: "border border-amber-500",
+                      selected:
+                        "bg-amber-500  rounded rounded-full text-white bg-primary text-primary-foreground hover:bg-primary hover:text-primary-foreground focus:bg-primary focus:text-primary-foreground",
+                    }}
+                  />
+                </div>
               </div>
             </div>
-            {showErrorName && (
-              <div className="flex flex-col md:justify-center">
-                <p className="mt-2 text-sm text-center text-red-600">
-                  Kérlek, add meg a nevet
-                </p>
-              </div>
-            )}
-            <div className="flex flex-col md:justify-center">
-              <label className="mb-2 mt-6 text-sm font-medium text-gray-700">
-                Időpontok kiválasztása:
-              </label>
-
-              <div className="mx-auto mb-6 text-sm font-medium text-gray-700">
-                <Calendar
-                  onChange={(date) => {
-                    setDate(date);
-                    setEdited(true);
-                  }}
-                  value={date}
-                  formatDate={(date) => {
-                    transformDateFormat(date);
-                  }}
-                  onClickDay={(date) => {
-                    if (dates.includes(transformDateFormat(date).toString())) {
-                      setDates(dates);
-                    } else {
-                      days.push(transformDateFormat(date).toString());
-                      days.sort();
-                      setDates(days, ...dates);
-                      setNewCalendar((prevState) => ({
-                        ...prevState,
-                        days: days,
-                      }));
-                    }
-                  }}
-                />
-              </div>
-              <div className="flex md:flex-row flex-col flex-wrap">
+            <div className="grid grid-cols-1 gap-x-10 gap-y-5 mt-5">
+              <div className="flex flex-row flex-wrap justify-center">
                 {dates.map((day, idx) => {
                   return (
                     <div className="flex my-1" key={idx}>
-                      <span
-                        id="badge-dismiss-dark"
-                        className="inline-flex items-center px-3 py-1 me-2 text-sm text-gray-600 bg-gray-300 rounded-full"
-                      >
+                      <span className="inline-flex items-center px-3 py-1 me-2 text-sm text-white bg-amber-500 rounded-full">
                         {day}
-                        <button
-                          type="button"
-                          className="inline-flex items-center p-1 ms-2 text-sm text-gray-600 bg-transparent rounded-sm hover:bg-gray-400 hover:text-gray-50"
-                          data-dismiss-target="#badge-dismiss-dark"
-                          aria-label="Remove"
-                          onClick={() => {
-                            const modifiedArray = dates.filter(
-                              (day) => dates.indexOf(day) !== idx
-                            );
-                            setDates(modifiedArray);
-                            setNewCalendar((prevState) => ({
-                              ...prevState,
-                              days: modifiedArray,
-                            }));
-                            setEdited(true);
-                          }}
-                        >
-                          <svg
-                            className="w-2 h-2"
-                            aria-hidden="true"
-                            xmlns="http://www.w3.org/2000/svg"
-                            fill="none"
-                            viewBox="0 0 14 14"
-                          >
-                            <path
-                              stroke="currentColor"
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              strokeWidth="2"
-                              d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"
-                            />
-                          </svg>
-                          <span className="sr-only">Remove date</span>
-                        </button>
                       </span>
                     </div>
                   );
@@ -190,25 +173,26 @@ const CalendarNew = () => {
                 </p>
               )}
             </div>
-            <div className="flex flex-col md:flex-row-reverse justify-around mt-5">
+
+            <div className="flex items-center gap-3 px-2 mt-6 justify-center lg:justify-end">
+              <div className="px-4 py-3 text-center sm:px-6">
+                <OutlinedButton
+                  text={"Mégse"}
+                  type={"button"}
+                  onClick={toggleCreateNew}
+                />
+              </div>
               <div className="px-4 py-3 text-center sm:px-6">
                 {edited ? (
-                  <PrimaryButton type={"submit"} text={"Létrehozás"} />
+                  <PrimaryButton onClick={handleSave} text="Létrehozás" />
                 ) : (
                   <DisabledButton text={"Létrehozás"} />
                 )}
               </div>
-              <div className="px-4 py-3 text-center sm:px-6">
-                <OutlinedButton
-                  text={"Vissza"}
-                  type={"button"}
-                  onClick={exitEditMode}
-                />
-              </div>
             </div>
           </div>
-        </div>
-      </form>
+        </form>
+      )}
     </div>
   );
 };
