@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Table,
   TableBody,
@@ -14,47 +14,72 @@ import { User } from "@/types/types";
 import profileImage from "@/assets/images/profile-image.png";
 import OutlinedButton from "./common/OutlinedButton";
 import Link from "next/link";
+import Skeleton from "./common/Skeleton";
+import { fetchUsers } from "@/lib/actions/fetchUsers";
 
-export default function RefereesTable({ referees }: { referees: User[] }) {
+export default function RefereesTable() {
   const { isOpen, openModal, closeModal } = useModal();
   const [selectedReferee, setSelectedReferee] = useState<User | null>(null);
+  const [referees, setReferees] = useState<User[]>([]);
+  const [loading, setLoading] = useState(false);
+
+  const loadReferees = async () => {
+    setLoading(true);
+    const usersData = await fetchUsers();
+    setReferees(usersData);
+    setLoading(false);
+  };
 
   const handleSelectedReferee = (referee: User) => {
     setSelectedReferee(referee);
     openModal();
   };
 
+  useEffect(() => {
+    loadReferees();
+  }, []);
+
+  if (loading)
+    return (
+      <>
+        <Skeleton className="w-full h-14 mb-2" />
+        <Skeleton className="w-full h-14 mb-2" />
+        <Skeleton className="w-full h-14 mb-2" />
+        <Skeleton className="w-full h-14" />
+      </>
+    );
+
   return (
     <>
       <div className="overflow-hidden rounded-xl border border-gray-200 bg-white">
         <div className="max-w-full overflow-x-auto">
-          <div className="min-w-[1102px]">
+          <div className="min-w-[880px]">
             <Table>
               {/* Table Header */}
-              <TableHeader className="border-b border-gray-100">
-                <TableRow className="">
+              <TableHeader className="border-b border-gray-100 bg-gray-50">
+                <TableRow className="text-xs text-center">
                   <TableCell
                     isHeader
-                    className="px-6 py-3 font-normal text-gray-600 text-start"
+                    className="pl-16 pr-6 py-3 font-bold text-gray-600 text-start"
                   >
                     Név
                   </TableCell>
                   <TableCell
                     isHeader
-                    className="px-2 py-3 font-normal text-gray-600 text-start"
+                    className="px-2 py-3 font-bold text-gray-600 "
                   >
                     Email
                   </TableCell>
                   <TableCell
                     isHeader
-                    className="px-5 py-3 font-normal text-gray-500 text-start"
+                    className="px-5 py-3 font-bold text-gray-500 "
                   >
                     Lakhely
                   </TableCell>
 
                   <TableCell
                     isHeader
-                    className="px-5 py-3 font-normal text-gray-600 text-start"
+                    className="px-5 py-3 font-bold text-gray-600 "
                   >
                     Adatlap
                   </TableCell>
@@ -64,9 +89,12 @@ export default function RefereesTable({ referees }: { referees: User[] }) {
               {/* Table Body */}
               <TableBody className="divide-y divide-gray-100">
                 {referees.map((ref) => (
-                  <TableRow key={ref.clerkUserId}>
-                    <TableCell className="px-2 py-4 sm:px-6 text-start">
-                      <div className="flex items-center gap-6">
+                  <TableRow
+                    key={ref.clerkUserId}
+                    className="text-xs text-center"
+                  >
+                    <TableCell className="px-2 py-4 sm:px-6">
+                      <div className="flex gap-6">
                         <Image
                           width={40}
                           height={40}
@@ -75,7 +103,7 @@ export default function RefereesTable({ referees }: { referees: User[] }) {
                           className="w-10 h-10 rounded-full object-contain"
                           style={{ objectFit: "cover" }}
                         />
-                        <div>
+                        <div className="flex flex-col text-start">
                           <span className="block text-sm font-normal text-gray-600 text-theme-s">
                             {ref.username}
                           </span>
@@ -97,10 +125,10 @@ export default function RefereesTable({ referees }: { referees: User[] }) {
                       </span>
                     </TableCell>
 
-                    <TableCell className="px-2 py-3 text-gray-500 text-theme-sm dark:text-gray-400">
+                    <TableCell className="px-2 py-3 text-gray-500 text-theme-sm ">
                       <button
                         onClick={() => handleSelectedReferee(ref)}
-                        className="text-sm font-medium text-blue-600 dark:text-blue-500 hover:underline px-4 py-1 sm:py-1 w-24"
+                        className="text-sm cursor-pointer font-medium text-blue-600 hover:underline px-4 py-1 sm:py-1 w-24"
                       >
                         Megnyitás
                       </button>
@@ -113,13 +141,13 @@ export default function RefereesTable({ referees }: { referees: User[] }) {
         </div>
       </div>
       <Modal isOpen={isOpen} onClose={closeModal} className="max-w-[700px] m-4">
-        <div className="no-scrollbar relative w-full max-w-[700px] overflow-y-auto rounded-3xl bg-white p-4 dark:bg-gray-900 lg:p-11">
-          <h4 className="font-semibold text-gray-800 mb-10 text-title-sm dark:text-white/90">
+        <div className="no-scrollbar relative w-full max-w-[700px] overflow-y-auto rounded-3xl bg-white p-4 lg:p-11">
+          <h4 className="font-semibold text-gray-800 mb-10 text-title-sm ">
             Játékvezető profil
           </h4>
 
           <div className="flex flex-col items-center w-full gap-6 xl:flex-row">
-            <div className="w-20 h-20 relative border border-gray-200 rounded-full dark:border-gray-800">
+            <div className="w-20 h-20 relative border border-gray-200 rounded-full ">
               <Image
                 className="rounded-full mx-auto relative object-contain w-[100%] aspect-square"
                 width={100}
@@ -131,15 +159,15 @@ export default function RefereesTable({ referees }: { referees: User[] }) {
               />
             </div>
             <div className="order-3 xl:order-2">
-              <h4 className="mb-2 text-lg font-semibold text-center text-gray-600 dark:text-white/90 xl:text-left">
+              <h4 className="mb-2 text-lg font-semibold text-center text-gray-600  xl:text-left">
                 {selectedReferee?.username}
               </h4>
               <div className="flex flex-col items-center gap-1 text-center xl:flex-row xl:gap-3 xl:text-left">
-                <p className="text-sm text-gray-500 dark:text-gray-400">
+                <p className="text-sm text-gray-500 ">
                   {selectedReferee?.status}
                 </p>
-                <div className="hidden h-3.5 w-px bg-gray-300 dark:bg-gray-700 xl:block"></div>
-                <p className="text-sm text-gray-500 dark:text-gray-400">
+                <div className="hidden h-3.5 w-px bg-gray-300  xl:block"></div>
+                <p className="text-sm text-gray-500 ">
                   {selectedReferee?.address?.city}
                 </p>
               </div>
@@ -151,7 +179,7 @@ export default function RefereesTable({ referees }: { referees: User[] }) {
                 href={
                   selectedReferee?.facebookUrl || "https://www.facebook.com/"
                 }
-                className="flex h-11 w-11 items-center justify-center gap-2 rounded-full border border-gray-300 bg-white text-sm font-medium text-gray-700 shadow-theme-xs hover:bg-gray-50 hover:text-gray-800 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-white/[0.03] dark:hover:text-gray-200"
+                className="flex h-11 w-11 items-center justify-center gap-2 rounded-full border border-gray-300 bg-white text-sm font-medium text-gray-700 shadow-theme-xs hover:bg-gray-50 hover:text-gray-800"
               >
                 <svg
                   className="fill-current"
@@ -174,7 +202,7 @@ export default function RefereesTable({ referees }: { referees: User[] }) {
                 }
                 target="_blank"
                 rel="noreferrer"
-                className="flex h-11 w-11 items-center justify-center gap-2 rounded-full border border-gray-300 bg-white text-sm font-medium text-gray-700 shadow-theme-xs hover:bg-gray-50 hover:text-gray-800 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-white/[0.03] dark:hover:text-gray-200"
+                className="flex h-11 w-11 items-center justify-center gap-2 rounded-full border border-gray-300 bg-white text-sm font-medium text-gray-700 shadow-theme-xs hover:bg-gray-50 hover:text-gray-800"
               >
                 <svg
                   className="fill-current"
@@ -194,54 +222,48 @@ export default function RefereesTable({ referees }: { referees: User[] }) {
           </div>
           <div className="grid grid-cols-1 mt-10 gap-4 lg:grid-cols-2 lg:gap-7 2xl:gap-x-32">
             <div>
-              <p className="mb-2 text-xs leading-normal text-gray-500 dark:text-gray-400">
-                Név
-              </p>
-              <p className="text-sm font-medium text-gray-800 dark:text-white/90">
+              <p className="mb-2 text-xs leading-normal text-gray-500">Név</p>
+              <p className="text-sm font-medium text-gray-800">
                 {selectedReferee?.username}
               </p>
             </div>
 
             <div>
-              <p className="mb-2 text-xs leading-normal text-gray-500 dark:text-gray-400">
-                Email
-              </p>
-              <p className="text-sm font-medium text-gray-800 dark:text-white/90">
+              <p className="mb-2 text-xs leading-normal text-gray-500">Email</p>
+              <p className="text-sm font-medium text-gray-800">
                 {selectedReferee?.email}
               </p>
             </div>
 
             <div>
-              <p className="mb-2 text-xs leading-normal text-gray-500 dark:text-gray-400">
+              <p className="mb-2 text-xs leading-normal text-gray-500">
                 Ország
               </p>
-              <p className="text-sm font-medium text-gray-800 dark:text-white/90">
+              <p className="text-sm font-medium text-gray-800">
                 {selectedReferee?.address?.country}
               </p>
             </div>
             <div>
-              <p className="mb-2 text-xs leading-normal text-gray-500 dark:text-gray-400">
-                Város
-              </p>
-              <p className="text-sm font-medium text-gray-800 dark:text-white/90">
+              <p className="mb-2 text-xs leading-normal text-gray-500">Város</p>
+              <p className="text-sm font-medium text-gray-800">
                 {selectedReferee?.address?.city}
               </p>
             </div>
 
             <div>
-              <p className="mb-2 text-xs leading-normal text-gray-500 dark:text-gray-400">
+              <p className="mb-2 text-xs leading-normal text-gray-500">
                 Telefon
               </p>
-              <p className="text-sm font-medium text-gray-800 dark:text-white/90">
+              <p className="text-sm font-medium text-gray-800">
                 {selectedReferee?.phoneNumber}
               </p>
             </div>
 
             <div>
-              <p className="mb-2 text-xs leading-normal text-gray-500 dark:text-gray-400">
+              <p className="mb-2 text-xs leading-normal text-gray-500 ">
                 Státusz
               </p>
-              <p className="text-sm font-medium text-gray-800 dark:text-white/90">
+              <p className="text-sm font-medium text-gray-800">
                 {selectedReferee?.status}
               </p>
             </div>

@@ -1,23 +1,24 @@
 "use client";
 
 import React, { useCallback, useState, useEffect } from "react";
-import { useModal } from "../hooks/useModal";
-import { Modal } from "./common/Modal";
-import Input from "./common/InputField";
-import Label from "./common/Label";
+import Link from "next/link";
 import Image from "next/image";
 import { CldUploadButton } from "next-cloudinary";
+import { useModal } from "../hooks/useModal";
+import { Modal } from "./common/Modal";
+import { useUser } from "@clerk/nextjs";
+import { toast } from "react-toastify";
+import { Icon } from "@iconify/react";
+import Input from "./common/InputField";
+import Label from "./common/Label";
+import Skeleton from "./common/Skeleton";
 import OutlinedButton from "./common/OutlinedButton";
 import PrimaryButton from "./common/PrimaryButton";
-import { toast } from "react-toastify";
-import { useUser } from "@clerk/nextjs";
-import { Icon } from "@iconify/react";
 import { updateProfileData } from "@/lib/actions/updateProfileData";
-import { User } from "@/types/types";
-import { fetchProfile } from "@/lib/actions/fetchProfile";
-import profileImage from "@/assets/images/profile-image.png";
-import Link from "next/link";
 import { updateProfileImage } from "@/lib/actions/updateProfileImage";
+import { fetchProfile } from "@/lib/actions/fetchProfile";
+import { User } from "@/types/types";
+import profileImage from "@/assets/images/profile-image.png";
 
 export default function ProfileMetaCard() {
   const { isLoaded, user } = useUser();
@@ -83,14 +84,21 @@ export default function ProfileMetaCard() {
       fetchProfileData();
     }
     closeModal();
-  }, [closeModal, userName, fbUrl, instaUrl]);
+  }, [closeModal, userName, fbUrl, instaUrl, fetchProfileData]);
+
+  if (!profile)
+    return (
+      <>
+        <Skeleton className="w-full h-20 mb-2" />
+      </>
+    );
 
   return (
     <>
-      <div className="p-5 border border-gray-200 rounded-2xl dark:border-gray-800 lg:p-6">
+      <div className="p-5 border border-gray-200 rounded-2xl lg:p-6">
         <div className="flex flex-col gap-5 xl:flex-row xl:items-center xl:justify-between">
           <div className="flex flex-col items-center w-full gap-6 xl:flex-row">
-            <div className="w-20 h-20 relative border border-gray-200 rounded-full dark:border-gray-800">
+            <div className="w-20 h-20 relative border border-gray-200 rounded-full">
               <Image
                 className="rounded-full mx-auto relative object-contain w-[100%] aspect-square"
                 width={100}
@@ -120,15 +128,15 @@ export default function ProfileMetaCard() {
               </div>
             </div>
             <div className="order-3 xl:order-2">
-              <h4 className="mb-2 text-lg font-semibold text-center text-gray-600 dark:text-white/90 xl:text-left">
+              <h4 className="mb-2 text-lg font-semibold text-center text-gray-600  xl:text-left">
                 {profile?.username}
               </h4>
               <div className="flex flex-col items-center gap-1 text-center xl:flex-row xl:gap-3 xl:text-left">
-                <p className="text-sm text-gray-500 dark:text-gray-400">
+                <p className="text-sm text-gray-500 ">
                   {profile?.status}
                 </p>
-                <div className="hidden h-3.5 w-px bg-gray-300 dark:bg-gray-700 xl:block"></div>
-                <p className="text-sm text-gray-500 dark:text-gray-400">
+                <div className="hidden h-3.5 w-px bg-gray-300  xl:block"></div>
+                <p className="text-sm text-gray-500 ">
                   {profile?.address?.city}
                 </p>
               </div>
@@ -138,7 +146,7 @@ export default function ProfileMetaCard() {
                 target="_blank"
                 rel="noreferrer"
                 href={profile?.facebookUrl || "https://www.facebook.com/"}
-                className="flex h-11 w-11 items-center justify-center gap-2 rounded-full border border-gray-300 bg-white text-sm font-medium text-gray-700 shadow-theme-xs hover:bg-gray-50 hover:text-gray-800 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-white/[0.03] dark:hover:text-gray-200"
+                className="flex h-11 w-11 items-center justify-center gap-2 rounded-full border border-gray-300 bg-white text-sm font-medium text-gray-700 shadow-theme-xs hover:bg-gray-50 hover:text-gray-800"
               >
                 <svg
                   className="fill-current"
@@ -159,7 +167,7 @@ export default function ProfileMetaCard() {
                 href={profile?.instagramUrl || "https://www.instagram.com/"}
                 target="_blank"
                 rel="noreferrer"
-                className="flex h-11 w-11 items-center justify-center gap-2 rounded-full border border-gray-300 bg-white text-sm font-medium text-gray-700 shadow-theme-xs hover:bg-gray-50 hover:text-gray-800 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-white/[0.03] dark:hover:text-gray-200"
+                className="flex h-11 w-11 items-center justify-center gap-2 rounded-full border border-gray-300 bg-white text-sm font-medium text-gray-700 shadow-theme-xs hover:bg-gray-50 hover:text-gray-800 "
               >
                 <svg
                   className="fill-current"
@@ -179,7 +187,7 @@ export default function ProfileMetaCard() {
           </div>
           <button
             onClick={openModal}
-            className="flex w-full items-center justify-center gap-2 rounded-full border border-gray-300 bg-white px-4 py-3 text-sm font-medium text-gray-700 shadow-theme-xs hover:bg-gray-50 hover:text-gray-800 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-white/[0.03] dark:hover:text-gray-200 lg:inline-flex lg:w-auto"
+            className="flex w-full items-center justify-center gap-2 rounded-full border border-gray-300 bg-white px-4 py-3 text-sm font-medium text-gray-700 shadow-theme-xs hover:bg-gray-50 hover:text-gray-800  lg:inline-flex lg:w-auto"
           >
             <svg
               className="fill-current"
@@ -201,19 +209,19 @@ export default function ProfileMetaCard() {
         </div>
       </div>
       <Modal isOpen={isOpen} onClose={closeModal} className="max-w-[700px] m-4">
-        <div className="no-scrollbar relative w-full max-w-[700px] overflow-y-auto rounded-3xl bg-white p-4 dark:bg-gray-900 lg:p-11">
+        <div className="no-scrollbar relative w-full max-w-[700px] overflow-y-auto rounded-3xl bg-white p-4 lg:p-11">
           <div className="px-2 pr-14">
-            <h4 className="mb-2 text-2xl font-semibold text-gray-600 dark:text-white/90">
+            <h4 className="mb-2 text-2xl font-semibold text-gray-600 ">
               Személyes adatok módítása
             </h4>
-            <p className="mb-6 text-sm text-gray-500 dark:text-gray-400 lg:mb-7">
+            <p className="mb-6 text-sm text-gray-500  lg:mb-7">
               Frissítsd az adataidat, hogy a profilod naprakész legyen.
             </p>
           </div>
           <form className="flex flex-col">
             <div className="custom-scrollbar h-[450px] overflow-y-auto px-2 pb-3">
               <div>
-                <h5 className="mb-3 text-lg font-medium text-gray-600 dark:text-white/90">
+                <h5 className="mb-3 text-lg font-medium text-gray-600">
                   Személyes adatok
                 </h5>
 
@@ -229,7 +237,7 @@ export default function ProfileMetaCard() {
                 </div>
               </div>
               <div className="mt-5">
-                <h5 className="mb-3 text-lg font-medium text-gray-600 dark:text-white/90">
+                <h5 className="mb-3 text-lg font-medium text-gray-600 ">
                   Közösségi linkek:
                 </h5>
 

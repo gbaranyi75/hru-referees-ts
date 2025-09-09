@@ -22,6 +22,7 @@
       "@/*": ["./*"]
     }
   },
+  "extends": "@tsconfig/recommended/tsconfig.json",
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "lib/actions/mailAction.js"],
   "exclude": ["node_modules"]
 }

@@ -45,7 +45,7 @@ const NavbarProfileLinks = ({ loggedInUser }: { loggedInUser: any }) => {
             >
               <span className=" -inset-1.5"></span>
               <span className="sr-only">Open user menu</span>
-              <NavbarUserIcon image={loggedInUser?.image} />
+              <NavbarUserIcon image={loggedInUser?.image} username={loggedInUser?.username}/>
             </button>
           </div>
 

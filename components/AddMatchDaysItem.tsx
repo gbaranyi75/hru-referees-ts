@@ -17,16 +17,16 @@ const AddMatchDaysItem = ({
   toggle,
   profile,
 }: {
-  calendar: Calendar;
+  calendar: Calendar |  undefined;
   isOpen: boolean;
   toggle: () => void;
   profile: User;
 }) => {
-  const calendarName = calendar.name;
-  const calendarId = calendar._id;
+  const calendarName = calendar?.name;
+  const calendarId = calendar?._id;
   const clerkUserId = profile.clerkUserId;
   const username = profile.username;
-  const eventName = calendar.name;
+  const eventName = calendar?.name;
 
   const [edited, setEdited] = useState(false);
   const [isSelection, setIsSelection] = useState(false);
@@ -118,7 +118,7 @@ const AddMatchDaysItem = ({
       {isOpen && (
         <>
           <div className="md:max-w-4xl flex md:flex-row flex-col flex-wrap md:justify-center md:mx-auto my-4">
-            {calendar.days.map((day, idx) => {
+            {calendar?.days.map((day, idx) => {
               return (
                 <div className="flex my-2 mx-auto md:mx-0" key={idx}>
                   <span

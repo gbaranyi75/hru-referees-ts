@@ -1,114 +1,167 @@
 "use client";
-import React from "react";
+import React, { Suspense, useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
-import { NAV_LINKS, PROFILE_LINKS } from "@/lib/utils/links";
+import { ADMIN_LINKS, NAV_LINKS, PROFILE_LINKS } from "@/lib/utils/links";
 import Link from "next/link";
 import NavbarLogo from "./NavbarLogo";
 import { Icon } from "@iconify/react";
 import { useUser } from "@clerk/nextjs";
-import { NavLink } from "@/types/types";
+import { NavItem } from "@/types/types";
 import Skeleton from "./common/Skeleton";
 import Footer from "./Footer";
 
 const SideBar = ({ role }: { role: string }) => {
-  const pathname = usePathname();
   const { isSignedIn } = useUser();
 
   return (
-    <div className="fixed top-0 left-0 h-full hidden md:block md:w-64 bg-white border-gray-300 border-r shadow-lg z-10">
-      <div className="flex flex-col w-full min-h-screen">
+    <aside className="fixed top-0 left-0 h-screen hidden md:block overflow-hidden overflow-y-auto md:w-[290px] bg-white border-gray-300 border-r shadow-lg z-10">
+      <nav className="flex flex-col w-full min-h-screen">
         <div className="flex-grow">
           <div className="flex px-4">
             <NavbarLogo />
           </div>
           <div className="py-0 mb-4 border-b-1 border-gray-300"></div>
-          <div className="flex grow justify-between flex-col">
-            <div className="flex flex-col space-y-1 px-4">
-              {NAV_LINKS.map((item, idx) => {
-                return <SideNavItem key={idx} item={item} />;
+
+          {/* Public NAV items */}
+          <ul className="flex flex-col grow px-4 justify-between gap-1">
+            {NAV_LINKS.map((item, idx) => {
+              return (
+                <li key={idx}>
+                  <SideNavItem key={idx} item={item} />
+                </li>
+              );
+            })}
+            <li className="py-0 pt-1 m-0 mb-2 border-b-1 border-gray-300"></li>
+
+            {/* Private NAV items */}
+            {isSignedIn &&
+              PROFILE_LINKS.map((item, idx) => {
+                return (
+                  <li key={idx}>
+                    <SideNavItem key={idx} item={item} />
+                  </li>
+                );
               })}
-              <div className="py-0 pt-1 m-0 mb-2 border-b-1 border-gray-300"></div>
+            {isSignedIn && (
+              <li className="py-0 pt-1 m-0 mb-2 border-b-1 border-gray-300"></li>
+            )}
 
-              {isSignedIn &&
-                PROFILE_LINKS.map((item, idx) => {
-                  return <SideNavItem key={idx} item={item} />;
+            {/* Facebook links */}
+            <li>
+              <Link
+                href="https://www.facebook.com/groups/513219272190437"
+                target="_blank"
+                rel="noreferrer"
+                className={
+                  "flex flex-row space-x-3 text-gray-600 text-center text-sm items-center p-2 rounded-lg hover:bg-zinc-200"
+                }
+              >
+                <Icon icon="lucide:facebook" width="20" height="20" />
+                <span>MRGSZ JB zárt csoport</span>
+              </Link>
+            </li>
+            <li>
+              <Link
+                href="https://www.facebook.com/MRGSZ"
+                target="_blank"
+                rel="noreferrer"
+                className={
+                  "flex flex-row space-x-3 text-gray-600 text-center text-sm items-center p-2 rounded-lg hover:bg-zinc-200"
+                }
+              >
+                <Icon icon="lucide:facebook" width="20" height="20" />
+                <span>MRGSZ</span>
+              </Link>
+            </li>
+
+            {/* Admin links */}
+            {role === "admin" && (
+              <>
+                <li className="py-0 pt-1 m-0 mb-2 border-b-1 border-gray-300"></li>
+
+                {ADMIN_LINKS.map((item, idx) => {
+                  return (
+                    <li key={idx}>
+                      <SideNavItem key={idx} item={item} />
+                    </li>
+                  );
                 })}
-              {isSignedIn && (
-                <div className="py-0 pt-1 m-0 mb-2 border-b-1 border-gray-300"></div>
-              )}
-
-              <div className="w-full px-4 md:px-0 text-center text-sm">
-                <Link
-                  href="https://www.facebook.com/groups/513219272190437"
-                  target="_blank"
-                  rel="noreferrer"
-                  className={
-                    "flex flex-row space-x-3 text-gray-600 items-center p-2 rounded-lg hover:bg-zinc-200"
-                  }
-                >
-                  <Icon icon="lucide:facebook" width="20" height="20" />
-                  <span>MRGSZ JB zárt csoport</span>
-                </Link>
-                <Link
-                  href="https://www.facebook.com/MRGSZ"
-                  target="_blank"
-                  rel="noreferrer"
-                  className={
-                    "flex flex-row space-x-3 text-gray-600 items-center p-2 rounded-lg hover:bg-zinc-200"
-                  }
-                >
-                  <Icon icon="lucide:facebook" width="20" height="20" />
-                  <span>MRGSZ</span>
-                </Link>
-              </div>
-              {role === "admin" && (
-                <>
-                  <div className="py-0 pt-1 border-b-1 border-gray-300"></div>
-                  <div className="w-full px-4 md:px-0 text-center text-sm">
-                    <Link
-                      href="/dashboard/calendar"
-                      className={`flex flex-row space-x-3 text-gray-600 items-center p-2 rounded-lg hover:bg-zinc-200 ${
-                        pathname === "/dashboard/calendar" ? "text-indigo-700 bg-blue-100" : ""
-                      }`}
-                    >
-                      <Icon
-                        icon="lucide:layout-dashboard"
-                        width="20"
-                        height="20"
-                      />
-                      <span>Admin Dashboard</span>
-                    </Link>
-                  </div>
-                </>
-              )}
-            </div>
-          </div>
+              </>
+            )}
+          </ul>
         </div>
-        <div><Footer /></div>
-      </div>
-    </div>
+        <div>
+          <Footer />
+        </div>
+      </nav>
+    </aside>
   );
 };
 
 export default SideBar;
 
-const SideNavItem = ({ item }: { item: NavLink }) => {
+const SideNavItem = ({ item }: { item: NavItem }) => {
   const pathname = usePathname();
-  const isActive = item.path === pathname;
+  const [subMenuOpen, setSubMenuOpen] = useState(false);
+  const toggleSubMenu = () => {
+    setSubMenuOpen(!subMenuOpen);
+  };
+
+  const isActive = item?.path === pathname;
+  const isSubMenuItemActive = pathname.startsWith("/dashboard");
+
+  useEffect(() => {
+    if (subMenuOpen === true && !isSubMenuItemActive) {
+      setSubMenuOpen(false);
+    }
+  }, [pathname]);
 
   return (
     <>
-      {NAV_LINKS ? (
-        <Link
-          href={item.path}
-          className={`flex flex-row w-full p-2 space-x-3 text-center text-sm text-gray-600 items-center rounded-lg hover:bg-zinc-200
-          ${isActive ? "text-indigo-700 bg-blue-100" : "bg-white"}`}
-        >
-          {item.icon}
-          <span>{item.label}</span>
-        </Link>
+      {item.subItems ? (
+        <Suspense fallback={<Skeleton className="h-10" />}>
+          <button
+            onClick={toggleSubMenu}
+            className={`flex flex-row w-full p-2 mb-1 space-x-3 text-center text-sm text-gray-600 items-center rounded-lg hover:bg-zinc-200
+            ${subMenuOpen ? "text-indigo-700 bg-blue-100" : "bg-white"}`}
+          >
+            {item.icon}
+            <span>{item.label}</span>
+
+            <div className={`${subMenuOpen ? "rotate-180" : ""} flex`}>
+              <Icon icon="lucide:chevron-down" width="20" height="20" />
+            </div>
+          </button>
+
+          {subMenuOpen && (
+            <ul className="flex flex-col space-y-2 gap-1">
+              {item.subItems?.map((subItem, idx) => {
+                return (
+                  <li key={idx} className="m-0 ml-8">
+                    <Link
+                      href={subItem.path}
+                      className={`flex flex-row w-full p-2 space-x-3 text-center text-sm text-gray-600 items-center rounded-lg hover:bg-zinc-200
+                      ${subItem.path === pathname ? "text-indigo-700 bg-blue-100" : "bg-white"}`}
+                    >
+                      <span>{subItem.label}</span>
+                    </Link>
+                  </li>
+                );
+              })}
+            </ul>
+          )}
+        </Suspense>
       ) : (
-        <Skeleton />
+        <Suspense fallback={<Skeleton className="h-10" />}>
+          <Link
+            href={item.path || ""}
+            className={`flex flex-row w-full p-2 space-x-3 text-center text-sm text-gray-600 items-center rounded-lg hover:bg-zinc-200
+          ${isActive ? "text-indigo-700 bg-blue-100" : "bg-white"}`}
+          >
+            {item.icon}
+            <span>{item.label}</span>
+          </Link>
+        </Suspense>
       )}
     </>
   );

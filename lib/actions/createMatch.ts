@@ -1,7 +1,9 @@
 "use server";
 import connectDB from "@/config/database";
 import Match from "@/models/Match";
+import { MatchOfficial } from "@/types/types";
 import { currentUser } from "@clerk/nextjs/server";
+import { revalidatePath } from "next/cache";
 
 export const createMatch = async (data: {
   home: string;
@@ -10,12 +12,12 @@ export const createMatch = async (data: {
   gender: string;
   age: string;
   venue: string;
-  referee: string;
-  referees: string[];
-  assist1: string;
-  assist2: string;
-  controllers: string[];
-  date: Date;
+  referee: MatchOfficial;
+  referees: MatchOfficial[];
+  assist1: MatchOfficial;
+  assist2: MatchOfficial;
+  controllers: MatchOfficial[];
+  date: string;
   time: string;
 }) => {
   await connectDB();
@@ -40,7 +42,8 @@ export const createMatch = async (data: {
       time: data.time,
     });
     await newMatch.save();
-    return { submitted: true };
+    revalidatePath("/dashboard/matches")
+    return { success: true, error: false };
   } catch (error) {
     console.error(error);
     return new Error(error instanceof Error ? error.message : String(error));

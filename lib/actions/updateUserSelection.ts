@@ -2,7 +2,7 @@
 import connectDB from "@/config/database";
 import UserSelection from "@/models/Userselection";
 
-export const updateUserSelection = async (selectionId: string, selectedDays: string[]) => {
+export const updateUserSelection = async (selectionId: string | undefined, selectedDays: string[] | undefined) => {
   await connectDB();
 
   try {

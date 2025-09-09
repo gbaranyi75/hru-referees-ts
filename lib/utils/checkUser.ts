@@ -8,7 +8,6 @@ export const checkUser = async () => {
     const user = await currentUser();
     const clerk = await clerkClient(); // Get the ClerkClient instance
     const response = await clerk.users.getUserList();
-    console.log(user)
 
     if (!user) return null;
     if (!user.publicMetadata.role) {

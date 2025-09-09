@@ -11,45 +11,45 @@ const MatchSchema = new Schema(
     age: { type: String, required: true },
     venue: { type: String, required: true },
     referee: {
-      userName: {
+      username: {
         type: String,
       },
-      userId: {
+      clerkUserId: {
         type: String,
       },
     },
     referees: [
       {
-        userName: {
+        username: {
           type: String,
         },
-        userId: {
+        clerkUserId: {
           type: String,
         },
       },
     ],
     assist1: {
-      userName: {
+      username: {
         type: String,
       },
-      userId: {
+      clerkUserId: {
         type: String,
       },
     },
     assist2: {
-      userName: {
+      username: {
         type: String,
       },
-      userId: {
+      clerkUserId: {
         type: String,
       },
     },
     controllers: [
       {
-        userName: {
+        username: {
           type: String,
         },
-        userId: {
+        clerkUserId: {
           type: String,
         },
       },

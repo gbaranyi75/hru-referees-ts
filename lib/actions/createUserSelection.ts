@@ -4,8 +4,8 @@ import { currentUser } from "@clerk/nextjs/server";
 import UserSelection from "@/models/Userselection";
 
 export const createNewUserSelection = async (data: {
-  calendarName: string;
-  calendarId: string;
+  calendarName?: string;
+  calendarId?: string;
   selectedDays: string[];
   username: string;
   clerkUserId: string;

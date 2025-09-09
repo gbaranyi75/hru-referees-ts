@@ -1,3 +1,4 @@
+'use server'
 import connectDB from "@/config/database";
 import User from "@/models/User";
 import { convertToJSON } from "../utils/convertToJSON";

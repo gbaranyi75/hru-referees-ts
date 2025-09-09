@@ -4,7 +4,7 @@ import UserSelection from "@/models/Userselection";
 import { convertToJSON } from "../utils/convertToJSON";
 import { currentUser } from "@clerk/nextjs/server";
 
-export const fetchUserSelection = async (calendarId: string) => {
+export const fetchUserSelection = async (calendarId: string | undefined) => {
   await connectDB();
   try {
     const user = await currentUser();

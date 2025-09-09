@@ -3,7 +3,7 @@ import connectDB from "@/config/database";
 import UserSelection from "@/models/Userselection";
 import { convertToJSON } from "../utils/convertToJSON";
 
-export const fetchUserSelections = async (calendarId: string) => {
+export const fetchUserSelections = async (calendarId: string | undefined) => {
   await connectDB();
   try {    
     const userSelectionData = await UserSelection.find({

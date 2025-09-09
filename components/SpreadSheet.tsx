@@ -5,27 +5,40 @@ import { fetchCalendars } from "@/lib/actions/fetchCalendars";
 import { Calendar } from "@/types/types";
 import { User } from "@/types/types";
 import Skeleton from "./common/Skeleton";
+import { fetchUsers } from "@/lib/actions/fetchUsers";
 
-const SpreadSheet = ({ users }: { users: User[] }) => {
+const SpreadSheet = () => {
   const [isOpen, setIsOpen] = useState(0);
   const [calendars, setCalendars] = useState<Calendar[]>([]);
+  const [referees, setReferees] = useState<User[]>([]);
+  const [loading, setLoading] = useState(false);
+
   const toggleOpen = (id: number) => () =>
     setIsOpen((isOpen) => (isOpen === id ? 0 : id));
 
   const fetchCalendarsData = async () => {
+    setLoading(true);
     const fetchedCalendars = await fetchCalendars();
-    if (fetchedCalendars) {
-      setCalendars(fetchedCalendars);
-    }
+    const usersData = await fetchUsers();
+    setCalendars(fetchedCalendars);
+
+    setReferees(usersData);
+    setLoading(false);
   };
 
   useEffect(() => {
     fetchCalendarsData();
   }, []);
 
-  if (!calendars)
+  if (loading)
     return (
-      <Skeleton className="flex flex-col border-b border-gray-300 mx-6 mt-5 h-12 bg-white text-gray-600 text-center drop-shadow-md hover:drop-shadow-xl justify-center z-0" />
+      <>
+        <Skeleton className="w-full h-12 mb-2" />
+        <Skeleton className="w-full h-12 mb-2" />
+        <Skeleton className="w-full h-12 mb-2" />
+        <Skeleton className="w-full h-12 mb-2" />
+        <Skeleton className="w-full h-12 mb-2" />
+      </>
     );
 
   return (
@@ -34,7 +47,7 @@ const SpreadSheet = ({ users }: { users: User[] }) => {
         <SpreadSheetItem
           key={index}
           calendar={data}
-          users={users}
+          users={referees}
           isOpen={isOpen === index}
           toggle={toggleOpen(index)}
         />
