@@ -1,33 +1,15 @@
 "use client";
-import { useEffect, useState } from "react";
-import { usePathname, useRouter } from "next/navigation";
+import { useState } from "react";
 import MatchListTableEdit from "./MatchListTableEdit";
 import { Icon } from "@iconify/react/dist/iconify.js";
 import { User } from "@/types/types";
-//import { fetchMatches } from "@/lib/actions/fetchMatches";
 
 const MatchesEdit = ({ referees }: { referees: User[] }) => {
-  const [isOpen, setIsOpen] = useState(0);
-  const router = useRouter();
-  const pathName = usePathname();
-  const [isEditMode, setIsEditMode] = useState(false);
   const [editModeOpen, setEditModeOpen] = useState(false);
 
   const toggleEditMode = () => {
     setEditModeOpen(!editModeOpen);
-    //resetToBase();
   };
-
-  const exitEditMode = () => {
-    router.push("/dashboard/matches");
-  };
-
-  const toggleOpen = (id: number) => () =>
-    setIsOpen((isOpen) => (isOpen === id ? 0 : id));
-
-  const setToEdit = () => setIsEditMode(!isEditMode);
-
-  //if (loading) return <Spinner />;
 
   return (
     <section>

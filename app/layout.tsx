@@ -33,7 +33,11 @@ export default function RootLayout({
               </div>
               {/* <Analytics /> */}
             </div>
-            <ToastContainer position="bottom-center" autoClose={2000} />
+            <ToastContainer
+              position="top-right"
+              autoClose={2000}
+              style={{ zIndex: 20000000 }}
+            />
           </div>
         </body>
       </html>

@@ -50,8 +50,8 @@ const MatchItemEditModal = ({
     label: selectedMatch?.type,
   } as SelectOption);
   const [homeValue, setHomeValue] = useState<SelectOption | undefined>({
-    value: selectedMatch?.type,
-    label: selectedMatch?.type,
+    value: selectedMatch?.home,
+    label: selectedMatch?.home,
   } as SelectOption);
   const [awayValue, setAwayValue] = useState<SelectOption | undefined>({
     value: selectedMatch?.away,
@@ -232,7 +232,6 @@ const MatchItemEditModal = ({
     <>
       <div className="text-gray-600">
         <form className="flex flex-col overscroll-y-auto">
-          <div className="">
             <div className="grid grid-cols-1 gap-x-10 gap-y-5 xl:grid-cols-2">
               <div className="col-span-2 lg:col-span-1">
                 <Label>Verseny típus:</Label>
@@ -247,7 +246,7 @@ const MatchItemEditModal = ({
                     setTypeValue(o);
                     setFormFields({
                       ...formFields,
-                      type: String(o?.value) || "",
+                      type: String(o === undefined ? "" : o?.value),
                     });
                     if (o?.value === "7s" || o?.value === "UP torna") {
                       setIsSingleMatch(false);
@@ -272,7 +271,7 @@ const MatchItemEditModal = ({
                     setGenderValue(o);
                     setFormFields({
                       ...formFields,
-                      gender: String(o?.value) || "",
+                      gender: String(o === undefined ? "" : o?.value),
                     });
                   }}
                   value={genderValue}
@@ -291,7 +290,7 @@ const MatchItemEditModal = ({
                     setAgeValue(o);
                     setFormFields({
                       ...formFields,
-                      age: String(o?.value),
+                      age: String(o === undefined ? "" : o?.value),
                     });
                   }}
                   value={ageValue}
@@ -310,7 +309,7 @@ const MatchItemEditModal = ({
                     setVenueValue(o);
                     setFormFields({
                       ...formFields,
-                      venue: String(o?.value),
+                      venue: String(o === undefined ? "" : o?.value),
                     });
                   }}
                   value={venueValue}
@@ -331,7 +330,7 @@ const MatchItemEditModal = ({
                         setHomeValue(o);
                         setFormFields({
                           ...formFields,
-                          home: String(o?.value),
+                          home: String(o === undefined ? "" : o?.value),
                         });
                       }}
                       value={homeValue}
@@ -350,7 +349,7 @@ const MatchItemEditModal = ({
                         setAwayValue(o);
                         setFormFields({
                           ...formFields,
-                          away: String(o?.value),
+                          away: String(o === undefined ? "" : o?.value),
                         });
                       }}
                       value={awayValue}
@@ -371,7 +370,7 @@ const MatchItemEditModal = ({
                         setFormFields({
                           ...formFields,
                           referee: {
-                            username: String(o?.value),
+                            username: String(o === undefined ? "" : o?.value),
                             clerkUserId: o?.id || "",
                           },
                         });
@@ -394,7 +393,7 @@ const MatchItemEditModal = ({
                         setFormFields({
                           ...formFields,
                           assist1: {
-                            username: String(o?.value),
+                            username: String(o === undefined ? "" : o?.value),
                             clerkUserId: o?.id || "",
                           },
                         });
@@ -417,7 +416,7 @@ const MatchItemEditModal = ({
                         setFormFields({
                           ...formFields,
                           assist2: {
-                            username: String(o?.value),
+                            username: String(o === undefined ? "" : o?.value),
                             clerkUserId: o?.id || "",
                           },
                         });
@@ -488,7 +487,7 @@ const MatchItemEditModal = ({
                   placeholder="--Válassz időpontot--"
                   onChange={(o) => {
                     setTimeValue(o);
-                    setFormFields({ ...formFields, time: String(o?.value) });
+                    setFormFields({ ...formFields, time: String(o === undefined ? "" : o?.value) });
                   }}
                   value={timeValue}
                 />
@@ -557,7 +556,6 @@ const MatchItemEditModal = ({
                 text={"Mégse"}
               />
             </div>
-          </div>
         </form>
       </div>
     </>

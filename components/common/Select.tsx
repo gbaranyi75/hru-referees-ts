@@ -141,7 +141,7 @@ const Select = ({
         <Icon icon="lucide:chevron-down" width="20" height="20" />
       </div>
       {isOpen && (
-        <ul className="absolute border border-gray-600 rounded-lg bg-gray-400 -left-2 top-2 w-full list-none z-3000">
+        <ul className="absolute overscroll-auto overflow-auto border border-gray-400 max-h-60 rounded bg-gray-400 -left-2 top-2 w-full list-none z-3000">
           {options.map((option, index) => (
             <li
               onClick={(e) => {
