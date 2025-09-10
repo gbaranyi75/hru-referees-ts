@@ -10,6 +10,9 @@ import {
 import { Icon } from "@iconify/react";
 import LoadingComponent from "./common/LoadingComponent";
 import NavbarUserIcon from "./NavbarUserIcon";
+import { Dropdown } from "./common/Dropdown";
+import Link from "next/link";
+import { DropdownItem } from "./common/DropdownItem";
 const NavbarProfileLinks = ({ loggedInUser }: { loggedInUser: any }) => {
   const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false);
   const { isLoaded } = useUser();
@@ -45,40 +48,82 @@ const NavbarProfileLinks = ({ loggedInUser }: { loggedInUser: any }) => {
             >
               <span className=" -inset-1.5"></span>
               <span className="sr-only">Open user menu</span>
-              <NavbarUserIcon image={loggedInUser?.image} username={loggedInUser?.username}/>
+              <NavbarUserIcon
+                image={loggedInUser?.image}
+                username={loggedInUser?.username}
+              />
             </button>
           </div>
 
           {/* <!-- Profile dropdown --> */}
-          {isProfileMenuOpen && (
-            <div
-              id="user-menu"
-              className="absolute right-0 top-10 z-10 w-44 items-center justify-center origin-top-right rounded-md bg-white shadow-lg ring-1 ring-gray-200 ring-opacity-5 focus:outline-none"
-              role="menu"
-              aria-orientation="vertical"
-              aria-labelledby="user-menu-button"
-              tabIndex={-1}
-            >
-              <SignOutButton redirectUrl="/">
-                <div className="flex items-center justify-center">
+          <Dropdown
+            isOpen={isProfileMenuOpen}
+            onClose={() => setIsProfileMenuOpen(false)}
+            className="absolute right-0 mt-[9px] top-10 flex w-[260px] flex-col rounded-2xl border border-gray-200 bg-white p-3 shadow-theme-lg"
+          >
+            <div>
+              <span className="block font-bold text-gray-600 text-xs">
+                {loggedInUser?.username}
+              </span>
+              <span className="mt-0.5 block text-xs text-gray-400">
+                {loggedInUser?.email}
+              </span>
+            </div>
+            <ul className="flex flex-col gap-1 pt-3 pb-3 border-b border-gray-200">
+              <li>
+                <DropdownItem
+                  onItemClick={() => setIsProfileMenuOpen(false)}
+                  tag="a"
+                  href="/profil"
+                  className="flex items-center gap-3 px-3 py-1 font-medium text-gray-600 rounded-lg group text-sm hover:bg-gray-100 hover:text-gray-700"
+                >
+                  <Icon
+                    icon="lucide:user-round"
+                    width="20"
+                    height="20"
+                    color="gray"
+                  />
+                  <span className="text-gray-600">Profil</span>
+                </DropdownItem>
+              </li>
+              <li>
+                <DropdownItem
+                  onItemClick={() => setIsProfileMenuOpen(false)}
+                  tag="a"
+                  href="/jv-elerhetoseg"
+                  className="flex items-center gap-3 px-3 py-1 font-medium text-gray-600 rounded-lg group text-sm hover:bg-gray-100 hover:text-gray-700"
+                >
+                  <Icon
+                    icon="lucide:calendar-days"
+                    width="20"
+                    height="20"
+                    color="gray"
+                  />
+                  <span className="text-gray-600">Elérhetőség megadása</span>
+                </DropdownItem>
+              </li>
+            </ul>
+            <SignOutButton redirectUrl="/">
+              <div className="flex flex-col gap-1 pt-3">
+                <div className="flex items-center gap-3 px-4 py-2 font-medium text-gray-600 rounded-lg group text-sm hover:bg-gray-100 hover:text-gray-700">
                   <Icon
                     icon="lucide:log-out"
                     width="20"
                     height="20"
                     color="gray"
                   />
-                  <button
+                  <Link
+                    href="/"
                     onClick={() => {
                       setIsProfileMenuOpen(false);
                     }}
-                    className="block px-2 py-3 cursor-pointer md:py-2 text-sm text-gray-600"
                   >
                     Kijelentkezés
-                  </button>
+                  </Link>
                 </div>
-              </SignOutButton>
-            </div>
-          )}
+              </div>
+            </SignOutButton>
+          </Dropdown>
         </div>
       </SignedIn>
     </>
