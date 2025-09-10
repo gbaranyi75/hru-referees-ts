@@ -233,7 +233,7 @@ const MatchesNew = ({ referees }: { referees: User[] }) => {
                       setTypeValue(o);
                       setFormFields({
                         ...formFields,
-                        type: String(o?.value) || "",
+                        type: String(o === undefined ? "" : o?.value),
                       });
                       if (o?.value === "7s" || o?.value === "UP torna") {
                         setIsSingleMatch(false);
@@ -255,7 +255,7 @@ const MatchesNew = ({ referees }: { referees: User[] }) => {
                       setGenderValue(o);
                       setFormFields({
                         ...formFields,
-                        gender: String(o?.value) || "",
+                        gender: String(o === undefined ? "" : o?.value),
                       });
                     }}
                     value={genderValue}
@@ -274,7 +274,7 @@ const MatchesNew = ({ referees }: { referees: User[] }) => {
                       setAgeValue(o);
                       setFormFields({
                         ...formFields,
-                        age: String(o?.value),
+                        age: String(o === undefined ? "" : o?.value),
                       });
                     }}
                     value={ageValue}
@@ -293,7 +293,7 @@ const MatchesNew = ({ referees }: { referees: User[] }) => {
                       setVenueValue(o);
                       setFormFields({
                         ...formFields,
-                        venue: String(o?.value),
+                        venue: String(o === undefined ? "" : o?.value),
                       });
                     }}
                     value={venueValue}
@@ -314,7 +314,7 @@ const MatchesNew = ({ referees }: { referees: User[] }) => {
                           setHomeValue(o);
                           setFormFields({
                             ...formFields,
-                            home: String(o?.value),
+                            home: String(o === undefined ? "" : o?.value),
                           });
                         }}
                         value={homeValue}
@@ -333,7 +333,7 @@ const MatchesNew = ({ referees }: { referees: User[] }) => {
                           setAwayValue(o);
                           setFormFields({
                             ...formFields,
-                            away: String(o?.value),
+                            away: String(o === undefined ? "" : o?.value),
                           });
                         }}
                         value={awayValue}
@@ -354,7 +354,7 @@ const MatchesNew = ({ referees }: { referees: User[] }) => {
                           setFormFields({
                             ...formFields,
                             referee: {
-                              username: String(o?.value),
+                              username: String(o === undefined ? "" : o?.value),
                               clerkUserId: o?.id || "",
                             },
                           });
@@ -377,7 +377,7 @@ const MatchesNew = ({ referees }: { referees: User[] }) => {
                           setFormFields({
                             ...formFields,
                             assist1: {
-                              username: String(o?.value),
+                              username: String(o === undefined ? "" : o?.value),
                               clerkUserId: o?.id || "",
                             },
                           });
@@ -400,7 +400,7 @@ const MatchesNew = ({ referees }: { referees: User[] }) => {
                           setFormFields({
                             ...formFields,
                             assist2: {
-                              username: String(o?.value),
+                              username: String(o === undefined ? "" : o?.value),
                               clerkUserId: o?.id || "",
                             },
                           });
@@ -471,7 +471,7 @@ const MatchesNew = ({ referees }: { referees: User[] }) => {
                     placeholder="--Válassz időpontot--"
                     onChange={(o) => {
                       setTimeValue(o);
-                      setFormFields({ ...formFields, time: String(o?.value) });
+                      setFormFields({ ...formFields, time: String(o === undefined ? "" : o?.value) });
                     }}
                     value={timeValue}
                   />

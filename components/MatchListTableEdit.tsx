@@ -31,7 +31,7 @@ export default function MatchListTable({ referees }: { referees: User[] }) {
     const fetchedMatches = await fetchMatches();
     let sortedMatches: Match[] = fetchedMatches.sort((a: Match, b: Match) => {
       return new Date(a.date).getTime() - new Date(b.date).getTime();
-    })
+    });
     setMatches(sortedMatches);
     setLoading(false);
   };
@@ -111,12 +111,6 @@ export default function MatchListTable({ referees }: { referees: User[] }) {
                   </TableCell>
                   <TableCell
                     isHeader
-                    className="px-2 py-3 font-bold text-gray-600 "
-                  >
-                    Játékvezető(k)
-                  </TableCell>
-                  <TableCell
-                    isHeader
                     className="px-2 py-3 font-bold text-gray-600"
                   >
                     {""}
@@ -152,25 +146,12 @@ export default function MatchListTable({ referees }: { referees: User[] }) {
                     <TableCell className="px-2 font-normal text-gray-600">
                       {m.time}
                     </TableCell>
-                    <TableCell className="px-2 font-semibold text-gray-600">
-                      {m?.referee?.username
-                        ? m?.referee?.username
-                        : m?.referees?.map((r) => (
-                            <span
-                              key={r.clerkUserId}
-                              className="block text-xs py-0.5 font-normal text-gray-600 text-theme-s"
-                            >
-                              {r.username}
-                            </span>
-                          ))}
-                    </TableCell>
-
                     <TableCell className="flex px-2 py-3 text-gray-500 text-theme-sm my-auto">
                       <button
                         onClick={() => handleSelectedMatch(m)}
                         className="cursor-pointer text-blue-600 my-auto"
                       >
-                        <Icon icon="lucide:edit" width="20" height="20" />
+                        <Icon icon="lucide:edit" width="18" height="18" />
                       </button>
                     </TableCell>
                   </TableRow>
@@ -183,21 +164,19 @@ export default function MatchListTable({ referees }: { referees: User[] }) {
       <Modal
         isOpen={isOpen}
         onClose={closeModal}
-        isFullscreen={true}
         showCloseButton={true}
+        className="flex flex-col justify-between max-w-[900px] max-h-[800px] px-16 overflow-auto bg-white"
       >
-        <div className="fixed top-0 left-0 flex flex-col justify-between w-full mx-auto h-screen py-10 px-16 overflow-x-hidden overflow-y-auto bg-white">
-          <div className="w-full lg:w-[1024px] mx-auto">
-            <h4 className="font-semibold text-gray-800 mb-10 text-title-sm ">
-              Mérkőzés szerkesztése
-            </h4>
-            <MatchListTableEditModal
-              referees={referees}
-              closeModal={closeModal}
-              selectedMatch={selectedMatch}
-              loadMatches={loadMatches}
-            />
-          </div>
+        <div className="py-10 overscroll-auto">
+          <h4 className="font-semibold text-gray-800 mb-10 text-title-sm ">
+            Mérkőzés szerkesztése
+          </h4>
+          <MatchListTableEditModal
+            referees={referees}
+            closeModal={closeModal}
+            selectedMatch={selectedMatch}
+            loadMatches={loadMatches}
+          />
         </div>
       </Modal>
     </>

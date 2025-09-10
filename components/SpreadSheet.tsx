@@ -8,13 +8,13 @@ import Skeleton from "./common/Skeleton";
 import { fetchUsers } from "@/lib/actions/fetchUsers";
 
 const SpreadSheet = () => {
-  const [isOpen, setIsOpen] = useState(0);
+  const [isTableOpen, setIsTableOpen] = useState(0);
   const [calendars, setCalendars] = useState<Calendar[]>([]);
   const [referees, setReferees] = useState<User[]>([]);
   const [loading, setLoading] = useState(false);
 
   const toggleOpen = (id: number) => () =>
-    setIsOpen((isOpen) => (isOpen === id ? 0 : id));
+    setIsTableOpen((isTableOpen) => (isTableOpen === id ? 0 : id));
 
   const fetchCalendarsData = async () => {
     setLoading(true);
@@ -48,7 +48,7 @@ const SpreadSheet = () => {
           key={index}
           calendar={data}
           users={referees}
-          isOpen={isOpen === index}
+          isTableOpen={isTableOpen === index}
           toggle={toggleOpen(index)}
         />
       ))}
