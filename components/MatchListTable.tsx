@@ -61,7 +61,7 @@ const MatchList = () => {
             <Table className="">
               {/* Table Header */}
               <TableHeader className="border-b border-gray-100 bg-gray-50">
-                <TableRow className="text-xs text-center">
+                <TableRow className="text-sm text-center">
                   <TableCell
                     isHeader
                     className="px-2 py-3 font-bold text-gray-800 "
@@ -111,12 +111,6 @@ const MatchList = () => {
                   >
                     Időpont
                   </TableCell>
-                  {/*                   <TableCell
-                    isHeader
-                    className="px-2 py-3 font-bold text-gray-600 "
-                  >
-                    Játékvezető(k)
-                  </TableCell> */}
                   <TableCell
                     isHeader
                     className="px-2 py-3 font-bold text-gray-600"
@@ -129,7 +123,7 @@ const MatchList = () => {
               {/* Table Body */}
               <TableBody className="divide-y divide-gray-100">
                 {matches.map((m) => (
-                  <TableRow key={m._id} className="text-center text-xs">
+                  <TableRow key={m._id} className="text-center text-sm">
                     <TableCell className="px-2 font-bold text-gray-600">
                       {m.type}
                     </TableCell>
@@ -154,19 +148,6 @@ const MatchList = () => {
                     <TableCell className="px-2 font-normal text-gray-600">
                       {m.time}
                     </TableCell>
-                    {/*                     <TableCell className="px-2 font-semibold text-gray-600">
-                      {m?.referee?.username
-                        ? m?.referee?.username
-                        : m?.referees?.map((r) => (
-                            <span
-                              key={r.clerkUserId}
-                              className="block text-xs py-0.5 font-normal text-gray-600 text-theme-s"
-                            >
-                              {r.username}
-                            </span>
-                          ))}
-                    </TableCell> */}
-
                     <TableCell className="flex px-2 py-3 text-gray-500 text-theme-sm my-auto">
                       <button
                         onClick={() => handleSelectedMatch(m)}

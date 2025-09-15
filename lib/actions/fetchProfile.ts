@@ -11,10 +11,9 @@ export const fetchProfile = async () => {
   try {
     const loggedInUser = await User.findOne({
       email: user.emailAddresses[0].emailAddress,
-    });
+    }).lean();
     if (!loggedInUser) return null;
     return convertToJSON(loggedInUser);
-    //return loggedInUser.toObject();
   } catch (error) {
     console.error(error);
     return new Error(error instanceof Error ? error.message : String(error));

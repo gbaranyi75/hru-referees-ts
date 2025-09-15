@@ -17,15 +17,11 @@ const AddMatchDaysItem = ({
   toggle,
   profile,
 }: {
-  calendar: Calendar |  undefined;
+  calendar: Calendar;
   isOpen: boolean;
   toggle: () => void;
   profile: User;
 }) => {
-  const calendarName = calendar?.name;
-  const calendarId = calendar?._id;
-  const clerkUserId = profile.clerkUserId;
-  const username = profile.username;
   const eventName = calendar?.name;
 
   const [edited, setEdited] = useState(false);
@@ -71,11 +67,11 @@ const AddMatchDaysItem = ({
       toast.success("Sikeres mentés");
     } else {
       const res = await createNewUserSelection({
-        calendarName: calendarName,
-        calendarId: calendarId,
+        calendarName: calendar.name,
+        calendarId: calendar._id,
         selectedDays: selectedDates,
-        username: username,
-        clerkUserId: clerkUserId,
+        username: profile.username,
+        clerkUserId: profile.clerkUserId,
       });
       const success = res instanceof Error ? false : res.success;
       if (success) setSelectedDates(selectedDates);
@@ -87,7 +83,7 @@ const AddMatchDaysItem = ({
   useEffect(() => {
     setLoading(true);
     const fetchCurrentSelection = async () => {
-      const selection = await fetchUserSelection(calendarId);
+      const selection = await fetchUserSelection(calendar._id);
       if (selection?._id) {
         setIsSelection(true);
         setMyCurrentDates(selection.selectedDays);
@@ -102,12 +98,17 @@ const AddMatchDaysItem = ({
   if (loading) return <Spinner />;
 
   return (
-    <div className="flex flex-col border rounded-xl border-gray-200 mt-5 bg-white text-gray-600 text-center justify-center z-0">
-      <div className="flex md:mx-36 py-6 bg-white text-center justify-center">
-        <span>
-          <h2 className="text-lg mr-1 font-semibold">{eventName}</h2>
+    <div className="flex flex-col border overflow-hidden rounded-xl border-gray-200 bg-white text-gray-600 text-center justify-center z-0">
+      <div
+        className={`flex md:px-6 py-6 items-center justify-between ${isOpen ? "bg-gray-100" : "bg-white"}`}
+      >
+        <span className="ml-6">
+          <h2 className="text-lg font-semibold">{eventName}</h2>
         </span>
-        <span className="my-auto cursor-pointer" onClick={handleOpenCalendar}>
+        <span
+          className={`my-auto mr-6 p-2 rounded-full ${isOpen ? "hover:bg-white" : "hover:bg-gray-200"} cursor-pointer`}
+          onClick={handleOpenCalendar}
+        >
           {!isOpen ? (
             <MdOutlineExpandMore size={24} />
           ) : (
@@ -117,10 +118,10 @@ const AddMatchDaysItem = ({
       </div>
       {isOpen && (
         <>
-          <div className="md:max-w-4xl flex md:flex-row flex-col flex-wrap md:justify-center md:mx-auto my-4">
+          <div className="md:max-w-3xl flex md:flex-row flex-col gap-4 flex-wrap items-center justify-center md:mx-auto my-8">
             {calendar?.days.map((day, idx) => {
               return (
-                <div className="flex my-2 mx-auto md:mx-0" key={idx}>
+                <div className="flex" key={idx}>
                   <span
                     id={
                       !selectedDates?.includes(day)
@@ -129,8 +130,8 @@ const AddMatchDaysItem = ({
                     }
                     className={
                       !selectedDates?.includes(day)
-                        ? "inline-flex items-center px-3 py-1 me-2 text-sm text-gray-600 bg-gray-300 rounded-full"
-                        : "inline-flex items-center px-3 py-1 me-2 text-sm rounded-full bg-green-900 text-green-300"
+                        ? "inline-flex items-center px-4 py-2 font-semibold text-sm text-red-200 bg-red-600 rounded-full"
+                        : "inline-flex items-center px-4 py-2 font-semibold text-sm bg-green-900 text-green-300 rounded-full"
                     }
                   >
                     {day}
@@ -138,8 +139,8 @@ const AddMatchDaysItem = ({
                       type="button"
                       className={
                         !selectedDates?.includes(day)
-                          ? "inline-flex items-center p-1 ms-2 text-sm text-gray-600 bg-transparent rounded-sm hover:bg-gray-400 hover:text-gray-50"
-                          : "inline-flex items-center p-1 ms-2 text-sm text-green-400 bg-transparent rounded-sm hover:bg-green-800 hover:text-green-100"
+                          ? "inline-flex items-center p-2 text-sm text-red-200 bg-transparent rounded-sm hover:bg-red-400 hover:text-gray-50"
+                          : "inline-flex items-center p-2 text-sm text-green-400 bg-transparent rounded-sm hover:bg-green-600 hover:text-green-100"
                       }
                       data-dismiss-target="#badge-dismiss-dark"
                       aria-label="Remove"
@@ -150,7 +151,7 @@ const AddMatchDaysItem = ({
                       {!selectedDates?.includes(day) ? (
                         <>
                           <svg
-                            className="w-2.5 h-2.5"
+                            className="w-3 h-3"
                             aria-hidden="true"
                             xmlns="http://www.w3.org/2000/svg"
                             fill="none"
@@ -169,7 +170,7 @@ const AddMatchDaysItem = ({
                       ) : (
                         <>
                           <svg
-                            className="w-2 h-2"
+                            className="w-2.5 h-2.5"
                             aria-hidden="true"
                             xmlns="http://www.w3.org/2000/svg"
                             fill="none"
@@ -193,7 +194,7 @@ const AddMatchDaysItem = ({
               );
             })}
           </div>
-
+          {/* <DaysCalendar onChange={() => console.log("klikk")} value={currentDate}/> */}
           <div className="flex flex-col md:flex-row-reverse justify-around m-5">
             <div className="px-4 py-3 text-center sm:px-6">
               {edited ? (

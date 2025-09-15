@@ -57,29 +57,29 @@ export default function RefereesTable() {
             <Table>
               {/* Table Header */}
               <TableHeader className="border-b border-gray-100 bg-gray-50">
-                <TableRow className="text-xs text-center">
+                <TableRow className="text-sm text-center">
                   <TableCell
                     isHeader
-                    className="pl-16 pr-6 py-3 font-bold text-gray-600 text-start"
+                    className="pl-16 pr-6 py-4 font-bold text-gray-600 text-start"
                   >
                     Név
                   </TableCell>
                   <TableCell
                     isHeader
-                    className="px-2 py-3 font-bold text-gray-600 "
+                    className="px-2 py-4 font-bold text-gray-600 "
                   >
                     Email
                   </TableCell>
                   <TableCell
                     isHeader
-                    className="px-5 py-3 font-bold text-gray-500 "
+                    className="px-5 py-4 font-bold text-gray-500 "
                   >
                     Lakhely
                   </TableCell>
 
                   <TableCell
                     isHeader
-                    className="px-5 py-3 font-bold text-gray-600 "
+                    className="px-5 py-4 font-bold text-gray-600 "
                   >
                     Adatlap
                   </TableCell>

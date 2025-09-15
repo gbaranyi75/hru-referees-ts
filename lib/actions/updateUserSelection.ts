@@ -1,6 +1,7 @@
 "use server";
 import connectDB from "@/config/database";
 import UserSelection from "@/models/Userselection";
+import { revalidatePath } from "next/cache";
 
 export const updateUserSelection = async (selectionId: string | undefined, selectedDays: string[] | undefined) => {
   await connectDB();
@@ -10,6 +11,7 @@ export const updateUserSelection = async (selectionId: string | undefined, selec
       { _id: selectionId },
       { selectedDays: selectedDays }
     );
+    revalidatePath('/jv-elerhetoseg');
     return { success: true, error: false };
   } catch (error) {
     console.error(error);
