@@ -471,7 +471,10 @@ const MatchesNew = ({ referees }: { referees: User[] }) => {
                     placeholder="--Válassz időpontot--"
                     onChange={(o) => {
                       setTimeValue(o);
-                      setFormFields({ ...formFields, time: String(o === undefined ? "" : o?.value) });
+                      setFormFields({
+                        ...formFields,
+                        time: String(o === undefined ? "" : o?.value),
+                      });
                     }}
                     value={timeValue}
                   />
@@ -502,27 +505,40 @@ const MatchesNew = ({ referees }: { referees: User[] }) => {
                     </div>
                   </div>
                   {calendarOpen && (
-                    <div className="flex justify-center mx-auto mt-1 mb-6 text-sm font-medium text-gray-700">
-                      <DayPicker
-                        locale={hu}
-                        id="day-picker"
-                        mode="single"
-                        animate
-                        navLayout="around"
-                        timeZone="Europe/Budapest"
-                        showOutsideDays={true}
-                        className={"p-3"}
-                        selected={selected}
-                        onSelect={setSelected}
-                        classNames={{
-                          root: `${defaultClassNames.root} border border-gray-200 rounded-xl p-5`,
-                          caption_label: `${defaultClassNames.caption_label} text-base font-medium capitalize`,
-                          weekday: `${defaultClassNames.weekday} uppercase text-sm`,
-                          today: "border border-amber-500",
-                          selected:
-                            "bg-amber-500  rounded rounded-full text-white bg-primary text-primary-foreground hover:bg-primary hover:text-primary-foreground focus:bg-primary focus:text-primary-foreground",
-                        }}
-                      />
+                    <div className="flex items-center">
+                      <div className="flex overflow-hidden overflow-x-auto justify-center pl-20 md:pl-0 mx-auto mt-1 mb-6 text-sm font-medium text-gray-700">
+                        <DayPicker
+                          locale={hu}
+                          id="day-picker"
+                          mode="single"
+                          animate
+                          navLayout="around"
+                          timeZone="Europe/Budapest"
+                          showOutsideDays={true}
+                          className={"p-3"}
+                          selected={selected}
+                          onSelect={setSelected}
+                          classNames={{
+                            root: `${defaultClassNames.root}  border border-gray-200 rounded-xl p-5`,
+                            caption_label: `${defaultClassNames.caption_label} text-base font-medium capitalize`,
+                            weekday: `${defaultClassNames.weekday} uppercase text-sm`,
+                            today: "border border-amber-500",
+                            selected:
+                              "bg-amber-500  rounded rounded-full text-white bg-primary text-primary-foreground hover:bg-primary hover:text-primary-foreground focus:bg-primary focus:text-primary-foreground",
+                          }}
+                          styles={{
+                            head_cell: {
+                              width: "0px",
+                            },
+                            table: {
+                              maxWidth: "150px",
+                            },
+                            day: {
+                              margin: "auto",
+                            },
+                          }}
+                        />
+                      </div>
                     </div>
                   )}
                 </div>

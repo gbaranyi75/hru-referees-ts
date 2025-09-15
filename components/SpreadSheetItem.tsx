@@ -3,6 +3,8 @@ import { useState, useEffect } from "react";
 import Image from "next/image";
 import { useModal } from "../hooks/useModal";
 import { Modal } from "./common/Modal";
+import { Tooltip } from "react-tooltip";
+import "react-tooltip/dist/react-tooltip.css";
 import {
   Table,
   TableBody,
@@ -35,8 +37,7 @@ const SpreadSheetItem = ({
   const { isOpen, openModal, closeModal } = useModal();
   const [selectedDate, setSelectedDate] = useState<string>("");
 
-  const handleOpenSpreadSheet = (e: React.MouseEvent<HTMLSpanElement>) => {
-    e.preventDefault();
+  const handleOpenSpreadSheet = () => {
     toggle();
   };
 
@@ -63,7 +64,6 @@ const SpreadSheetItem = ({
   const handleOpenModal = (date: string) => {
     userSelections.forEach((selection) => {
       if (selection.selectedDays.includes(date)) {
-        console.log(selection);
         setAvailableUsers((prev) => [...prev, selection]);
         setSelectedDate(date);
       }
@@ -88,16 +88,18 @@ const SpreadSheetItem = ({
 
   return (
     <>
-      <div className="flex flex-col my-5 rounded-2xl border border-gray-200 bg-white text-gray-600 text-center justify-center z-0">
-        <div className="flex md:mx-36 py-6 bg-white text-center justify-center">
-          <span>
+      <div className="flex flex-col border overflow-hidden rounded-xl border-gray-200 bg-white text-gray-600 text-center justify-center z-0">
+        <div
+          className={`flex md:px-6 py-6 items-center justify-between ${isTableOpen ? "bg-gray-100" : "bg-white"}`}
+        >
+          <span className="ml-6">
             <h2 className="text-lg mr-1 font-semibold">{calendar?.name}</h2>
           </span>
           <span
-            className="my-auto cursor-pointer"
+            className={`my-auto mr-6 p-2 rounded-full ${isTableOpen ? "hover:bg-white" : "hover:bg-gray-200"} cursor-pointer`}
             onClick={handleOpenSpreadSheet}
           >
-            {!isOpen ? (
+            {!isTableOpen ? (
               <MdOutlineExpandMore size={24} />
             ) : (
               <MdOutlineExpandLess size={24} />
@@ -111,21 +113,42 @@ const SpreadSheetItem = ({
                 <Table className="max-w-5xl text-center text-gray-500 mx-auto">
                   <TableHeader className="border-b border-gray-100 bg-gray-50">
                     <TableRow className="text-xs text-center">
-                      <TableCell isHeader className="py-3 px-6 text-center">
+                      <TableCell isHeader className="py-4 px-6 text-center">
                         Név
                       </TableCell>
                       {currentDates?.map((date) => (
                         <TableCell
                           isHeader
-                          className="py-3 px-2 text-center"
+                          className="py-4 px-2 text-center"
                           key={date}
                         >
-                          <button
+                          <a
+                            data-tooltip-id="my-tooltip"
+                            data-tooltip-content={date}
+                            //data-tooltip-content={`Kattints, hogy lásd az` <br /> `elérhető játékvezetőket ${date} napon!`}
                             className="cursor-pointer"
                             onClick={() => handleOpenModal(date)}
                           >
                             {date}
-                          </button>
+                          </a>
+                          <Tooltip
+                            id="my-tooltip"
+                            place="top"
+                            border="1px solid #cdd4df"
+                            style={{
+                              borderRadius: "8px",
+                              fontSize: "12px",
+                              backgroundColor: "#f1f3f6",
+                              color: "#7e8591",
+                            }}
+                            render={({ content }) => (
+                              <span className="text-center">
+                                Kattints, hogy lásd az elérhető
+                                <br />
+                                játékvezetőket {content} napon!
+                              </span>
+                            )}
+                          />
                         </TableCell>
                       ))}
                     </TableRow>
@@ -151,7 +174,7 @@ const SpreadSheetItem = ({
                             <div className="flex justify-center">
                               {user.selectedDays.includes(date) ? (
                                 <Image
-                                  className="h-4 w-4"
+                                  className="h-5 w-5"
                                   src={checkedImage}
                                   alt="logo"
                                   width={10}
@@ -160,7 +183,7 @@ const SpreadSheetItem = ({
                                 />
                               ) : (
                                 <Image
-                                  className="h-4 w-4"
+                                  className="h-5 w-5"
                                   src={unCheckedImage}
                                   alt="logo"
                                   width={10}

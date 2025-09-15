@@ -1,6 +1,7 @@
 "use server";
 import connectDB from "@/config/database";
 import Calendar from "@/models/Calendar";
+import { revalidatePath } from "next/cache";
 
 export const updateCalendar = async (calendarId: string | undefined, data: { name: string, days: string[] }) => {
   await connectDB();
@@ -10,6 +11,7 @@ export const updateCalendar = async (calendarId: string | undefined, data: { nam
       { _id: calendarId },
       { name: data.name, days: data.days }
     );
+    revalidatePath('/dashboard/calendar');
     return { success: true, error: false };
   } catch (error) {
     console.error(error);

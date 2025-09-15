@@ -128,10 +128,10 @@ const CalendarNew = () => {
                   </div>
                 )}
               </div>
-              <div className="flex flex-col col-span-2 lg:col-span-1 items-center justify-center">
+              <div className="flex flex-col col-span-2 lg:col-span-1 items-center justify-center overflow-y-hidden">
                 <Label htmlFor="day-picker">Időpontok kiválasztása:</Label>
 
-                <div className="flex justify-center mx-auto mb-6 text-sm font-medium text-gray-700">
+                <div className="flex justify-center mx-auto mt-1 mb-6  text-sm font-medium text-gray-700">
                   <DayPicker
                     locale={hu}
                     id="day-picker"
@@ -150,6 +150,17 @@ const CalendarNew = () => {
                       today: "border border-amber-500",
                       selected:
                         "bg-amber-500  rounded rounded-full text-white bg-primary text-primary-foreground hover:bg-primary hover:text-primary-foreground focus:bg-primary focus:text-primary-foreground",
+                    }}
+                    styles={{
+                      head_cell: {
+                        width: "0px",
+                      },
+                      table: {
+                        maxWidth: "150px",
+                      },
+                      day: {
+                        margin: "auto",
+                      },
                     }}
                   />
                 </div>

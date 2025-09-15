@@ -2,6 +2,7 @@
 import connectDB from "@/config/database";
 import { currentUser } from "@clerk/nextjs/server";
 import Calendar from "@/models/Calendar";
+import { revalidatePath } from "next/cache";
 
 export const createNewCalendar = async (data: { name: string; days: Array<string>; }) => {
   await connectDB();
@@ -15,6 +16,7 @@ export const createNewCalendar = async (data: { name: string; days: Array<string
       days: data.days,
     });
     await newCalendar.save();
+    revalidatePath('/dashboard/calendar');
     return { success: true, error: false };
   } catch (error) {
     console.error(error);
