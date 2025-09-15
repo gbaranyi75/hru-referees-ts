@@ -3,6 +3,7 @@ import connectDB from "@/config/database";
 import Match from "@/models/Match";
 import { MatchOfficial } from "@/types/types";
 import { currentUser } from "@clerk/nextjs/server";
+import { revalidatePath } from "next/cache";
 
 async function updateMatch(matchId: string | undefined, data: {
   home: string;
@@ -46,6 +47,7 @@ async function updateMatch(matchId: string | undefined, data: {
         time: data.time
       }
     );
+    revalidatePath('/dashboard/matches');
     return { success: true, error: false };
   } catch (error) {
     console.error(error);

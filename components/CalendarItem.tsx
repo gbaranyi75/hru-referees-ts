@@ -161,10 +161,10 @@ const CalendarItem = ({
                   </div>
                 )}
               </div>
-              <div className="flex flex-col col-span-2 lg:col-span-1 items-center justify-center">
+              <div className="flex flex-col col-span-2 lg:col-span-1 items-center justify-center overflow-y-hidden">
                 <Label>Időpontok kiválasztása:</Label>
 
-                <div className="flex justify-center mx-auto mb-6 text-sm font-medium text-gray-700">
+                <div className="flex justify-center mx-auto mb-6 overscroll-x-auto text-sm font-medium text-gray-700">
                   <DayPicker
                     locale={hu}
                     mode="multiple"

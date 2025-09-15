@@ -60,13 +60,6 @@ const CalendarEdit = () => {
                 fetchCalendarsData={fetchCalendarsData}
               />
             ))}
-          <div className="px-4 py-3 my-8 text-center sm:px-6">
-            <OutlinedButton
-              text={"Vissza"}
-              type={"button"}
-              onClick={toggleEditMode}
-            />
-          </div>
         </div>
       )}
     </div>
