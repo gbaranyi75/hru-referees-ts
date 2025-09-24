@@ -106,7 +106,7 @@ const AddMatchDaysItem = ({
           <h2 className="text-lg font-semibold">{eventName}</h2>
         </span>
         <span
-          className={`my-auto mr-6 p-2 rounded-full ${isOpen ? "hover:bg-white" : "hover:bg-gray-200"} cursor-pointer`}
+          className="my-auto mr-6 p-2 rounded-full bg-gray-200 cursor-pointer"
           onClick={handleOpenCalendar}
         >
           {!isOpen ? (

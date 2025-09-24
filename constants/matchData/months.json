@@ -1,14 +1,50 @@
 [
-  { "id": 0, "name": "Jan" },
-  { "id": 1, "name": "Feb" },
-  { "id": 2, "name": "Már" },
-  { "id": 3, "name": "Ápr" },
-  { "id": 4, "name": "Máj" },
-  { "id": 5, "name": "Jún" },
-  { "id": 6, "name": "Júl" },
-  { "id": 7, "name": "Aug" },
-  { "id": 8, "name": "Szept" },
-  { "id": 9, "name": "Okt" },
-  { "id": 10, "name": "Nov" },
-  { "id": 11, "name": "Dec" }
+  {
+    "id": 0,
+    "name": "Jan"
+  },
+  {
+    "id": 1,
+    "name": "Feb"
+  },
+  {
+    "id": 2,
+    "name": "Már"
+  },
+  {
+    "id": 3,
+    "name": "Ápr"
+  },
+  {
+    "id": 4,
+    "name": "Máj"
+  },
+  {
+    "id": 5,
+    "name": "Jún"
+  },
+  {
+    "id": 6,
+    "name": "Júl"
+  },
+  {
+    "id": 7,
+    "name": "Aug"
+  },
+  {
+    "id": 8,
+    "name": "Szept"
+  },
+  {
+    "id": 9,
+    "name": "Okt"
+  },
+  {
+    "id": 10,
+    "name": "Nov"
+  },
+  {
+    "id": 11,
+    "name": "Dec"
+  }
 ]

@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { Inter } from "next/font/google";
 import Navbar from "@/components/Navbar";
 import NavbarMobileMenuWrapper from "@/components/NavbarMobileMenuWrapper";
 import SideBarWrapper from "@/components/SideBarWrapper";
@@ -6,6 +7,7 @@ import { ToastContainer } from "react-toastify";
 import { ClerkProvider } from "@clerk/nextjs";
 import { huHU } from "@clerk/localizations";
 import { Analytics } from "@vercel/analytics/next";
+const inter = Inter({ subsets: ["latin"] });
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -21,8 +23,8 @@ export default function RootLayout({
 }>) {
   return (
     <ClerkProvider localization={huHU}>
-      <html lang="en">
-        <body>
+      <html lang="en" suppressHydrationWarning>
+        <body className={inter.className}>
           <div className="min-h-screen xl:flex">
             <SideBarWrapper />
             <div className="flex-1 md:ml-[290px]">

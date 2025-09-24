@@ -1,1 +1,8 @@
-[{ "name": "Férfi" }, { "name": "Női" }]
+[
+  {
+    "name": "Férfi"
+  },
+  {
+    "name": "Női"
+  }
+]

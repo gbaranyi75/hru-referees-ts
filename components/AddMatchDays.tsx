@@ -6,6 +6,10 @@ import { Calendar, User } from "@/types/types";
 import { fetchCalendars } from "@/lib/actions/fetchCalendars";
 import { fetchProfile } from "@/lib/actions/fetchProfile";
 
+/**
+ * A component that displays a list of calendars and allows the user to add match days to them.
+ * @returns A JSX component that displays a list of calendars and allows the user to add match days to them.
+ */
 const AddMatchDays = () => {
   const [isOpen, setIsOpen] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -13,7 +17,7 @@ const AddMatchDays = () => {
   const [profile, setProfile] = useState<User>({} as User);
 
   const toggleOpen = (id: any) => () =>
-    setIsOpen((isOpen) => (isOpen === id ? 0 : id));
+    setIsOpen((isOpen) => (isOpen === id ? null : id));
 
   const fetchData = async () => {
     setLoading(true);

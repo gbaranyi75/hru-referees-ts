@@ -1,1 +1,8 @@
-[{ "name": "Felnőtt" }, { "name": "Utánpótlás" }]
+[
+  {
+    "name": "Felnőtt"
+  },
+  {
+    "name": "Utánpótlás"
+  }
+]

@@ -20,7 +20,7 @@ export const MatchListTableModal = ({
         <h3 className="pl-1 text-sm font-semibold">{selectedMatch?.type}</h3>
       </div>
       {isSingleMatch && (
-        <div className="flex flex-row items-center space-x-24 mt-3 text-gray-500 rounded-2xl bg-gray-100 p-4">
+        <div className="flex flex-row items-center space-x-24 mt-5 text-gray-500 rounded-2xl bg-gray-100 p-4">
           <h3 className="text-lg font-semibold text-red-600">
             {selectedMatch?.home}
           </h3>
