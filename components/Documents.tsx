@@ -25,7 +25,7 @@ const Documents = ({ role }: { role: string }) => {
   const fetchFiles = async () => {
     try {
       setLoading(true);
-      const filesData = await fetch("/api/r2/get").then((res) => res.json());
+      const filesData = await fetch("/api/r2/files").then((res) => res.json());
       setFileList(filesData.Contents);
       setLoading(false);
       return fileList;

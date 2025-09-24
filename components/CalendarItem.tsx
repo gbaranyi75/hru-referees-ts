@@ -127,12 +127,17 @@ const CalendarItem = ({
   };
 
   return (
-    <div className="flex flex-col my-5 rounded-2xl border border-gray-200 bg-white text-gray-600 text-center justify-center z-0">
-      <div className="flex md:mx-36 py-6 bg-white text-center justify-center">
-        <span>
+    <div className="flex flex-col border mt-4 overflow-hidden rounded-xl border-gray-200 bg-white text-gray-600 text-center justify-center z-0">
+      <div
+        className={`flex md:px-6 py-6 items-center justify-between ${isOpen ? "bg-gray-100" : "bg-white"}`}
+      >
+        <span className="ml-6">
           <h2 className="text-lg mr-1 font-semibold">{eventName}</h2>
         </span>
-        <span className="my-auto cursor-pointer" onClick={handleOpenCalendar}>
+        <span
+          className="my-auto mr-6 p-2 rounded-full bg-gray-200 cursor-pointer"
+          onClick={handleOpenCalendar}
+        >
           {!isOpen ? (
             <MdOutlineExpandMore size={24} />
           ) : (
