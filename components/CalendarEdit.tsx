@@ -1,24 +1,21 @@
 "use client";
 import { useEffect, useState } from "react";
 import CalendarItem from "./CalendarItem";
-import OutlinedButton from "@/components/common/OutlinedButton";
-import Spinner from "./common/Spinner";
 import { Calendar } from "@/types/types";
 import { Icon } from "@iconify/react/dist/iconify.js";
 import { fetchCalendars } from "@/lib/actions/fetchCalendars";
 
 const CalendarEdit = () => {
-  const [isOpen, setIsOpen] = useState(0);
+  const [isOpen, setIsOpen] = useState(null);
   const [calendars, setCalendars] = useState<Calendar[]>([]);
   const [editModeOpen, setEditModeOpen] = useState(false);
 
   const toggleEditMode = () => {
     setEditModeOpen(!editModeOpen);
-    //resetToBase();
   };
 
-  const toggleOpen = (id: number) => () =>
-    setIsOpen((isOpen) => (isOpen === id ? 0 : id));
+  const toggleOpen = (id: any) => () =>
+    setIsOpen((isOpen) => (isOpen === id ? null : id));
 
   const fetchCalendarsData = async () => {
     const fetchedCalendars = await fetchCalendars();
@@ -30,8 +27,6 @@ const CalendarEdit = () => {
   useEffect(() => {
     fetchCalendarsData();
   }, []);
-
-  //if (!calendars) return <Spinner />;
 
   return (
     <div className="p-5 border border-gray-200 rounded-2xl lg:p-6">
