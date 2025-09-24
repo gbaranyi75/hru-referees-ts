@@ -2,6 +2,7 @@ import connectDB from "@/config/database";
 import User from "@/models/User";
 import { currentUser, clerkClient } from "@clerk/nextjs/server";
 
+
 export const checkUser = async () => {
   await connectDB();
   try {
