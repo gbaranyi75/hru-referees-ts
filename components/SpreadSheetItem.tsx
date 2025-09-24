@@ -96,7 +96,7 @@ const SpreadSheetItem = ({
             <h2 className="text-lg mr-1 font-semibold">{calendar?.name}</h2>
           </span>
           <span
-            className={`my-auto mr-6 p-2 rounded-full ${isTableOpen ? "hover:bg-white" : "hover:bg-gray-200"} cursor-pointer`}
+            className="my-auto mr-6 p-2 rounded-full bg-gray-200 cursor-pointer"
             onClick={handleOpenSpreadSheet}
           >
             {!isTableOpen ? (

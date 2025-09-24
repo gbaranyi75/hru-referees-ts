@@ -1,13 +1,16 @@
-import Referees from "@/components/Referees";
+import Documents from "@/components/Documents";
 import PageLayout from "@/components/common/PageLayout";
 import PageTitle from "@/components/common/PageTitle";
+import { getSessionUser } from "@/lib/utils/getSessionUser";
 
-const DocumentsPage = () => {
+const DocumentsPage = async () => {
+  const { user } = await getSessionUser();
+  const role: string = user ? user?.publicMetadata?.role : ("guest" as const);
 
   return (
     <PageLayout>
       <PageTitle title="Letölthető dokumentumok" />
-      <h4>Hamarosan...</h4>
+      <Documents role={role} />
     </PageLayout>
   );
 };
