@@ -27,7 +27,7 @@ export const checkUser = async () => {
       return loggedInUser;
     }
 
-    const newUser = await User.create({
+    const newUser = new User({
       email: user.emailAddresses[0].emailAddress,
       clerkUserId: user.id,
       username: `${user.lastName} ${user.firstName}`,
@@ -37,7 +37,9 @@ export const checkUser = async () => {
       facebookUrl: 'https://www.facebook.com/',
       instagramUrl: 'https://www.instagram.com/',
       phoneNumber: '0000-0000000000',
-    });
+    })
+
+    await newUser.save()
     return newUser;
   } catch (error) {
     console.error(error);

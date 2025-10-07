@@ -18,8 +18,11 @@ const SpreadSheet = () => {
   const fetchCalendarsData = async () => {
     setLoading(true);
     const fetchedCalendars = await fetchCalendars();
+    let sortedCalendars: Calendar[] = fetchedCalendars.sort((a: Calendar, b: Calendar) => {
+      return new Date(b.days[0]).getTime() - new Date(a.days[0]).getTime();
+    });
     const usersData = await fetchUsers();
-    setCalendars(fetchedCalendars);
+    setCalendars(sortedCalendars);
 
     setReferees(usersData);
     setLoading(false);

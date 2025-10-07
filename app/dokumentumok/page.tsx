@@ -1,16 +1,16 @@
 import Documents from "@/components/Documents";
 import PageLayout from "@/components/common/PageLayout";
 import PageTitle from "@/components/common/PageTitle";
-import { getSessionUser } from "@/lib/utils/getSessionUser";
+import { checkRole } from "@/lib/utils/roles";
+
 
 const DocumentsPage = async () => {
-  const { user } = await getSessionUser();
-  const role: string = user ? user?.publicMetadata?.role : ("guest" as const);
+  const isAdmin = await checkRole("admin");
 
   return (
     <PageLayout>
       <PageTitle title="Letölthető dokumentumok" />
-      <Documents role={role} />
+      <Documents isAdmin={isAdmin} />
     </PageLayout>
   );
 };
