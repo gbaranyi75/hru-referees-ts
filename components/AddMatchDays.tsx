@@ -5,6 +5,7 @@ import Skeleton from "./common/Skeleton";
 import { Calendar, User } from "@/types/types";
 import { fetchCalendars } from "@/lib/actions/fetchCalendars";
 import { fetchProfile } from "@/lib/actions/fetchProfile";
+import EventCalendar from "./MatchDayCalendar";
 
 /**
  * A component that displays a list of calendars and allows the user to add match days to them.
@@ -22,8 +23,13 @@ const AddMatchDays = () => {
   const fetchData = async () => {
     setLoading(true);
     const fetchedCalendars = await fetchCalendars();
+    let sortedCalendars: Calendar[] = fetchedCalendars.sort(
+      (a: Calendar, b: Calendar) => {
+        return new Date(b.days[0]).getTime() - new Date(a.days[0]).getTime();
+      }
+    );
     const userProfile = await fetchProfile();
-    setCalendars(fetchedCalendars);
+    setCalendars(sortedCalendars);
     setProfile(userProfile);
     setLoading(false);
   };

@@ -19,8 +19,13 @@ const CalendarEdit = () => {
 
   const fetchCalendarsData = async () => {
     const fetchedCalendars = await fetchCalendars();
+    let sortedCalendars: Calendar[] = fetchedCalendars.sort(
+      (a: Calendar, b: Calendar) => {
+        return new Date(b.days[0]).getTime() - new Date(a.days[0]).getTime();
+      }
+    );
     if (fetchedCalendars) {
-      setCalendars(fetchedCalendars);
+      setCalendars(sortedCalendars);
     }
   };
 

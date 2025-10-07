@@ -43,7 +43,7 @@ export default function MatchListTable({ referees }: { referees: User[] }) {
   if (loading)
     return (
       <>
-        <Skeleton className="w-full h-12 mb-2" />
+        <Skeleton className="w-full h-12 mb-2 mt-1" />
         <Skeleton className="w-full h-12 mb-2" />
         <Skeleton className="w-full h-12 mb-2" />
         <Skeleton className="w-full h-12 mb-2" />

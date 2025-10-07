@@ -1,16 +1,17 @@
 "use client";
 import React, { Suspense, useEffect, useState } from "react";
+import { Route } from "next";
+import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { ADMIN_LINKS, NAV_LINKS, PROFILE_LINKS } from "@/lib/utils/links";
-import Link from "next/link";
-import NavbarLogo from "./NavbarLogo";
 import { Icon } from "@iconify/react";
 import { useUser } from "@clerk/nextjs";
 import { NavItem } from "@/types/types";
+import NavbarLogo from "./NavbarLogo";
 import Skeleton from "./common/Skeleton";
 import Footer from "./Footer";
 
-const SideBar = ({ role }: { role: string }) => {
+const SideBar = ({ isAdmin }: { isAdmin: boolean }) => {
   const { isSignedIn } = useUser();
 
   return (
@@ -75,7 +76,7 @@ const SideBar = ({ role }: { role: string }) => {
             </li>
 
             {/* Admin links */}
-            {role === "admin" && (
+            {isAdmin && (
               <>
                 <li className="py-0 pt-1 m-0 mb-2 border-b-1 border-gray-300"></li>
 
@@ -139,7 +140,7 @@ const SideNavItem = ({ item }: { item: NavItem }) => {
                 return (
                   <li key={idx} className="m-0 ml-8">
                     <Link
-                      href={subItem.path}
+                      href={subItem.path as Route}
                       className={`flex flex-row w-full p-2 space-x-3 text-center text-sm text-gray-600 items-center rounded-lg hover:bg-zinc-200
                       ${subItem.path === pathname ? "text-indigo-700 bg-blue-100" : "bg-white"}`}
                     >
@@ -154,7 +155,7 @@ const SideNavItem = ({ item }: { item: NavItem }) => {
       ) : (
         <Suspense fallback={<Skeleton className="h-10" />}>
           <Link
-            href={item.path || ""}
+            href={(item.path as Route) || ""}
             className={`flex flex-row w-full p-2 space-x-3 text-center text-sm text-gray-600 items-center rounded-lg hover:bg-zinc-200
           ${isActive ? "text-indigo-700 bg-blue-100" : "bg-white"}`}
           >

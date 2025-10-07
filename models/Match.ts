@@ -17,6 +17,9 @@ const MatchSchema = new Schema(
       clerkUserId: {
         type: String,
       },
+      email: {
+        type: String,
+      },
     },
     referees: [
       {
@@ -24,6 +27,9 @@ const MatchSchema = new Schema(
           type: String,
         },
         clerkUserId: {
+          type: String,
+        },
+        email: {
           type: String,
         },
       },
@@ -35,12 +41,18 @@ const MatchSchema = new Schema(
       clerkUserId: {
         type: String,
       },
+      email: {
+        type: String,
+      },
     },
     assist2: {
       username: {
         type: String,
       },
       clerkUserId: {
+        type: String,
+      },
+      email: {
         type: String,
       },
     },
@@ -50,6 +62,9 @@ const MatchSchema = new Schema(
           type: String,
         },
         clerkUserId: {
+          type: String,
+        },
+        email: {
           type: String,
         },
       },

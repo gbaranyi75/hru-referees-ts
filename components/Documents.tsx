@@ -13,7 +13,7 @@ interface FileProps {
   ETag: string;
 }
 
-const Documents = ({ role }: { role: string }) => {
+const Documents = ({ isAdmin }: { isAdmin: boolean }) => {
   const [fileList, setFileList] = useState<FileProps[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const [editModeOpen, setEditModeOpen] = useState<boolean>(false);
@@ -40,7 +40,7 @@ const Documents = ({ role }: { role: string }) => {
 
   return (
     <div className="rounded-2xl border border-gray-200 bg-white p-5 mt-5">
-      {role === "admin" && (
+      {isAdmin && (
         <div className="flex flex-col mb-5">
           <div className="flex flex-col gap-5 xl:flex-row xl:items-center xl:justify-end">
             <button
@@ -62,7 +62,7 @@ const Documents = ({ role }: { role: string }) => {
       <DocumentsList
         fileList={fileList}
         loading={loading}
-        role={role}
+        isAdmin={isAdmin}
         fetchFiles={fetchFiles}
       />
     </div>
