@@ -44,6 +44,7 @@ export type Address = {
 export type MatchOfficial = {
   username: string;
   clerkUserId: string;
+  email: string;
 };
 
 export type Match = {
@@ -62,3 +63,10 @@ export type Match = {
   date: string;
   time: string;
 };
+
+export type SendEmail = {
+  email: string;
+  username: string;
+  clerkUserId: string;
+  messageData?: Match;
+}

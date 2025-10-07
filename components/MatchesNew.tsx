@@ -74,10 +74,10 @@ const MatchesNew = ({ referees }: { referees: User[] }) => {
   );
   const [dateValue, setDateValue] = useState<string | undefined>("" as string);
   const [selected, setSelected] = useState<Date | undefined>(undefined);
-  const [createNewOpen, setCreateNewOpen] = useState(false);
-  const [calendarOpen, setCalendarOpen] = useState(false);
-  const [isSingleMatch, setIsSingleMatch] = useState(true);
-  const [isSuccess, setIsSuccess] = useState(false);
+  const [createNewOpen, setCreateNewOpen] = useState<boolean>(false);
+  const [calendarOpen, setCalendarOpen] = useState<boolean>(false);
+  const [isSingleMatch, setIsSingleMatch] = useState<boolean>(true);
+  const [isSuccess, setIsSuccess] = useState<boolean>(false);
   const {
     home = "",
     away = "",
@@ -119,23 +119,100 @@ const MatchesNew = ({ referees }: { referees: User[] }) => {
     setCalendarOpen((state) => !state);
   };
 
+  const handleEmailSend = async () => {
+    let list = [];
+    if (formFields.referee.clerkUserId) {
+      list.push({
+        username: formFields.referee.username,
+        clerkUserId: formFields.referee.clerkUserId,
+        email: formFields.referee.email,
+        messageData: formFields,
+      });
+    }
+    if (formFields.assist1.clerkUserId) {
+      list.push({
+        username: formFields.assist1.username,
+        clerkUserId: formFields.assist1.clerkUserId,
+        email: formFields.assist1.email,
+        messageData: formFields,
+      });
+    }
+    if (formFields.assist2.clerkUserId) {
+      list.push({
+        username: formFields.assist2.username,
+        clerkUserId: formFields.assist2.clerkUserId,
+        email: formFields.assist2.email,
+        messageData: formFields,
+      });
+    }
+    if (formFields.controllers.length > 0) {
+      formFields.controllers.forEach((controller) => {
+        if (controller.clerkUserId) {
+          list.push({
+            username: controller.username,
+            clerkUserId: controller.clerkUserId,
+            email: controller.email,
+            messageData: formFields,
+          });
+        }
+      });
+    }
+    if (formFields.referees.length > 0) {
+      formFields.referees.forEach((referee) => {
+        if (referee.clerkUserId) {
+          console.log(formFields);
+          list.push({
+            username: referee.username,
+            clerkUserId: referee.clerkUserId,
+            email: referee.email,
+            messageData: formFields,
+          });
+        }
+      });
+    }
+
+    list.forEach(async (l) => {
+      console.log(l);
+      const resp = await fetch("/api/send-email", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          email: l.email,
+          username: l.username,
+          messageData: l.messageData,
+          subject: "Új küldés",
+        }),
+      });
+    });
+    list = [];
+  };
+
   const handleSubmit = async () => {
-    // test type
+    // test type xxx Not single matches
     if (type === "7s" || type === "UP torna") {
       if (date !== "" && time !== "" && venue !== "") {
         try {
           const res = await createMatch(formFields);
-          resetFormFields();
           const success = res instanceof Error ? false : res.success;
-          if (success) setIsSuccess(true);
-          toast.success("Sikeres mentés");
+
+          if (success) {
+            handleEmailSend();
+            setIsSuccess(true);
+            toast.success("Sikeres mentés");
+            resetFormFields();
+            toggleCreateNew();
+          }
         } catch (error) {
           console.error(error);
         }
       } else {
         toast.error("Kérlek, tölts ki minden kötelező mezőt");
       }
-    } else {
+    }
+    // Single match
+    else {
       if (home === away) {
         toast.error("A hazai és a vendég csapat nem lehet ugyanaz");
         return;
@@ -146,10 +223,7 @@ const MatchesNew = ({ referees }: { referees: User[] }) => {
           referee.username === assist1.username) ||
         (referee.username !== "" &&
           assist2.username !== "" &&
-          referee.username === assist2.username) ||
-        (!assist2.username &&
-          !assist1.username &&
-          assist2.username === assist1.username)
+          referee.username === assist2.username)
       ) {
         toast.error("A nevek nem egyezhetnek meg");
         return;
@@ -177,9 +251,13 @@ const MatchesNew = ({ referees }: { referees: User[] }) => {
         try {
           const res = await createMatch(formFields);
           const success = res instanceof Error ? false : res.success;
-          if (success) setIsSuccess(true);
-          toast.success("Sikeres mentés");
-          resetFormFields();
+          if (success) {
+            handleEmailSend();
+            setIsSuccess(true);
+            toast.success("Sikeres mentés");
+            resetFormFields();
+            toggleCreateNew();
+          }
         } catch (error) {
           console.error(error);
         }
@@ -191,11 +269,23 @@ const MatchesNew = ({ referees }: { referees: User[] }) => {
 
   const resetFormFields = () => {
     setFormFields(defaultFormFields);
+    setControllersValue([]);
+    setRefereesValue([]);
+    setTypeValue(undefined);
+    setHomeValue(undefined);
+    setAwayValue(undefined);
+    setGenderValue(undefined);
+    setAgeValue(undefined);
+    setVenueValue(undefined);
+    setRefereeValue(undefined);
+    setAssist1Value(undefined);
+    setAssist2Value(undefined);
+    setDateValue("");
+    setTimeValue(undefined);
   };
 
   const toggleCreateNew = () => {
     setCreateNewOpen(!createNewOpen);
-    //resetToBase();
   };
 
   return (
@@ -345,6 +435,7 @@ const MatchesNew = ({ referees }: { referees: User[] }) => {
                         options={referees.map((n) => ({
                           label: n.username,
                           value: n.username,
+                          email: n.email,
                           id: n.clerkUserId,
                           name: "referee",
                         }))}
@@ -356,6 +447,7 @@ const MatchesNew = ({ referees }: { referees: User[] }) => {
                             referee: {
                               username: String(o === undefined ? "" : o?.value),
                               clerkUserId: o?.id || "",
+                              email: o?.email || "",
                             },
                           });
                         }}
@@ -368,6 +460,7 @@ const MatchesNew = ({ referees }: { referees: User[] }) => {
                         options={referees.map((n) => ({
                           label: n.username,
                           value: n.username,
+                          email: n.email,
                           id: n.clerkUserId,
                           name: "assist1",
                         }))}
@@ -379,6 +472,7 @@ const MatchesNew = ({ referees }: { referees: User[] }) => {
                             assist1: {
                               username: String(o === undefined ? "" : o?.value),
                               clerkUserId: o?.id || "",
+                              email: o?.email || "",
                             },
                           });
                         }}
@@ -391,6 +485,7 @@ const MatchesNew = ({ referees }: { referees: User[] }) => {
                         options={referees.map((n) => ({
                           label: n.username,
                           value: n.username,
+                          email: n.email,
                           id: n.clerkUserId,
                           name: "assist2",
                         }))}
@@ -402,6 +497,7 @@ const MatchesNew = ({ referees }: { referees: User[] }) => {
                             assist2: {
                               username: String(o === undefined ? "" : o?.value),
                               clerkUserId: o?.id || "",
+                              email: o?.email || "",
                             },
                           });
                         }}
@@ -415,6 +511,7 @@ const MatchesNew = ({ referees }: { referees: User[] }) => {
                         options={referees.map((n) => ({
                           label: n.username,
                           value: n.username,
+                          email: n.email,
                           id: n.clerkUserId,
                           name: "controllers",
                         }))}
@@ -426,6 +523,7 @@ const MatchesNew = ({ referees }: { referees: User[] }) => {
                             controllers: o.map((i) => ({
                               username: String(i.value), // Ensure username is a string
                               clerkUserId: i.id || "", // Provide a fallback to an empty string
+                              email: i.email || "",
                             })),
                           });
                         }}
@@ -443,6 +541,7 @@ const MatchesNew = ({ referees }: { referees: User[] }) => {
                       options={referees.map((n) => ({
                         label: n.username,
                         value: n.username,
+                        email: n.email,
                         id: n.clerkUserId,
                         name: "referees",
                       }))}
@@ -453,6 +552,7 @@ const MatchesNew = ({ referees }: { referees: User[] }) => {
                           referees: o.map((i) => ({
                             username: String(i.value), // Ensure username is a string
                             clerkUserId: i.id || "", // Provide a fallback to an empty string
+                            email: i.email || "",
                           })),
                         });
                       }}
@@ -544,10 +644,7 @@ const MatchesNew = ({ referees }: { referees: User[] }) => {
                 </div>
               </div>
               <div className="mt-5 md:mt-10 px-4 py-3 text-center sm:px-6">
-                <PrimaryButton
-                  onClick={handleSubmit}
-                  text={"Mentem a módosításokat"}
-                />
+                <PrimaryButton onClick={handleSubmit} text={"Mentés"} />
               </div>
               <div className="mb-5 md:mb-10 px-4 py-3 text-center sm:px-6">
                 <OutlinedButton

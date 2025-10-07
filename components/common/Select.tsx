@@ -7,6 +7,7 @@ export type SelectOption = {
   value: string | number;
   id?: string;
   name?: string;
+  email?: string;
 };
 
 type MultipleSelectProps = {
@@ -101,12 +102,12 @@ const Select = ({
   return (
     <div
       ref={containerRef}
-      className="flex overscroll-contain relative h-11 w-full appearance-none rounded-lg border border-gray-300  px-4 py-2.5 text-sm shadow-theme-xs placeholder:text-gray-400 focus:border-blue-500 focus:outline-hidden focus:ring-2 focus:ring-blue-300"
+      className="flex overscroll-y-auto relative h-11 w-full appearance-none rounded-lg border border-gray-300  px-4 py-2.5 text-sm shadow-theme-xs placeholder:text-gray-400 focus:border-blue-500 focus:outline-hidden focus:ring-2 focus:ring-blue-300"
       onBlur={() => setIsOpen(false)}
       onClick={() => setIsOpen((prev) => !prev)}
       tabIndex={0}
     >
-      <span className="flex flex-1 flex-wrap gap-2 text-gray-600  overflow-hidden">
+      <span className="flex flex-1 flex-wrap gap-2 text-gray-600 overflow-auto overscroll-auto">
         {multiple
           ? value.map((v) => (
               <button

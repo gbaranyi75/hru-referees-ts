@@ -8,6 +8,7 @@ import { ADMIN_LINKS, NAV_LINKS, PROFILE_LINKS } from "@/lib/utils/links";
 import { NavItem } from "@/types/types";
 import { Icon } from "@iconify/react/dist/iconify.js";
 import { useUser } from "@clerk/nextjs";
+import { Route } from "next";
 
 const sidebar: Variants = {
   open: (height = 1000) => ({
@@ -123,7 +124,7 @@ const MenuItemVariants = {
   },
 };
 
-const NavbarMobileMenu = ({ role }: { role: string }) => {
+const NavbarMobileMenu = ({ isAdmin }: { isAdmin: boolean }) => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const pathname = usePathname();
   const containerRef = useRef(null);
@@ -204,7 +205,7 @@ const NavbarMobileMenu = ({ role }: { role: string }) => {
         </motion.li>
 
         {/* Admin links */}
-        {role === "admin" && (
+        {isAdmin && (
           <>
             <motion.li
               variants={MenuItemVariants}
@@ -274,7 +275,7 @@ const SideNavItem = ({
                   return (
                     <motion.li key={idx} className="m-0 ml-8">
                       <Link
-                        href={subItem.path}
+                        href={subItem.path as Route}
                         onClick={toggle}
                         className={`flex flex-row w-full p-2 space-x-3 text-center text-sm text-gray-600 items-center rounded-lg hover:bg-zinc-200
                       ${subItem.path === pathname ? "text-indigo-700 bg-blue-100" : "bg-white"}`}
@@ -289,7 +290,7 @@ const SideNavItem = ({
           </>
         ) : (
           <Link
-            href={item.path || ""}
+            href={item.path as Route || ""}
             onClick={toggle}
             className={`flex flex-row w-full p-2 space-x-3 text-center text-sm text-gray-600 items-center rounded-lg hover:bg-zinc-200
           ${isActive ? "text-indigo-700 bg-blue-100" : "bg-white"}`}

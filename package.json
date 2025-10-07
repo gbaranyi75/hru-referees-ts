@@ -7,7 +7,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "pretty": "prettier --write \"./**/*.{js,jsx,mjs,cjs,ts,tsx,json}\""
+    "pretty": "prettier --write \"./**/*.{js,jsx,mjs,cjs,ts,tsx,json}\"",
+    "email": "email dev --dir components/Email.tsx"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.890.0",
@@ -16,6 +17,8 @@
     "@clerk/localizations": "^3.21.2",
     "@clerk/nextjs": "^6.31.1",
     "@google-cloud/storage": "^7.17.1",
+    "@react-email/components": "^0.5.5",
+    "@react-email/render": "1.3.1",
     "@typescript-eslint/eslint-plugin": "^8.39.1",
     "@vercel/analytics": "^1.5.0",
     "bcrypt": "^6.0.0",
@@ -31,16 +34,17 @@
     "next": "^15.5.3",
     "next-cloudinary": "^6.16.0",
     "postcss": "^8.5.6",
-    "react": "19.1.0",
+    "react": "^19.2.0",
     "react-calendar": "^6.0.0",
     "react-day-picker": "^9.9.0",
-    "react-dom": "19.1.0",
+    "react-dom": "^19.2.0",
     "react-dropzone": "^14.3.8",
     "react-icons": "^5.5.0",
     "react-select": "^5.10.2",
     "react-spinners": "^0.17.0",
     "react-toastify": "^11.0.5",
     "react-tooltip": "^5.29.1",
+    "resend": "^6.1.2",
     "tailwind-merge": "^3.3.1",
     "uuid": "^13.0.0",
     "zod": "^4.1.9"
@@ -48,6 +52,7 @@
   "devDependencies": {
     "@ianvs/prettier-plugin-sort-imports": "^4.6.2",
     "@iconify/react": "^6.0.0",
+    "@react-email/preview-server": "^4.2.12",
     "@tailwindcss/postcss": "^4.1.12",
     "@tsconfig/recommended": "^1.0.10",
     "@types/bcrypt": "^6.0.0",
@@ -60,7 +65,11 @@
     "eslint-config-next": "^15.4.6",
     "prettier": "^3.6.2",
     "prettier-plugin-tailwindcss": "^0.6.14",
+    "react-email": "^4.2.12",
     "tailwindcss": "^4.1.12",
     "typescript": "^5"
+  },
+  "overrides": {
+    "@types/react": "^19"
   }
 }

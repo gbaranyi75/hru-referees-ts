@@ -29,12 +29,12 @@ interface FileProps {
 const DocumentsList = ({
   fileList,
   loading,
-  role,
+  isAdmin,
   fetchFiles,
 }: {
   fileList: FileProps[];
   loading: boolean;
-  role: string;
+  isAdmin: boolean;
   fetchFiles: () => void;
 }) => {
   const [files, setFiles] = useState<FileProps[]>([]);
@@ -83,7 +83,6 @@ const DocumentsList = ({
 
   const handleDelete = () => {
     removeFile(fileToDelete);
-    //if (isDeleting) closeModal();
   };
 
   const handleDownload = (file: FileProps) => {
@@ -177,7 +176,7 @@ const DocumentsList = ({
                           color="gray"
                         />
                       </button>
-                      {role === "admin" && (
+                      {isAdmin && (
                         <button
                           className="cursor-pointer"
                           onClick={() => handleOpenModal(file)}

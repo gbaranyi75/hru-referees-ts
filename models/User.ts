@@ -15,7 +15,7 @@ const UserSchema = new Schema(
     username: {
       type: String,
       required: [true, "Username is required"],
-      unique: true,
+      unique: [true, "Username already exists"],
     },
     image: {
       type: String,
@@ -23,17 +23,14 @@ const UserSchema = new Schema(
     facebookUrl: {
       type: String,
       required: false,
-      unique: true,
     },
     instagramUrl: {
       type: String,
       required: false,
-      unique: true,
     },
     phoneNumber: {
       type: String,
       required: false,
-      unique: true,
     },
     address:
     {
