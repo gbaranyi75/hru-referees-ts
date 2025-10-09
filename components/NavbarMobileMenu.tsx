@@ -20,7 +20,7 @@ const sidebar: Variants = {
     },
   }),
   closed: {
-    clipPath: "circle(0px at 100% 0)",
+    clipPath: "circle(30px at 20px 20px)",
     transition: {
       type: "spring",
       stiffness: 400,
@@ -125,8 +125,6 @@ const MenuItemVariants = {
 };
 
 const NavbarMobileMenu = ({ isAdmin }: { isAdmin: boolean }) => {
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const pathname = usePathname();
   const containerRef = useRef(null);
   const { height } = useDimensions(containerRef);
   const [isOpen, toggleOpen] = useCycle(false, true);
@@ -137,13 +135,13 @@ const NavbarMobileMenu = ({ isAdmin }: { isAdmin: boolean }) => {
       initial={false}
       animate={isOpen ? "open" : "closed"}
       custom={height}
-      className={`fixed inset-0 z-50 w-full md:hidden ${
+      className={`fixed inset-0 z-50 w-full lg:hidden ${
         isOpen ? "" : "pointer-events-none"
       }`}
       ref={containerRef}
     >
       <motion.div
-        className="absolute inset-0 right-0 w-full bg-white"
+        className="absolute inset-0 left-0 w-full bg-white"
         variants={sidebar}
       />
       <motion.ul

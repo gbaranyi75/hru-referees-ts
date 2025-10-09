@@ -19,6 +19,7 @@ import { updateProfileImage } from "@/lib/actions/updateProfileImage";
 import { fetchProfile } from "@/lib/actions/fetchProfile";
 import { User } from "@/types/types";
 import profileImage from "@/assets/images/profile-image.png";
+import { Route } from "next";
 
 export default function ProfileMetaCard() {
   const { isLoaded, user } = useUser();
@@ -89,7 +90,7 @@ export default function ProfileMetaCard() {
   if (!profile)
     return (
       <>
-        <Skeleton className="w-full h-20 mb-2" />
+        <Skeleton className="w-full h-32 mb-2" />
       </>
     );
 
@@ -145,7 +146,7 @@ export default function ProfileMetaCard() {
               <Link
                 target="_blank"
                 rel="noreferrer"
-                href={profile?.facebookUrl || "https://www.facebook.com/"}
+                href={profile?.facebookUrl as Route || "https://www.facebook.com/"}
                 className="flex h-11 w-11 items-center justify-center gap-2 rounded-full border border-gray-300 bg-white text-sm font-medium text-gray-700 shadow-theme-xs hover:bg-gray-50 hover:text-gray-800"
               >
                 <svg
@@ -164,7 +165,7 @@ export default function ProfileMetaCard() {
               </Link>
 
               <Link
-                href={profile?.instagramUrl || "https://www.instagram.com/"}
+                href={profile?.instagramUrl as Route|| "https://www.instagram.com/"}
                 target="_blank"
                 rel="noreferrer"
                 className="flex h-11 w-11 items-center justify-center gap-2 rounded-full border border-gray-300 bg-white text-sm font-medium text-gray-700 shadow-theme-xs hover:bg-gray-50 hover:text-gray-800 "

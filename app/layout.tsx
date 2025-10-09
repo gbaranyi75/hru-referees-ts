@@ -25,9 +25,9 @@ export default function RootLayout({
     <ClerkProvider localization={huHU}>
       <html lang="en" suppressHydrationWarning>
         <body className={inter.className}>
-          <div className="min-h-screen xl:flex">
+          <div className="min-h-screen lg:flex">
             <SideBarWrapper />
-            <div className="flex-1 md:ml-[290px]">
+            <div className="flex-1 lg:ml-[290px]">
               <Navbar />
               <NavbarMobileMenuWrapper />
               <div className="bg-gray-100 p-4 mx-auto max-w-(--breakpoint-2xl) md:p-6 text-gray-600">

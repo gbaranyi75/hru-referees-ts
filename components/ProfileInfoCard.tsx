@@ -63,12 +63,12 @@ export default function ProfileInfoCard() {
 
   if (!profile)
     return (
-      <>
-        <Skeleton className="w-full h-20 mb-2" />
-        <Skeleton className="w-full h-12 mb-2" />
-        <Skeleton className="w-full h-12 mb-2" />
+      <div className="grid gap-4 mt-5">
         <Skeleton className="w-full h-12" />
-      </>
+        <Skeleton className="w-full h-12" />
+        <Skeleton className="w-full h-12" />
+        <Skeleton className="w-full h-12" />
+      </div>
     );
 
   return (
