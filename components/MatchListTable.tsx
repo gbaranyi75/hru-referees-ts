@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import MatchItemEditModal from "./MatchListTableEditModal";
 import { Modal } from "./common/Modal";
 import Skeleton from "./common/Skeleton";
 import {
@@ -11,7 +10,7 @@ import {
   TableCell,
   TableBody,
 } from "./common/Table";
-import { Match, User } from "@/types/types";
+import { Match } from "@/types/types";
 import { useModal } from "@/hooks/useModal";
 import { fetchMatches } from "@/lib/actions/fetchMatches";
 import { Icon } from "@iconify/react/dist/iconify.js";

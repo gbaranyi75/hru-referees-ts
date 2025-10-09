@@ -10,6 +10,7 @@ import { updateUserSelection } from "@/lib/actions/updateUserSelection";
 import Spinner from "./common/Spinner";
 import { toast } from "react-toastify";
 import { Calendar, User } from "@/types/types";
+import MatchDayCalendar from "./MatchDayCalendar";
 
 const AddMatchDaysItem = ({
   calendar,
@@ -95,6 +96,77 @@ const AddMatchDaysItem = ({
     setLoading(false);
   }, [calendar]);
 
+  const daysBadges = (day: string) => {
+    return (
+      <div className="flex">
+        <span
+          id={!selectedDates?.includes(day) ? "badge-dark" : "badge-green"}
+          className={
+            !selectedDates?.includes(day)
+              ? "inline-flex items-center px-4 py-2 font-semibold text-sm text-red-200 bg-red-600 rounded-full"
+              : "inline-flex items-center px-4 py-2 font-semibold text-sm bg-green-900 text-green-300 rounded-full"
+          }
+        >
+          {day}
+          <button
+            type="button"
+            className={
+              !selectedDates?.includes(day)
+                ? "inline-flex items-center p-2 text-sm text-red-200 bg-transparent rounded-sm hover:bg-red-400 hover:text-gray-50"
+                : "inline-flex items-center p-2 text-sm text-green-400 bg-transparent rounded-sm hover:bg-green-600 hover:text-green-100"
+            }
+            data-dismiss-target="#badge-dismiss-dark"
+            aria-label="Remove"
+            onClick={() => {
+              handleDateSelect(day);
+            }}
+          >
+            {!selectedDates?.includes(day) ? (
+              <>
+                <svg
+                  className="w-3 h-3"
+                  aria-hidden="true"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 16 12"
+                >
+                  <path
+                    stroke="currentColor"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    d="M1 5.917 5.724 10.5 15 1.5"
+                  />
+                </svg>
+                <span className="sr-only">Not selected</span>
+              </>
+            ) : (
+              <>
+                <svg
+                  className="w-2.5 h-2.5"
+                  aria-hidden="true"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 14 14"
+                >
+                  <path
+                    stroke="currentColor"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"
+                  />
+                </svg>
+
+                <span className="sr-only">Selected</span>
+              </>
+            )}
+          </button>
+        </span>
+      </div>
+    );
+  };
+
   if (loading) return <Spinner />;
 
   return (
@@ -118,83 +190,17 @@ const AddMatchDaysItem = ({
       </div>
       {isOpen && (
         <>
-          <div className="md:max-w-3xl flex md:flex-row flex-col gap-4 flex-wrap items-center justify-center md:mx-auto my-8">
-            {calendar?.days.map((day, idx) => {
-              return (
-                <div className="flex" key={idx}>
-                  <span
-                    id={
-                      !selectedDates?.includes(day)
-                        ? "badge-dark"
-                        : "badge-green"
-                    }
-                    className={
-                      !selectedDates?.includes(day)
-                        ? "inline-flex items-center px-4 py-2 font-semibold text-sm text-red-200 bg-red-600 rounded-full"
-                        : "inline-flex items-center px-4 py-2 font-semibold text-sm bg-green-900 text-green-300 rounded-full"
-                    }
-                  >
-                    {day}
-                    <button
-                      type="button"
-                      className={
-                        !selectedDates?.includes(day)
-                          ? "inline-flex items-center p-2 text-sm text-red-200 bg-transparent rounded-sm hover:bg-red-400 hover:text-gray-50"
-                          : "inline-flex items-center p-2 text-sm text-green-400 bg-transparent rounded-sm hover:bg-green-600 hover:text-green-100"
-                      }
-                      data-dismiss-target="#badge-dismiss-dark"
-                      aria-label="Remove"
-                      onClick={() => {
-                        handleDateSelect(day);
-                      }}
-                    >
-                      {!selectedDates?.includes(day) ? (
-                        <>
-                          <svg
-                            className="w-3 h-3"
-                            aria-hidden="true"
-                            xmlns="http://www.w3.org/2000/svg"
-                            fill="none"
-                            viewBox="0 0 16 12"
-                          >
-                            <path
-                              stroke="currentColor"
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              strokeWidth="2"
-                              d="M1 5.917 5.724 10.5 15 1.5"
-                            />
-                          </svg>
-                          <span className="sr-only">Not selected</span>
-                        </>
-                      ) : (
-                        <>
-                          <svg
-                            className="w-2.5 h-2.5"
-                            aria-hidden="true"
-                            xmlns="http://www.w3.org/2000/svg"
-                            fill="none"
-                            viewBox="0 0 14 14"
-                          >
-                            <path
-                              stroke="currentColor"
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              strokeWidth="2"
-                              d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"
-                            />
-                          </svg>
-
-                          <span className="sr-only">Selected</span>
-                        </>
-                      )}
-                    </button>
-                  </span>
-                </div>
-              );
-            })}
+          <div className="overflow-hidden">
+            <div className="overflow-x-auto z-1">
+              <div className="min-w-[600px]">
+                <MatchDayCalendar
+                  calendar={calendar}
+                  handleDateSelect={handleDateSelect}
+                  selectedDates={selectedDates}
+                />
+              </div>
+            </div>
           </div>
-          {/* <DaysCalendar onChange={() => console.log("klikk")} value={currentDate}/> */}
           <div className="flex flex-col md:flex-row-reverse justify-around m-5">
             <div className="px-4 py-3 text-center sm:px-6">
               {edited ? (
