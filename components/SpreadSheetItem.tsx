@@ -14,8 +14,8 @@ import {
 } from "./common/Table";
 import { MdOutlineExpandMore, MdOutlineExpandLess } from "react-icons/md";
 import { fetchUserSelections } from "@/lib/actions/fetchUserSelections";
-import checkedImage from "@/assets/images/checked.png";
-import unCheckedImage from "@/assets/images/unchecked.png";
+import checkedImage from "@/public/images/checked.png";
+import unCheckedImage from "@/public/images/unchecked.png";
 import { UserSelection, Calendar, User } from "@/types/types";
 import Skeleton from "./common/Skeleton";
 import OutlinedButton from "./common/OutlinedButton";

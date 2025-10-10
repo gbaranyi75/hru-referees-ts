@@ -11,11 +11,12 @@ import { useModal } from "../hooks/useModal";
 import { Modal } from "./common/Modal";
 import Image from "next/image";
 import { User } from "@/types/types";
-import profileImage from "@/assets/images/profile-image.png";
+import profileImage from "@/public/images/profile-image.png";
 import OutlinedButton from "./common/OutlinedButton";
 import Link from "next/link";
 import Skeleton from "./common/Skeleton";
 import { fetchUsers } from "@/lib/actions/fetchUsers";
+import { Route } from "next";
 
 export default function RefereesTable() {
   const { isOpen, openModal, closeModal } = useModal();
@@ -177,7 +178,7 @@ export default function RefereesTable() {
                 target="_blank"
                 rel="noreferrer"
                 href={
-                  selectedReferee?.facebookUrl || "https://www.facebook.com/"
+                  selectedReferee?.facebookUrl as Route|| "https://www.facebook.com/"
                 }
                 className="flex h-11 w-11 items-center justify-center gap-2 rounded-full border border-gray-300 bg-white text-sm font-medium text-gray-700 shadow-theme-xs hover:bg-gray-50 hover:text-gray-800"
               >
@@ -198,7 +199,7 @@ export default function RefereesTable() {
 
               <Link
                 href={
-                  selectedReferee?.instagramUrl || "https://www.instagram.com/"
+                  selectedReferee?.instagramUrl as Route|| "https://www.instagram.com/"
                 }
                 target="_blank"
                 rel="noreferrer"
