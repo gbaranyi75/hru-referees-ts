@@ -18,7 +18,7 @@ import { updateProfileData } from "@/lib/actions/updateProfileData";
 import { updateProfileImage } from "@/lib/actions/updateProfileImage";
 import { fetchProfile } from "@/lib/actions/fetchProfile";
 import { User } from "@/types/types";
-import profileImage from "@/assets/images/profile-image.png";
+import profileImage from "@/public/images/profile-image.png";
 import { Route } from "next";
 
 export default function ProfileMetaCard() {

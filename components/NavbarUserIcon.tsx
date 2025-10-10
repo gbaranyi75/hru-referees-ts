@@ -2,7 +2,7 @@
 
 import { Icon } from "@iconify/react";
 import Image from "next/image";
-import profileImage from "@/assets/images/profile-image.png";
+import profileImage from "@/public/images/profile-image.png";
 
 const NavbarUserIcon = ({
   image,
