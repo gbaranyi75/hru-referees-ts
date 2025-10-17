@@ -4,31 +4,28 @@ import { useModal } from "../hooks/useModal";
 import { Modal } from "./common/Modal";
 import Input from "./common/InputField";
 import Label from "./common/Label";
-import { User } from "@/types/types";
-import { fetchProfile } from "@/lib/actions/fetchProfile";
+import { Address, User } from "@/types/types";
 import { updateProfileContactData } from "@/lib/actions/updateProfileContactData";
 import { toast } from "react-toastify";
 import OutlinedButton from "./common/OutlinedButton";
 import PrimaryButton from "./common/PrimaryButton";
-import Skeleton from "./common/Skeleton";
 
-export default function ProfileInfoCard() {
+type Props = {
+  profileData: User | null;
+  loadProfileAfterSaveAction: () => void;
+};
+
+export default function ProfileInfoCard({
+  profileData,
+  loadProfileAfterSaveAction,
+}: Props) {
   const [phoneNumber, setPhoneNumber] = useState("");
   const [city, setCity] = useState("");
   const [country, setCountry] = useState("");
   const [status, setStatus] = useState("");
+  const [address, setAddress] = useState<Address | null>(null);
   const [profile, setProfile] = useState<User | null>(null);
   const { isOpen, openModal, closeModal } = useModal();
-
-  const fetchProfileData = async () => {
-    const loggedInUserData = await fetchProfile();
-
-    setPhoneNumber(loggedInUserData?.phoneNumber || ("-" as string));
-    setCity(loggedInUserData?.address?.city || ("-" as string));
-    setCountry(loggedInUserData?.address?.country || ("-" as string));
-    setStatus(loggedInUserData?.status || ("-" as string));
-    setProfile(loggedInUserData);
-  };
 
   const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setPhoneNumber(e.target.value);
@@ -36,10 +33,20 @@ export default function ProfileInfoCard() {
 
   const handleCountryChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setCountry(e.target.value);
+    setAddress((prevAddress) => ({
+      ...prevAddress,
+      city: prevAddress?.city || "",
+      country: e.target.value,
+    }));
   };
 
   const handleCityChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setCity(e.target.value);
+    setAddress((prevAddress) => ({
+      ...prevAddress,
+      city: e.target.value,
+      country: prevAddress?.country || "",
+    }));
   };
 
   const handleStatusChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -47,29 +54,34 @@ export default function ProfileInfoCard() {
   };
 
   const handleSave = useCallback(async () => {
-    const address = { city, country };
+    if (!address) {
+      toast.error("Address is required.");
+      return;
+    }
     const res = await updateProfileContactData(address, status, phoneNumber);
     const success = res instanceof Error ? false : res.success;
     if (success) {
-      toast.success("Sikeres mentés");
-      fetchProfileData();
+      loadProfileAfterSaveAction();
+      closeModal();
     }
-    closeModal();
-  }, [city, country, closeModal, status, phoneNumber]);
+  }, [
+    city,
+    country,
+    closeModal,
+    status,
+    phoneNumber,
+    address,
+    loadProfileAfterSaveAction,
+  ]);
 
   useEffect(() => {
-    fetchProfileData();
+    setPhoneNumber(profileData?.phoneNumber as string);
+    setCity(profileData?.address?.city as string);
+    setCountry(profileData?.address?.country as string);
+    setStatus(profileData?.status as string);
+    setAddress(profileData?.address || null);
+    setProfile(profileData);
   }, []);
-
-  if (!profile)
-    return (
-      <div className="grid gap-4 mt-5">
-        <Skeleton className="w-full h-12" />
-        <Skeleton className="w-full h-12" />
-        <Skeleton className="w-full h-12" />
-        <Skeleton className="w-full h-12" />
-      </div>
-    );
 
   return (
     <div className="p-5 border border-gray-200 rounded-2xl  lg:p-6">

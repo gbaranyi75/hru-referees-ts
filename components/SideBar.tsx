@@ -1,5 +1,5 @@
 "use client";
-import React, { Suspense, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Route } from "next";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -120,7 +120,7 @@ const SideNavItem = ({ item }: { item: NavItem }) => {
   return (
     <>
       {item.subItems ? (
-        <Suspense fallback={<Skeleton className="h-10" />}>
+        <>
           <button
             onClick={toggleSubMenu}
             className={`flex flex-row w-full p-2 mb-1 space-x-3 text-center text-sm text-gray-600 items-center rounded-lg hover:bg-zinc-200
@@ -151,18 +151,16 @@ const SideNavItem = ({ item }: { item: NavItem }) => {
               })}
             </ul>
           )}
-        </Suspense>
+        </>
       ) : (
-        <Suspense fallback={<Skeleton className="h-10" />}>
-          <Link
-            href={(item.path as Route) || ""}
-            className={`flex flex-row w-full p-2 space-x-3 text-center text-sm text-gray-600 items-center rounded-lg hover:bg-zinc-200
+        <Link
+          href={(item.path as Route) || ""}
+          className={`flex flex-row w-full p-2 space-x-3 text-center text-sm text-gray-600 items-center rounded-lg hover:bg-zinc-200
           ${isActive ? "text-indigo-700 bg-blue-100" : "bg-white"}`}
-          >
-            {item.icon}
-            <span>{item.label}</span>
-          </Link>
-        </Suspense>
+        >
+          {item.icon}
+          <span>{item.label}</span>
+        </Link>
       )}
     </>
   );

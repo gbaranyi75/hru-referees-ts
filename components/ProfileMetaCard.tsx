@@ -1,28 +1,30 @@
 "use client";
-
 import React, { useCallback, useState, useEffect } from "react";
+import { Route } from "next";
 import Link from "next/link";
 import Image from "next/image";
+import { Icon } from "@iconify/react";
 import { CldUploadButton } from "next-cloudinary";
 import { useModal } from "../hooks/useModal";
 import { Modal } from "./common/Modal";
-import { useUser } from "@clerk/nextjs";
-import { toast } from "react-toastify";
-import { Icon } from "@iconify/react";
 import Input from "./common/InputField";
 import Label from "./common/Label";
-import Skeleton from "./common/Skeleton";
 import OutlinedButton from "./common/OutlinedButton";
 import PrimaryButton from "./common/PrimaryButton";
 import { updateProfileData } from "@/lib/actions/updateProfileData";
 import { updateProfileImage } from "@/lib/actions/updateProfileImage";
-import { fetchProfile } from "@/lib/actions/fetchProfile";
 import { User } from "@/types/types";
 import profileImage from "@/public/images/profile-image.png";
-import { Route } from "next";
 
-export default function ProfileMetaCard() {
-  const { isLoaded, user } = useUser();
+type Props = {
+  profileData: User | null;
+  loadProfileAfterSaveAction: () => void;
+};
+
+export default function ProfileMetaCard({
+  profileData,
+  loadProfileAfterSaveAction,
+}: Props) {
   const [userName, setUserName] = useState("");
   const [fbUrl, setFbUrl] = useState("");
   const [instaUrl, setInstaUrl] = useState("");
@@ -32,18 +34,12 @@ export default function ProfileMetaCard() {
   const [publicId, setPublicId] = useState("");
   const { isOpen, openModal, closeModal } = useModal();
 
-  const fetchProfileData = async () => {
-    const loggedInUserData = await fetchProfile();
-
-    setUserName(loggedInUserData?.username as string);
-    setFbUrl(loggedInUserData?.fbUrl as string);
-    setInstaUrl(loggedInUserData?.instaUrl as string);
-    setDbImageUrl(loggedInUserData?.image as string);
-    setProfile(loggedInUserData);
-  };
-
   useEffect(() => {
-    fetchProfileData();
+    setUserName(profileData?.username as string);
+    setFbUrl(profileData?.facebookUrl as string);
+    setInstaUrl(profileData?.instagramUrl as string);
+    setDbImageUrl(profileData?.image as string);
+    setProfile(profileData);
   }, []);
 
   const handleUserNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -70,29 +66,20 @@ export default function ProfileMetaCard() {
       const res = await updateProfileImage(url);
       const success = res instanceof Error ? false : res.success;
       if (success) {
-        toast.success("Sikeres mentés");
-        fetchProfileData();
+        loadProfileAfterSaveAction();
       }
     },
-    [imageUrl, publicId]
+    [imageUrl, publicId, loadProfileAfterSaveAction]
   );
 
   const handleSave = useCallback(async () => {
     const res = await updateProfileData(userName, fbUrl, instaUrl);
     const success = res instanceof Error ? false : res.success;
     if (success) {
-      toast.success("Sikeres mentés");
-      fetchProfileData();
+      loadProfileAfterSaveAction();
+      closeModal();
     }
-    closeModal();
-  }, [closeModal, userName, fbUrl, instaUrl, fetchProfileData]);
-
-  if (!profile)
-    return (
-      <>
-        <Skeleton className="w-full h-32 mb-2" />
-      </>
-    );
+  }, [closeModal, userName, fbUrl, instaUrl, loadProfileAfterSaveAction]);
 
   return (
     <>
@@ -133,9 +120,7 @@ export default function ProfileMetaCard() {
                 {profile?.username}
               </h4>
               <div className="flex flex-col items-center gap-1 text-center xl:flex-row xl:gap-3 xl:text-left">
-                <p className="text-sm text-gray-500 ">
-                  {profile?.status}
-                </p>
+                <p className="text-sm text-gray-500 ">{profile?.status}</p>
                 <div className="hidden h-3.5 w-px bg-gray-300  xl:block"></div>
                 <p className="text-sm text-gray-500 ">
                   {profile?.address?.city}
@@ -146,7 +131,9 @@ export default function ProfileMetaCard() {
               <Link
                 target="_blank"
                 rel="noreferrer"
-                href={profile?.facebookUrl as Route || "https://www.facebook.com/"}
+                href={
+                  (profile?.facebookUrl as Route) || "https://www.facebook.com/"
+                }
                 className="flex h-11 w-11 items-center justify-center gap-2 rounded-full border border-gray-300 bg-white text-sm font-medium text-gray-700 shadow-theme-xs hover:bg-gray-50 hover:text-gray-800"
               >
                 <svg
@@ -165,7 +152,10 @@ export default function ProfileMetaCard() {
               </Link>
 
               <Link
-                href={profile?.instagramUrl as Route|| "https://www.instagram.com/"}
+                href={
+                  (profile?.instagramUrl as Route) ||
+                  "https://www.instagram.com/"
+                }
                 target="_blank"
                 rel="noreferrer"
                 className="flex h-11 w-11 items-center justify-center gap-2 rounded-full border border-gray-300 bg-white text-sm font-medium text-gray-700 shadow-theme-xs hover:bg-gray-50 hover:text-gray-800 "

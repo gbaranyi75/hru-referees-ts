@@ -2,10 +2,11 @@ import { clerkMiddleware, createRouteMatcher } from "@clerk/nextjs/server";
 import { NextResponse } from "next/server";
 
 const protectedRoutes = [
-  "/api/dashboard/calendar",
+  "/api/(.*)",
   "/profil",
   "/dashboard/(.*)",
   "/jv-elerhetoseg",
+  "/dokumentumok",
 ];
 
 const isAdminRoute = createRouteMatcher(["/dashboard(.*)"]);

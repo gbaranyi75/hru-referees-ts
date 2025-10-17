@@ -5,7 +5,7 @@ import { Icon } from "@iconify/react/dist/iconify.js";
 import { User } from "@/types/types";
 
 const MatchesEdit = ({ referees }: { referees: User[] }) => {
-  const [editModeOpen, setEditModeOpen] = useState(false);
+  const [editModeOpen, setEditModeOpen] = useState<boolean>(false);
 
   const toggleEditMode = () => {
     setEditModeOpen(!editModeOpen);

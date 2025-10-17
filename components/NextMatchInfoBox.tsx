@@ -16,7 +16,7 @@ const NextMatchInfoBox = () => {
   const loadMatches = async () => {
     setLoading(true);
     const fetchedMatches = await fetchMatches();
-    if (!fetchedMatches) return setNoMatch(true)
+    if (!fetchedMatches) return setNoMatch(true);
     const firstDay = new Date();
     const nextWeek = new Date(firstDay.getTime() + 7 * 24 * 60 * 60 * 1000);
     let sortedMatches: Match[] = fetchedMatches.sort((a: Match, b: Match) => {
@@ -37,8 +37,7 @@ const NextMatchInfoBox = () => {
   };
 
   const checkType = (m: Match) => {
-    const isSingleMatch =
-      m.type === "NB I" || m.type === "Extra Liga" ? true : false;
+    const isSingleMatch = m.type === "NB I" || m.type === "Extra Liga";
     return isSingleMatch;
   };
 
@@ -67,7 +66,7 @@ const NextMatchInfoBox = () => {
                   <div className="flex mt-2 lg:flex-row lg:mt-0 lg:gap-16">
                     <div className="flex flex-col gap-1 lg:gap-2 justify-center text-sm items-center lg:items-start">
                       <div className="font-semibold">{m.venue}</div>
-                      <div className="flex lg:gap-2">
+                      <div className="flex lg:gap-2 text-xs">
                         <div>{m.date}</div>
                         <div>{m.time}</div>
                       </div>
@@ -89,12 +88,13 @@ const NextMatchInfoBox = () => {
                   <div>
                     <div
                       className={clsx(
-                        "flex mx-auto w-50 px-2 py-1 rounded-2xl text-white justify-center",
+                        "flex mx-auto w-50 px-2 py-1 rounded-2xl justify-center",
                         {
-                          "bg-blue-500": m.type === "NB I",
-                          "bg-green-600": m.type === "Extra Liga",
-                          "bg-orange-500": m.type === "7s",
-                          "bg-purple-500": m.type === "UP torna",
+                          "bg-blue-200 text-blue-700": m.type === "NB I",
+                          "bg-green-200 text-green-700":
+                            m.type === "Extra Liga",
+                          "bg-orange-200 text-orange-700": m.type === "7s",
+                          "bg-purple-200 text-purple-700": m.type === "UP torna",
                         }
                       )}
                     >
