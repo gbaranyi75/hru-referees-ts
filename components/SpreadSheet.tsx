@@ -35,11 +35,11 @@ const SpreadSheet = () => {
   if (loading)
     return (
       <>
-        <Skeleton className="w-full h-12 mb-2" />
-        <Skeleton className="w-full h-12 mb-2" />
-        <Skeleton className="w-full h-12 mb-2" />
-        <Skeleton className="w-full h-12 mb-2" />
-        <Skeleton className="w-full h-12 mb-2" />
+        <Skeleton className="w-full h-22 mb-2" />
+        <Skeleton className="w-full h-22 mb-2" />
+        <Skeleton className="w-full h-22 mb-2" />
+        <Skeleton className="w-full h-22 mb-2" />
+        <Skeleton className="w-full h-22 mb-2" />
       </>
     );
 

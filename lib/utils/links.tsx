@@ -58,7 +58,7 @@ export const ADMIN_LINKS: NavItem[] = [
     subItems: [
       { label: "Táblázat", path: "/dashboard/calendar" },
       { label: "Mérkőzések", path: "/dashboard/matches" },
-      { label: "Játékvezetők", path: "/dashboard/jatekvezetok" },
+      { label: "Játékvezetők", path: "/dashboard/referees" },
       { label: "Videók", path: "/dashboard/videos" },
     ],
   },

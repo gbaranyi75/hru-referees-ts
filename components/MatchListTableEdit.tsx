@@ -165,9 +165,9 @@ export default function MatchListTable({ referees }: { referees: User[] }) {
         isOpen={isOpen}
         onClose={closeModal}
         showCloseButton={true}
-        className="flex flex-col justify-between max-w-[900px] max-h-[800px] px-16 overflow-auto bg-white"
+        className="flex flex-col justify-between max-w-[900px] max-h-[700px] px-16 bg-white"
       >
-        <div className="py-10 overscroll-auto">
+        <div className="py-10">
           <h4 className="font-semibold text-gray-800 mb-10 text-title-sm ">
             Mérkőzés szerkesztése
           </h4>

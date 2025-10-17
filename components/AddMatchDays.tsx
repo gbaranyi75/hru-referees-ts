@@ -5,7 +5,6 @@ import Skeleton from "./common/Skeleton";
 import { Calendar, User } from "@/types/types";
 import { fetchCalendars } from "@/lib/actions/fetchCalendars";
 import { fetchProfile } from "@/lib/actions/fetchProfile";
-import EventCalendar from "./MatchDayCalendar";
 
 /**
  * A component that displays a list of calendars and allows the user to add match days to them.

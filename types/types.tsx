@@ -29,8 +29,9 @@ export type User = {
   email: string;
   clerkUserId: string;
   image: string;
-  address: Address;
+  address?: Address;
   status: string;
+  hasTitle: string;
   facebookUrl?: string;
   instagramUrl?: string;
   phoneNumber?: string;
@@ -69,4 +70,4 @@ export type SendEmail = {
   username: string;
   clerkUserId: string;
   messageData?: Match;
-}
+};
