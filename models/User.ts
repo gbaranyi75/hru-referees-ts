@@ -20,6 +20,29 @@ const UserSchema = new Schema(
     image: {
       type: String,
     },
+    address:
+    {
+      city: {
+        type: String,
+        required: true
+      },
+      country: {
+        type: String,
+        required: true
+      },
+    },
+    phoneNumber: {
+      type: String,
+      required: false,
+    },
+    hasTitle: {
+      type: String,
+      required: true
+    },
+    status: {
+      type: String,
+      required: true
+    },
     facebookUrl: {
       type: String,
       required: false,
@@ -28,19 +51,6 @@ const UserSchema = new Schema(
       type: String,
       required: false,
     },
-    phoneNumber: {
-      type: String,
-      required: false,
-    },
-    address:
-    {
-      city: { type: String, required: true },
-      country: { type: String, required: true },
-    },
-    status: {
-      type: String,
-      required: true
-    }
   },
   {
     timestamps: true,

@@ -22,7 +22,7 @@ export default function RefereesTable() {
   const { isOpen, openModal, closeModal } = useModal();
   const [selectedReferee, setSelectedReferee] = useState<User | null>(null);
   const [referees, setReferees] = useState<User[]>([]);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState<boolean>(false);
 
   const loadReferees = async () => {
     setLoading(true);
@@ -40,13 +40,13 @@ export default function RefereesTable() {
     loadReferees();
   }, []);
 
-  if (loading)
+  if (loading || !referees)
     return (
       <>
-        <Skeleton className="w-full h-14 mb-2" />
-        <Skeleton className="w-full h-14 mb-2" />
-        <Skeleton className="w-full h-14 mb-2" />
-        <Skeleton className="w-full h-14" />
+        <Skeleton className="w-full h-18 mb-2" />
+        <Skeleton className="w-full h-18 mb-2" />
+        <Skeleton className="w-full h-18 mb-2" />
+        <Skeleton className="w-full h-18" />
       </>
     );
 

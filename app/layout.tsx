@@ -37,7 +37,7 @@ export default function RootLayout({
             </div>
             <ToastContainer
               position="top-right"
-              autoClose={2000}
+              autoClose={2500}
               style={{ zIndex: 20000000 }}
             />
           </div>
