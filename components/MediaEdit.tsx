@@ -1,55 +1,43 @@
 "use client";
 import { useCallback, useEffect, useState } from "react";
 import { Icon } from "@iconify/react/dist/iconify.js";
-import Input from "@/components/common/InputField";
-import DisabledButton from "./common/DisabledButton";
-import Label from "./common/Label";
-import OutlinedButton from "./common/OutlinedButton";
-import PrimaryButton from "./common/PrimaryButton";
-import RefereesEditTable from "./RefereesEditTable";
-import Skeleton from "./common/Skeleton";
-import { createGuestUser } from "@/lib/actions/createGuestUser";
-import { Address } from "@/types/types";
-import Checkbox from "./common/Checkbox";
 import { toast } from "react-toastify";
-import { fetchGuestUsers } from "@/lib/actions/fetchGuestUser";
+import MediaEditList from "./MediaEditList";
+import Input from "@/components/common/InputField";
+import Label from "@/components/common/Label";
+import DisabledButton from "./common/DisabledButton";
+import OutlinedButton from "./common/OutlinedButton";
+import Skeleton from "./common/Skeleton";
+import PrimaryButton from "./common/PrimaryButton";
+import { createNewMediaLink } from "@/lib/actions/createNewMediaLink";
+import { fetchMedia } from "@/lib/actions/fetchMedia";
+import { Media } from "@/types/types";
 
-const RefereesEdit = () => {
+export default function MediaEdit() {
   const [loading, setLoading] = useState<boolean>(true);
   const [editModeOpen, setEditModeOpen] = useState<boolean>(false);
   const [edited, setEdited] = useState<boolean>(false);
-  const [userName, setUserName] = useState<string>("");
-  const [status, setStatus] = useState<string>("");
-  const [address, setAddress] = useState<Address | null>(null); // Initialize with an empty object or appropriate default value
-  const [isGuest, setIsGuest] = useState<boolean>(false);
-  const [keyValue, setKeyValue] = useState<number>(0);
+  const [mediaName, setMediaName] = useState<string>("");
+  const [videoUrl, setVideoUrl] = useState<string>("");
+  const [mediaList, setMediaList] = useState<Media[]>([]);
+
   const toggleEditMode = () => {
     setEditModeOpen(!editModeOpen);
     resetToDefault();
   };
 
-  const handleUserNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleMediaNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.value !== "") {
       setEdited(true);
     }
-    setUserName(e.target.value);
+    setMediaName(e.target.value);
   };
 
-  const handleStatusChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleVideoUrlChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.value !== "") {
       setEdited(true);
     }
-    setStatus(e.target.value);
-  };
-
-  const handleAddressChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.value !== "") {
-      setEdited(true);
-    }
-    setAddress((prevAddress) => ({
-      ...prevAddress,
-      country: e.target.value,
-    }));
+    setVideoUrl(e.target.value);
   };
 
   const toggleCreateNew = () => {
@@ -59,32 +47,56 @@ const RefereesEdit = () => {
 
   const resetToDefault = () => {
     setEdited(false);
-    setUserName("");
-    setStatus("");
+    setMediaName("");
+    setVideoUrl("");
   };
 
   const handleSave = useCallback(async () => {
+    if (mediaName === "" || videoUrl === "") {
+      toast.error("Kérlek, tölts ki minden kötelezŐ mezőt");
+      return;
+    }
+    if (!videoUrl.startsWith("http") && !videoUrl.startsWith("https")) {
+      toast.error("Az URL nem megfelelő");
+      return;
+    }
+
     try {
-      if (
-        userName === "" ||
-        address === null ||
-        isGuest === false ||
-        status === ""
-      ) {
-        toast.error("Kérlek, tölts ki minden kötelezŐ mezőt");
-        return;
-      }
-      const res = await createGuestUser({ userName, address, status, isGuest });
+      const res = await createNewMediaLink(mediaName, videoUrl);
       const success = res instanceof Error ? false : res.success;
       if (success) {
         toast.success("Sikeres mentés");
         resetToDefault();
         toggleCreateNew();
-        fetchGuestUsers()
-        setKeyValue((prev) => prev + 1);
+        getMedia();
       }
-    } catch (error) {}
-  }, [userName, address, status, isGuest]);
+    } catch (error) {
+      console.error(error);
+    }
+  }, [mediaName, videoUrl]);
+
+  const getMedia = async () => {
+    try {
+      setLoading(true);
+      const media: Media[] = await fetchMedia();
+      if (!media) return null;
+      let sortedMedia: Media[] = media.sort((a: Media, b: Media) => {
+        return (
+          new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+        );
+      });
+      setMediaList(sortedMedia);
+      setLoading(false);
+      return sortedMedia;
+    } catch (error) {
+      console.error(error);
+      return new Error(error instanceof Error ? error.message : String(error));
+    }
+  };
+
+  useEffect(() => {
+    getMedia();
+  }, []);
 
   return (
     <div className="rounded-2xl border border-gray-200 bg-white p-5 mt-5">
@@ -95,43 +107,29 @@ const RefereesEdit = () => {
             className="flex w-full items-center justify-center gap-2 rounded-full border mb-4 border-gray-300 bg-white px-4 py-3 text-sm font-medium text-gray-700 shadow-theme-xs hover:bg-gray-50 hover:text-gray-800  lg:inline-flex lg:w-auto"
           >
             <Icon icon="lucide:plus" width="20" height="20" />
-            {editModeOpen ? "Mégsem" : "Új vendég játékvezető hozzáadása"}
+            {editModeOpen ? "Mégsem" : "Új videó feltöltése"}
           </button>
         </div>
         {editModeOpen && (
           <>
             <div className="grid grid-cols-1 gap-x-10 gap-y-5 xl:grid-cols-2">
-              
               <div className="col-span-2 lg:col-span-1">
-                <Label htmlFor="userame">Név:</Label>
+                <Label htmlFor="videoName">Név:</Label>
                 <Input
                   type="text"
-                  id="userame"
+                  id="videoName"
                   defaultValue={""}
-                  onChange={handleUserNameChange}
+                  onChange={handleMediaNameChange}
                 />
               </div>
               <div className="col-span-2 lg:col-span-1">
-                <Label htmlFor="address">Ország:</Label>
+                <Label htmlFor="videoUrl">Média URL:</Label>
                 <Input
                   type="text"
-                  id="address"
+                  id="videoUrl"
                   defaultValue={""}
-                  onChange={handleAddressChange}
+                  onChange={handleVideoUrlChange}
                 />
-              </div>
-              <div className="col-span-2 lg:col-span-1">
-                <Label htmlFor="status">Státusz:</Label>
-                <Input
-                  type="text"
-                  id="status"
-                  defaultValue={""}
-                  onChange={handleStatusChange}
-                />
-              </div>
-              <div className="col-span-1 lg:col-span-1">
-                <Label htmlFor="status">Vendég játékvezető:</Label>
-                <Checkbox checked={isGuest} onChange={setIsGuest} />
               </div>
             </div>
             <div className="flex items-center gap-3 px-2 mt-6 justify-center lg:justify-end">
@@ -153,16 +151,15 @@ const RefereesEdit = () => {
           </>
         )}
       </div>
-      {!loading ? (
+      {loading ? (
         <>
           {Array.from({ length: 10 }).map((_, i) => (
             <Skeleton key={i} className="w-full h-18 mb-2" />
           ))}
         </>
       ) : (
-        <RefereesEditTable key={keyValue}/>
+        <MediaEditList mediaList={mediaList} loadMediaAction={getMedia} />
       )}
     </div>
   );
-};
-export default RefereesEdit;
+}

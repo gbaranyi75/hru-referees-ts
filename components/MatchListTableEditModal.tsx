@@ -3,7 +3,7 @@ import { useState, useEffect, useCallback } from "react";
 import Select, { SelectOption } from "./common/Select";
 import { toast } from "react-toastify";
 import { Icon } from "@iconify/react/dist/iconify.js";
-import { Match, MatchOfficial, User } from "@/types/types";
+import { GuestUser, Match, MatchOfficial, User } from "@/types/types";
 import { hours } from "@/constants/matchUtils";
 import teams from "@/constants/matchData/teams.json";
 import types from "@/constants/matchData/matchTypes.json";
@@ -24,7 +24,7 @@ const MatchItemEditModal = ({
   selectedMatch,
   loadMatches,
 }: {
-  referees: User[];
+  referees: User[] | GuestUser[];
   closeModal: () => void;
   selectedMatch: Match | null;
   loadMatches: () => void;
@@ -431,8 +431,8 @@ const MatchItemEditModal = ({
                   options={referees.map((n) => ({
                     label: n.username,
                     value: n.username,
-                    id: n.clerkUserId,
-                    email: n.email,
+                    id: "email" in n ? n.email : "",
+                    email: "clerkUserId" in n ? n.clerkUserId : "",
                     name: "referee",
                   }))}
                   placeholder="--Válassz játékvezetőt--"
@@ -456,8 +456,8 @@ const MatchItemEditModal = ({
                   options={referees.map((n) => ({
                     label: n.username,
                     value: n.username,
-                    email: n.email,
-                    id: n.clerkUserId,
+                    email: "email" in n ? n.email : "",
+                    id: "clerkUserId" in n ? n.clerkUserId : "",
                     name: "assist1",
                   }))}
                   placeholder="--Válassz asszisztenst--"
@@ -482,8 +482,8 @@ const MatchItemEditModal = ({
                   options={referees.map((n) => ({
                     label: n.username,
                     value: n.username,
-                    email: n.email,
-                    id: n.clerkUserId,
+                    email: "email" in n ? n.email : "",
+                    id: "clerkUserId" in n ? n.clerkUserId : "",
                     name: "assist2",
                   }))}
                   placeholder="--Válassz asszisztenst--"
@@ -508,8 +508,8 @@ const MatchItemEditModal = ({
                   options={referees.map((n) => ({
                     label: n.username,
                     value: n.username,
-                    email: n.email,
-                    id: n.clerkUserId,
+                    email: "email" in n ? n.email : "",
+                    id: "clerkUserId" in n ? n.clerkUserId : "",
                     name: "controllers",
                   }))}
                   placeholder="--Válassz ellenőrt--"
@@ -538,8 +538,8 @@ const MatchItemEditModal = ({
                 options={referees.map((n) => ({
                   label: n.username,
                   value: n.username,
-                  email: n.email,
-                  id: n.clerkUserId,
+                  email: "email" in n ? n.email : "",
+                  id: "clerkUserId" in n ? n.clerkUserId : "",
                   name: "referees",
                 }))}
                 onChange={(o) => {

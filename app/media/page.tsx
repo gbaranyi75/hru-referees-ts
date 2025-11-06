@@ -1,12 +1,12 @@
-import MatchListTable from "@/components/MatchListTable";
 import PageLayout from "@/components/common/PageLayout";
 import PageTitle from "@/components/common/PageTitle";
+import VideoList from "@/components/Media";
 
 const MatchesPage = () => {
   return (
     <PageLayout>
-      <PageTitle title="Mérkőzések" />
-      <MatchListTable />
+      <PageTitle title="Média" />
+      <VideoList />
     </PageLayout>
   );
 };
