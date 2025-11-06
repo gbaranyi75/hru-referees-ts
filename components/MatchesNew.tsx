@@ -1,10 +1,15 @@
 "use client";
 import { useState, useEffect } from "react";
 import Select, { SelectOption } from "./common/Select";
-import { toast } from "react-toastify";
 import { Icon } from "@iconify/react/dist/iconify.js";
+import { toast } from "react-toastify";
+import { DayPicker, getDefaultClassNames } from "react-day-picker";
+import "react-day-picker/dist/style.css";
+import { hu } from "react-day-picker/locale";
 import { createMatch } from "@/lib/actions/createMatch";
-import { Match, MatchOfficial, User } from "@/types/types";
+import { fetchUsers } from "@/lib/actions/fetchUsers";
+import { fetchGuestUsers } from "@/lib/actions/fetchGuestUser";
+import { GuestUser, Match, MatchOfficial, User } from "@/types/types";
 import { hours } from "@/constants/matchUtils";
 import teams from "@/constants/matchData/teams.json";
 import types from "@/constants/matchData/matchTypes.json";
@@ -14,9 +19,6 @@ import venues from "@/constants/matchData/venues.json";
 import OutlinedButton from "./common/OutlinedButton";
 import PrimaryButton from "./common/PrimaryButton";
 import Label from "./common/Label";
-import { DayPicker, getDefaultClassNames } from "react-day-picker";
-import { hu } from "react-day-picker/locale";
-import "react-day-picker/dist/style.css";
 
 const defaultFormFields = {
   type: "" as string,
@@ -34,7 +36,7 @@ const defaultFormFields = {
   time: "" as string,
 };
 
-const MatchesNew = ({ referees }: { referees: User[] }) => {
+const MatchesNew = () => {
   const [formFields, setFormFields] = useState<Match>(defaultFormFields);
   const [typeValue, setTypeValue] = useState<SelectOption | undefined>(
     {} as SelectOption
@@ -78,6 +80,7 @@ const MatchesNew = ({ referees }: { referees: User[] }) => {
   const [calendarOpen, setCalendarOpen] = useState<boolean>(false);
   const [isSingleMatch, setIsSingleMatch] = useState<boolean>(true);
   const [isSuccess, setIsSuccess] = useState<boolean>(false);
+  const [referees, setReferees] = useState<User[] | GuestUser[]>([]);
   const {
     home = "",
     away = "",
@@ -172,7 +175,6 @@ const MatchesNew = ({ referees }: { referees: User[] }) => {
     }
 
     list.forEach(async (l) => {
-      console.log(l);
       const resp = await fetch("/api/send-email", {
         method: "POST",
         headers: {
@@ -284,9 +286,23 @@ const MatchesNew = ({ referees }: { referees: User[] }) => {
     setTimeValue(undefined);
   };
 
+  const getUsers = async () => {
+    try {
+      const guestUsersData = await fetchGuestUsers();
+      const usersData = await fetchUsers();
+      setReferees([ ...usersData, ...guestUsersData ]);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   const toggleCreateNew = () => {
     setCreateNewOpen(!createNewOpen);
   };
+
+  useEffect(() => {
+    getUsers();
+  }, []);
 
   return (
     <>
@@ -435,8 +451,8 @@ const MatchesNew = ({ referees }: { referees: User[] }) => {
                         options={referees.map((n) => ({
                           label: n.username,
                           value: n.username,
-                          email: n.email,
-                          id: n.clerkUserId,
+                          email: "email" in n ? n.email : "", // Type guard to check if 'email' exists
+                          id: "clerkUserId" in n ? n.clerkUserId : "",
                           name: "referee",
                         }))}
                         placeholder="--Válassz játékvezetőt--"
@@ -460,8 +476,8 @@ const MatchesNew = ({ referees }: { referees: User[] }) => {
                         options={referees.map((n) => ({
                           label: n.username,
                           value: n.username,
-                          email: n.email,
-                          id: n.clerkUserId,
+                          email: "email" in n ? n.email : "",
+                          id: "clerkUserId" in n ? n.clerkUserId : "",
                           name: "assist1",
                         }))}
                         placeholder="--Válassz asszisztenst--"
@@ -485,8 +501,8 @@ const MatchesNew = ({ referees }: { referees: User[] }) => {
                         options={referees.map((n) => ({
                           label: n.username,
                           value: n.username,
-                          email: n.email,
-                          id: n.clerkUserId,
+                          email: "email" in n ? n.email : "",
+                          id: "clerkUserId" in n ? n.clerkUserId : "",
                           name: "assist2",
                         }))}
                         placeholder="--Válassz asszisztenst--"
@@ -511,8 +527,8 @@ const MatchesNew = ({ referees }: { referees: User[] }) => {
                         options={referees.map((n) => ({
                           label: n.username,
                           value: n.username,
-                          email: n.email,
-                          id: n.clerkUserId,
+                          email: "email" in n ? n.email : "",
+                          id: "clerkUserId" in n ? n.clerkUserId : "",
                           name: "controllers",
                         }))}
                         placeholder="--Válassz ellenőrt--"
@@ -541,8 +557,8 @@ const MatchesNew = ({ referees }: { referees: User[] }) => {
                       options={referees.map((n) => ({
                         label: n.username,
                         value: n.username,
-                        email: n.email,
-                        id: n.clerkUserId,
+                        email: "email" in n ? n.email : "",
+                        id: "clerkUserId" in n ? n.clerkUserId : "",
                         name: "referees",
                       }))}
                       onChange={(o) => {

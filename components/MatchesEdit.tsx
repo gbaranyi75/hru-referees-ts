@@ -4,7 +4,7 @@ import MatchListTableEdit from "./MatchListTableEdit";
 import { Icon } from "@iconify/react/dist/iconify.js";
 import { User } from "@/types/types";
 
-const MatchesEdit = ({ referees }: { referees: User[] }) => {
+const MatchesEdit = () => {
   const [editModeOpen, setEditModeOpen] = useState<boolean>(false);
 
   const toggleEditMode = () => {
@@ -30,7 +30,7 @@ const MatchesEdit = ({ referees }: { referees: User[] }) => {
 
       {editModeOpen && (
         <div className="rounded-xl overflow-hidden">
-          <MatchListTableEdit referees={referees} />
+          <MatchListTableEdit />
         </div>
       )}
     </section>

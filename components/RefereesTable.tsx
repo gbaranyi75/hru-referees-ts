@@ -53,92 +53,87 @@ export default function RefereesTable() {
   return (
     <>
       <div className="overflow-hidden rounded-xl border border-gray-200 bg-white">
-        <div className="max-w-full overflow-x-auto">
-          <div className="min-w-[880px]">
-            <Table>
-              {/* Table Header */}
-              <TableHeader className="border-b border-gray-100 bg-gray-50">
-                <TableRow className="text-sm text-center">
-                  <TableCell
-                    isHeader
-                    className="pl-16 pr-6 py-4 font-bold text-gray-600 text-start"
-                  >
-                    Név
+        <div className="overflow-x-auto">
+          <Table className="w-full table-auto">
+            {/* Table Header */}
+            <TableHeader className="border-b border-gray-100 bg-gray-50">
+              <TableRow className="text-sm text-center">
+                <TableCell
+                  isHeader
+                  className="pl-16 pr-6 py-4 font-bold text-gray-600 text-start min-w-[200px]"
+                >
+                  Név
+                </TableCell>
+                <TableCell
+                  isHeader
+                  className="px-2 py-4 font-bold text-gray-600 "
+                >
+                  Email
+                </TableCell>
+                <TableCell
+                  isHeader
+                  className="px-5 py-4 font-bold text-gray-500 "
+                >
+                  Lakhely
+                </TableCell>
+
+                <TableCell
+                  isHeader
+                  className="px-5 py-4 font-bold text-gray-600 "
+                >
+                  Adatlap
+                </TableCell>
+              </TableRow>
+            </TableHeader>
+
+            {/* Table Body */}
+            <TableBody className="divide-y divide-gray-100">
+              {referees.map((ref) => (
+                <TableRow key={ref.clerkUserId} className="text-xs text-center">
+                  <TableCell className="px-2 py-4 sm:px-6">
+                    <div className="flex gap-6">
+                      <Image
+                        width={40}
+                        height={40}
+                        src={ref.image}
+                        alt={ref.username}
+                        className="w-10 h-10 rounded-full object-contain"
+                        style={{ objectFit: "cover" }}
+                      />
+                      <div className="flex flex-col text-start">
+                        <span className="block text-sm font-normal text-gray-600 text-theme-s">
+                          {ref.username}
+                        </span>
+                        <span className="block text-xs font-normal text-gray-400 text-theme-s">
+                          {ref.status}
+                        </span>
+                      </div>
+                    </div>
                   </TableCell>
-                  <TableCell
-                    isHeader
-                    className="px-2 py-4 font-bold text-gray-600 "
-                  >
-                    Email
+                  <TableCell className="px-2 text-sm font-normal text-gray-600">
+                    {ref.email}
                   </TableCell>
-                  <TableCell
-                    isHeader
-                    className="px-5 py-4 font-bold text-gray-500 "
-                  >
-                    Lakhely
+                  <TableCell className="px-2 text-sm font-normal text-gray-600">
+                    <span className="block text-sm font-normal text-gray-600 text-theme-s">
+                      {ref.address?.country},
+                    </span>
+                    <span className="block text-xs font-normal text-gray-500 text-theme-s">
+                      {ref.address?.city}
+                    </span>
                   </TableCell>
 
-                  <TableCell
-                    isHeader
-                    className="px-5 py-4 font-bold text-gray-600 "
-                  >
-                    Adatlap
+                  <TableCell className="px-2 py-3 text-gray-500 text-theme-sm ">
+                    <button
+                      onClick={() => handleSelectedReferee(ref)}
+                      className="text-sm cursor-pointer font-medium text-blue-600 hover:underline px-4 py-1 sm:py-1 w-24"
+                    >
+                      Megnyitás
+                    </button>
                   </TableCell>
                 </TableRow>
-              </TableHeader>
-
-              {/* Table Body */}
-              <TableBody className="divide-y divide-gray-100">
-                {referees.map((ref) => (
-                  <TableRow
-                    key={ref.clerkUserId}
-                    className="text-xs text-center"
-                  >
-                    <TableCell className="px-2 py-4 sm:px-6">
-                      <div className="flex gap-6">
-                        <Image
-                          width={40}
-                          height={40}
-                          src={ref.image}
-                          alt={ref.username}
-                          className="w-10 h-10 rounded-full object-contain"
-                          style={{ objectFit: "cover" }}
-                        />
-                        <div className="flex flex-col text-start">
-                          <span className="block text-sm font-normal text-gray-600 text-theme-s">
-                            {ref.username}
-                          </span>
-                          <span className="block text-xs font-normal text-gray-400 text-theme-s">
-                            {ref.status}
-                          </span>
-                        </div>
-                      </div>
-                    </TableCell>
-                    <TableCell className="px-2 text-sm font-normal text-gray-600">
-                      {ref.email}
-                    </TableCell>
-                    <TableCell className="px-2 text-sm font-normal text-gray-600">
-                      <span className="block text-sm font-normal text-gray-600 text-theme-s">
-                        {ref.address?.country},
-                      </span>
-                      <span className="block text-xs font-normal text-gray-500 text-theme-s">
-                        {ref.address?.city}
-                      </span>
-                    </TableCell>
-
-                    <TableCell className="px-2 py-3 text-gray-500 text-theme-sm ">
-                      <button
-                        onClick={() => handleSelectedReferee(ref)}
-                        className="text-sm cursor-pointer font-medium text-blue-600 hover:underline px-4 py-1 sm:py-1 w-24"
-                      >
-                        Megnyitás
-                      </button>
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </div>
+              ))}
+            </TableBody>
+          </Table>
         </div>
       </div>
       <Modal isOpen={isOpen} onClose={closeModal} className="max-w-[700px] m-4">
@@ -178,7 +173,8 @@ export default function RefereesTable() {
                 target="_blank"
                 rel="noreferrer"
                 href={
-                  selectedReferee?.facebookUrl as Route|| "https://www.facebook.com/"
+                  (selectedReferee?.facebookUrl as Route) ||
+                  "https://www.facebook.com/"
                 }
                 className="flex h-11 w-11 items-center justify-center gap-2 rounded-full border border-gray-300 bg-white text-sm font-medium text-gray-700 shadow-theme-xs hover:bg-gray-50 hover:text-gray-800"
               >
@@ -199,7 +195,8 @@ export default function RefereesTable() {
 
               <Link
                 href={
-                  selectedReferee?.instagramUrl as Route|| "https://www.instagram.com/"
+                  (selectedReferee?.instagramUrl as Route) ||
+                  "https://www.instagram.com/"
                 }
                 target="_blank"
                 rel="noreferrer"

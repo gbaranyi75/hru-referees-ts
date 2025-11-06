@@ -108,97 +108,95 @@ const SpreadSheetItem = ({
         </div>
         {isTableOpen && (
           <div className="overflow-hidden rounded-xl border border-gray-200 bg-white m-5">
-            <div className="col-span-12 md:justify-center overflow-x-auto z-1">
-              <div className="min-w-[760px]">
-                <Table className="max-w-5xl text-center text-gray-500 mx-auto">
-                  <TableHeader className="border-b border-gray-100 bg-gray-50">
-                    <TableRow className="text-xs text-center">
-                      <TableCell isHeader className="py-4 px-6 text-center">
-                        Név
-                      </TableCell>
-                      {currentDates?.map((date) => (
-                        <TableCell
-                          isHeader
-                          className="py-4 px-2 text-center"
-                          key={date}
+            <div className="overflow-x-auto">
+              <Table className="w-full table-auto text-center text-gray-500 mx-auto">
+                <TableHeader className="border-b border-gray-100 bg-gray-50">
+                  <TableRow className="text-xs text-center">
+                    <TableCell
+                      isHeader
+                      className="py-4 px-6 text-center min-w-[100px]"
+                    >
+                      Név
+                    </TableCell>
+                    {currentDates?.map((date) => (
+                      <TableCell
+                        isHeader
+                        className="py-4 px-2 text-center"
+                        key={date}
+                      >
+                        <a
+                          data-tooltip-id="my-tooltip"
+                          data-tooltip-content={date}
+                          //data-tooltip-content={`Kattints, hogy lásd az` <br /> `elérhető játékvezetőket ${date} napon!`}
+                          className="cursor-pointer"
+                          onClick={() => handleOpenModal(date)}
                         >
-                          <a
-                            data-tooltip-id="my-tooltip"
-                            data-tooltip-content={date}
-                            //data-tooltip-content={`Kattints, hogy lásd az` <br /> `elérhető játékvezetőket ${date} napon!`}
-                            className="cursor-pointer"
-                            onClick={() => handleOpenModal(date)}
+                          {date}
+                        </a>
+                        <Tooltip
+                          id="my-tooltip"
+                          place="top"
+                          border="1px solid #cdd4df"
+                          style={{
+                            borderRadius: "8px",
+                            fontSize: "12px",
+                            backgroundColor: "#f1f3f6",
+                            color: "#7e8591",
+                          }}
+                          render={({ content }) => (
+                            <span className="text-center">
+                              Kattints, hogy lásd az elérhető
+                              <br />
+                              játékvezetőket {content} napon!
+                            </span>
+                          )}
+                        />
+                      </TableCell>
+                    ))}
+                  </TableRow>
+                </TableHeader>
+                <TableBody className="divide-y divide-gray-100 text-sm">
+                  {userSelections.map((user, idx) => (
+                    <TableRow key={idx} className="bg-white ">
+                      {users.map((dbUser, idx) =>
+                        dbUser.clerkUserId === user.clerkUserId ? (
+                          <TableCell
+                            key={idx}
+                            className="px-1 md:px-3 py-3 text-center"
                           >
-                            {date}
-                          </a>
-                          <Tooltip
-                            id="my-tooltip"
-                            place="top"
-                            border="1px solid #cdd4df"
-                            style={{
-                              borderRadius: "8px",
-                              fontSize: "12px",
-                              backgroundColor: "#f1f3f6",
-                              color: "#7e8591",
-                            }}
-                            render={({ content }) => (
-                              <span className="text-center">
-                                Kattints, hogy lásd az elérhető
-                                <br />
-                                játékvezetőket {content} napon!
-                              </span>
+                            {dbUser.username}
+                          </TableCell>
+                        ) : null
+                      )}
+                      {currentDates?.map((date) => (
+                        <TableCell key={date} className="px-1 py-3 text-center">
+                          <div className="flex justify-center">
+                            {user.selectedDays.includes(date) ? (
+                              <Image
+                                className="h-5 w-5"
+                                src={checkedImage}
+                                alt="logo"
+                                width={10}
+                                height={10}
+                                priority
+                              />
+                            ) : (
+                              <Image
+                                className="h-5 w-5"
+                                src={unCheckedImage}
+                                alt="logo"
+                                width={10}
+                                height={10}
+                                priority
+                              />
                             )}
-                          />
+                          </div>
                         </TableCell>
                       ))}
                     </TableRow>
-                  </TableHeader>
-                  <TableBody className="divide-y divide-gray-100 text-sm">
-                    {userSelections.map((user, idx) => (
-                      <TableRow key={idx} className="bg-white ">
-                        {users.map((dbUser, idx) =>
-                          dbUser.clerkUserId === user.clerkUserId ? (
-                            <TableCell
-                              key={idx}
-                              className="px-1 md:px-3 py-3 text-center"
-                            >
-                              {dbUser.username}
-                            </TableCell>
-                          ) : null
-                        )}
-                        {currentDates?.map((date) => (
-                          <TableCell
-                            key={date}
-                            className="px-1 py-3 text-center"
-                          >
-                            <div className="flex justify-center">
-                              {user.selectedDays.includes(date) ? (
-                                <Image
-                                  className="h-5 w-5"
-                                  src={checkedImage}
-                                  alt="logo"
-                                  width={10}
-                                  height={10}
-                                  priority
-                                />
-                              ) : (
-                                <Image
-                                  className="h-5 w-5"
-                                  src={unCheckedImage}
-                                  alt="logo"
-                                  width={10}
-                                  height={10}
-                                  priority
-                                />
-                              )}
-                            </div>
-                          </TableCell>
-                        ))}
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              </div>
+                  ))}
+                </TableBody>
+              </Table>
             </div>
           </div>
         )}

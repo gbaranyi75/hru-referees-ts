@@ -24,16 +24,14 @@ const NavbarProfileLinks = ({ loggedInUser }: { loggedInUser: any }) => {
   return (
     <>
       <SignedOut>
-        <div className="">
-          <SignInButton mode="modal">
-            <div className="flex text-md mr-6 cursor-pointer items-center text-gray-600">
-              <Icon icon="lucide:log-in" width="20" height="20" color="gray" />
-              <span className="hidden md:block ml-2">
-                Belépés vagy regisztráció
-              </span>
-            </div>
-          </SignInButton>
-        </div>
+        <SignInButton mode="modal">
+          <div className="flex text-md mr-6 cursor-pointer items-center text-gray-600">
+            <Icon icon="lucide:log-in" width="20" height="20" color="gray" />
+            <span className="hidden md:block ml-2">
+              Belépés vagy regisztráció
+            </span>
+          </div>
+        </SignInButton>
       </SignedOut>
       <SignedIn>
         <div className="flex items-center relative">

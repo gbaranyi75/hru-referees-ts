@@ -11,7 +11,6 @@ import { toast } from "react-toastify";
 export default function ProfileCardWrapper() {
   const [profile, setProfile] = useState<User | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
-  const [isAfterSave, setIsAfterSave] = useState<boolean>(false);
   const loadProfile = async () => {
     setLoading(true);
     const loggedInUserData = await fetchProfile();
@@ -49,12 +48,10 @@ export default function ProfileCardWrapper() {
         <ProfileMetaCard
           profileData={profile}
           loadProfileAfterSaveAction={reloadProfile}
-          //setIsSuccess={setIsAfterSave} // This should be fine as it is now
         />
         <ProfileInfoCard
           profileData={profile}
           loadProfileAfterSaveAction={reloadProfile}
-          //setIsAfterSave={setIsAfterSave} // Pass the setter function correctly
         />
       </div>
     </div>

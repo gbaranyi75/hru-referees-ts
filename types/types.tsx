@@ -38,14 +38,14 @@ export type User = {
 };
 
 export type Address = {
-  city: string;
+  city?: string;
   country: string;
 };
 
 export type MatchOfficial = {
   username: string;
-  clerkUserId: string;
-  email: string;
+  clerkUserId?: string;
+  email?: string;
 };
 
 export type Match = {
@@ -71,3 +71,18 @@ export type SendEmail = {
   clerkUserId: string;
   messageData?: Match;
 };
+
+export type Media = {
+  _id?: string;
+  name: string;
+  mediaUrl: string;
+  createdAt: string;
+};
+
+export type GuestUser = {
+  _id?: string;
+  username: string;
+  address: Address;
+  status: string;
+  isGuest: boolean;
+}

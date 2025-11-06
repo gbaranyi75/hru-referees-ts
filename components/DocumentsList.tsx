@@ -118,85 +118,84 @@ const DocumentsList = ({
 
   return (
     <div className="overflow-hidden rounded-xl border border-gray-200 bg-white">
-      <div className="max-w-full overflow-x-auto">
-        <div className="min-w-[880px]">
-          <Table>
-            <TableHeader className="border-b border-gray-100 bg-gray-50">
-              <TableRow className="text-sm text-center">
-                <TableCell
-                  isHeader
-                  className="py-3 px-4 text-left font-medium text-gray-600"
-                >
-                  Fájl neve
-                </TableCell>
-                <TableCell
-                  isHeader
-                  className="py-3 px-4 text-left font-medium text-gray-600"
-                >
-                  Módosítás dátuma
-                </TableCell>
-                <TableCell
-                  isHeader
-                  className="py-3 px-4 text-left font-medium text-gray-600"
-                >
-                  Méret
-                </TableCell>
-                <TableCell
-                  isHeader
-                  className="py-3 px-4 text-left font-medium text-gray-600"
-                >
-                  {""}
-                </TableCell>
-              </TableRow>
-            </TableHeader>
+      <div className="overflow-x-auto">
+        <Table className="w-full table-auto">
+          <TableHeader className="border-b border-gray-100 bg-gray-50">
+            <TableRow className="text-sm text-center">
+              <TableCell
+                isHeader
+                className="py-3 px-4 text-left font-medium text-gray-600 min-w-[320px]"
+              >
+                Fájl neve
+              </TableCell>
+              <TableCell
+                isHeader
+                className="py-3 px-4 text-left font-medium text-gray-600 min-w-[150px]"
+              >
+                Módosítás dátuma
+              </TableCell>
+              <TableCell
+                isHeader
+                className="py-3 px-4 text-left font-medium text-gray-600 min-w-[120px]"
+              >
+                Méret
+              </TableCell>
+              <TableCell
+                isHeader
+                className="py-3 px-4 text-left font-medium text-gray-600"
+              >
+                {""}
+              </TableCell>
+            </TableRow>
+          </TableHeader>
 
-            {/* Table Body */}
-            <TableBody className="divide-y divide-gray-100">
-              {files.map((file: any) => (
-                <TableRow key={file.Key} className="text-sm text-center">
-                  <TableCell className="py-3 px-4 text-left font-normal text-gray-600">
-                    {file.Key}
-                  </TableCell>
-                  <TableCell className="py-3 px-4 text-left font-normal text-gray-600">
-                    {formatDate(file.LastModified)}
-                  </TableCell>
-                  <TableCell className="py-3 px-4 text-left font-normal text-gray-600">
-                    {formatSize(file.Size)}
-                  </TableCell>
-                  <TableCell className="py-3 px-4 text-left font-normal text-gray-600">
-                    <div className="flex flex-row gap-2 items-center">
+          {/* Table Body */}
+          <TableBody className="divide-y divide-gray-100">
+            {files.map((file: any) => (
+              <TableRow key={file.Key} className="text-sm text-center">
+                <TableCell className="py-3 px-4 text-left font-normal text-gray-600">
+                  {file.Key}
+                </TableCell>
+                <TableCell className="py-3 px-4 text-left font-normal text-gray-600">
+                  {formatDate(file.LastModified)}
+                </TableCell>
+                <TableCell className="py-3 px-4 text-left font-normal text-gray-600">
+                  {formatSize(file.Size)}
+                </TableCell>
+                <TableCell className="py-3 px-4 text-left font-normal text-gray-600">
+                  <div className="flex flex-row gap-2 items-center">
+                    <button
+                      className="cursor-pointer"
+                      onClick={() => handleDownload(file)}
+                    >
+                      <Icon
+                        icon="lucide:download"
+                        width="20"
+                        height="20"
+                        color="gray"
+                      />
+                    </button>
+                    {isAdmin && (
                       <button
                         className="cursor-pointer"
-                        onClick={() => handleDownload(file)}
+                        onClick={() => handleOpenModal(file)}
                       >
                         <Icon
-                          icon="lucide:download"
+                          icon="lucide:trash-2"
                           width="20"
                           height="20"
                           color="gray"
                         />
                       </button>
-                      {isAdmin && (
-                        <button
-                          className="cursor-pointer"
-                          onClick={() => handleOpenModal(file)}
-                        >
-                          <Icon
-                            icon="lucide:trash-2"
-                            width="20"
-                            height="20"
-                            color="gray"
-                          />
-                        </button>
-                      )}
-                    </div>
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </div>
+                    )}
+                  </div>
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
       </div>
+
       <Modal
         isOpen={isOpen}
         onClose={closeModal}
