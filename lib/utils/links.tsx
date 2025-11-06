@@ -26,6 +26,12 @@ export const NAV_LINKS: NavItem[] = [
     type: "public",
     icon: <Icon icon="lucide:tv" width="20" height="20" />,
   },
+  {
+    path: "/media",
+    label: "Média",
+    type: "public",
+    icon: <Icon icon="lucide:file-video" width="20" height="20" />,
+  },
 ];
 
 export const PROFILE_LINKS: NavItem[] = [
@@ -59,7 +65,7 @@ export const ADMIN_LINKS: NavItem[] = [
       { label: "Táblázat", path: "/dashboard/calendar" },
       { label: "Mérkőzések", path: "/dashboard/matches" },
       { label: "Játékvezetők", path: "/dashboard/referees" },
-      { label: "Videók", path: "/dashboard/videos" },
+      { label: "Videók", path: "/dashboard/media" },
     ],
   },
 ];

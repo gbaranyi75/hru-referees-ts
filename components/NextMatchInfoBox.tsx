@@ -1,12 +1,12 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
+import Link from "next/link";
+import { Route } from "next";
 import clsx from "clsx";
 import Skeleton from "./common/Skeleton";
 import { Match } from "@/types/types";
 import { fetchMatches } from "@/lib/actions/fetchMatches";
-import { Route } from "next";
-import Link from "next/link";
 
 const NextMatchInfoBox = () => {
   const [matches, setMatches] = useState<Match[]>([]);
@@ -32,7 +32,7 @@ const NextMatchInfoBox = () => {
         setMatches(arr);
       }
     });
-    console.log(arr);
+    if (arr.length === 0) setNoMatch(true);
     setLoading(false);
   };
 

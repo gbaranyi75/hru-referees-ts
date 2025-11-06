@@ -15,6 +15,6 @@ export async function updatePassword({ newPassword, token }: { newPassword: stri
     { password: passwordHashed }
   );
 
-  if (res) redirect("/auth/belepes");
+  //if (res) redirect("/auth/belepes");
   return res;
 }
