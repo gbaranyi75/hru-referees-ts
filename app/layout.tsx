@@ -25,24 +25,22 @@ export default function RootLayout({
     <ClerkProvider localization={huHU}>
       <html lang="en" suppressHydrationWarning>
         <body className={inter.className}>
-          <main>
-            <div className="min-h-screen lg:flex">
-              <SideBarWrapper />
-              <div className="flex-1 lg:ml-[290px]">
-                <Navbar />
-                <NavbarMobileMenuWrapper />
-                <div className="bg-gray-100 p-4 mx-auto max-w-(--breakpoint-2xl) md:p-6 text-gray-600">
-                  {children}
-                </div>
-                {/* <Analytics /> */}
-              </div>
-              <ToastContainer
-                position="top-right"
-                autoClose={3000}
-                style={{ zIndex: 20000000 }}
-              />
+          <div className="min-h-screen lg:flex">
+            <SideBarWrapper />
+            <div className="flex-1 lg:ml-[290px]">
+              <Navbar />
+              <NavbarMobileMenuWrapper />
+              <main className="bg-gray-100 p-4 mx-auto max-w-(--breakpoint-2xl) md:p-6 text-gray-600">
+                {children}
+              </main>
+              {/* <Analytics /> */}
             </div>
-          </main>
+            <ToastContainer
+              position="top-right"
+              autoClose={3000}
+              style={{ zIndex: 20000000 }}
+            />
+          </div>
         </body>
       </html>
     </ClerkProvider>
