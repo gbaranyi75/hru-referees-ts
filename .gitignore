@@ -47,3 +47,6 @@ next-env.d.ts
 !.vscode/tasks.json
 !.vscode/launch.json
 !.vscode/extensions.json
+
+# clerk configuration (can include secrets)
+/.clerk/
