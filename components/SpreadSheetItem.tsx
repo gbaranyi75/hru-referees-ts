@@ -111,7 +111,7 @@ const SpreadSheetItem = ({
             <div className="overflow-x-auto">
               <Table className="w-full table-auto text-center text-gray-500 mx-auto">
                 <TableHeader className="border-b border-gray-100 bg-gray-50">
-                  <TableRow className="text-xs text-center">
+                  <TableRow className="text-sm text-center">
                     <TableCell
                       isHeader
                       className="py-4 px-6 text-center min-w-[100px]"
@@ -127,7 +127,6 @@ const SpreadSheetItem = ({
                         <a
                           data-tooltip-id="my-tooltip"
                           data-tooltip-content={date}
-                          //data-tooltip-content={`Kattints, hogy lásd az` <br /> `elérhető játékvezetőket ${date} napon!`}
                           className="cursor-pointer"
                           onClick={() => handleOpenModal(date)}
                         >
@@ -157,7 +156,7 @@ const SpreadSheetItem = ({
                 </TableHeader>
                 <TableBody className="divide-y divide-gray-100 text-sm">
                   {userSelections.map((user, idx) => (
-                    <TableRow key={idx} className="bg-white ">
+                    <TableRow key={idx} className="bg-white">
                       {users.map((dbUser, idx) =>
                         dbUser.clerkUserId === user.clerkUserId ? (
                           <TableCell
