@@ -8,6 +8,7 @@ module.exports = {
   theme: {
     extend: {
       fontFamily: {
+        outfit: ["Outfit", "sans-serif"],
         sans: ["Poppins", "sans-serif"],
       },
       gridTemplateColumns: {
@@ -15,5 +16,5 @@ module.exports = {
       },
     },
   },
-  plugins: [],
+  plugins: [require("@tailwindcss/forms"), require("autoprefixer")],
 };

@@ -17,15 +17,13 @@ const NavbarLogo = () => {
       />
 
       <span className="hidden md:block font-bold">
-        <div className="text-gray-500 text-xs font-bold md:ml-2">
+        <div className="text-gray-800 text-sm font-semibold md:ml-2">
           <div className="flex-col">
             <div className="flex justify-center">MRGSZ</div>
             <div className="flex justify-center">Játékvezetői Bizottság</div>
           </div>
         </div>
       </span>
-
-      
     </Link>
   );
 };
