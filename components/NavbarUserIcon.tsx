@@ -17,7 +17,7 @@ const NavbarUserIcon = ({
     <div className="flex items-center">
       <span>
         <Image
-          className="h-8 w-8 rounded-full"
+          className="h-8 w-8 rounded-full mr-1"
           src={image || profileImage}
           alt="profilkép"
           width={60}

@@ -18,8 +18,8 @@ import { fetchUsers } from "@/lib/actions/fetchUsers";
 import { Icon } from "@iconify/react/dist/iconify.js";
 
 export default function MatchListTable() {
-  const [selectedMatch, setSelectedMatch] = useState<Match | null>(null);
   const { isOpen, openModal, closeModal } = useModal();
+  const [selectedMatch, setSelectedMatch] = useState<Match | null>(null);
   const [matches, setMatches] = useState<Match[]>([]);
   const [referees, setReferees] = useState<User[] | GuestUser[]>([]);
   const [loading, setLoading] = useState(false);
@@ -71,7 +71,7 @@ export default function MatchListTable() {
           <Table className="w-full table-auto">
             {/* Table Header */}
             <TableHeader className="border-b border-gray-100 bg-gray-50">
-              <TableRow className="text-xs text-center">
+              <TableRow className="text-sm text-center">
                 <TableCell
                   isHeader
                   className="px-2 py-3 font-bold text-gray-800 "
@@ -133,7 +133,7 @@ export default function MatchListTable() {
             {/* Table Body */}
             <TableBody className="divide-y divide-gray-100">
               {matches.map((m) => (
-                <TableRow key={m._id} className="text-center text-xs">
+                <TableRow key={m._id} className="text-center text-sm">
                   <TableCell className="px-2 font-bold text-gray-600">
                     {m.type}
                   </TableCell>

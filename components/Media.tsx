@@ -109,7 +109,7 @@ const VideoList = () => {
             {/* Table Body */}
             <TableBody className="divide-y divide-gray-100">
               {mediaList.map((m) => (
-                <TableRow key={m._id} className="text-xs text-center h-16">
+                <TableRow key={m._id} className="text-sm text-center h-16">
                   <TableCell className="px-2 text-sm font-normal text-gray-600">
                     {m.name}
                   </TableCell>
