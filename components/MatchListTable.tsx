@@ -1,20 +1,25 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { Modal } from "./common/Modal";
-import Skeleton from "./common/Skeleton";
+
+import { Icon } from "@iconify/react/dist/iconify.js";
+import { Modal } from "@/components/common/Modal";
+import Skeleton from "@/components/common/Skeleton";
 import {
   Table,
   TableHeader,
   TableRow,
   TableCell,
   TableBody,
-} from "./common/Table";
+} from "@/components/common/Table";
+import { MatchListTableModal } from "./MatchListTableModal";
+import Pagination from "./Pagination";
 import { Match } from "@/types/types";
 import { useModal } from "@/hooks/useModal";
 import { fetchMatches } from "@/lib/actions/fetchMatches";
-import { Icon } from "@iconify/react/dist/iconify.js";
-import { MatchListTableModal } from "./MatchListTableModal";
+import { useSearchParams } from "next/navigation";
+
+const ITEMS_PER_PAGE = 10;
 
 const MatchList = () => {
   const [selectedMatch, setSelectedMatch] = useState<Match | null>(null);
@@ -22,6 +27,12 @@ const MatchList = () => {
   const [matches, setMatches] = useState<Match[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [isPastMatch, setIsPastMatch] = useState<boolean>(false);
+  const searchParams = useSearchParams();
+
+  const page = searchParams.get("page") ?? "1";
+  const per_page = searchParams.get("per_page") ?? ITEMS_PER_PAGE;
+  const start = (Number(page) - 1) * Number(per_page);
+  const end = start + Number(per_page);
 
   const handleSelectedMatch = (match: Match) => {
     setSelectedMatch(match);
@@ -41,11 +52,16 @@ const MatchList = () => {
     loadMatches();
   }, []);
 
+  const paginatedData = matches.slice(start, end);
+
   if (loading)
     return (
       <>
         {Array.from({ length: 10 }).map((_, i) => (
-          <Skeleton key={i} className="w-full h-12 mb-2" />
+          <Skeleton
+            key={i}
+            className="w-full h-12 mb-2"
+          />
         ))}
       </>
     );
@@ -60,57 +76,48 @@ const MatchList = () => {
               <TableRow className="text-sm text-center">
                 <TableCell
                   isHeader
-                  className="px-2 py-3 font-bold text-gray-800 "
-                >
+                  className="px-2 py-3 font-bold text-gray-800 ">
                   Típus
                 </TableCell>
                 <TableCell
                   isHeader
-                  className="px-2 py-3 font-bold text-gray-600"
-                >
+                  className="px-2 py-3 font-bold text-gray-600">
                   Neme
                 </TableCell>
                 <TableCell
                   isHeader
-                  className="px-2 py-3 font-bold text-gray-500 "
-                >
+                  className="px-2 py-3 font-bold text-gray-500 ">
                   Kor
                 </TableCell>
                 <TableCell
                   isHeader
-                  className="px-2 py-3 font-bold text-gray-600 "
-                >
+                  className="px-2 py-3 font-bold text-gray-600 ">
                   Helyszín
                 </TableCell>
                 <TableCell
                   isHeader
-                  className="px-2 py-3 font-bold text-gray-600 "
-                >
+                  className="px-2 py-3 font-bold text-gray-600 ">
                   Hazai
                 </TableCell>
                 <TableCell
                   isHeader
-                  className="px-2 py-3 font-bold text-gray-600"
-                >
+                  className="px-2 py-3 font-bold text-gray-600">
                   Vendég
                 </TableCell>
 
                 <TableCell
                   isHeader
-                  className="px-2 py-3 font-bold text-gray-600 "
-                >
+                  className="px-2 py-3 font-bold text-gray-600 ">
                   Dátum
                 </TableCell>
                 <TableCell
                   isHeader
-                  className="px-2 py-3 font-bold text-gray-600 "
-                >
+                  className="px-2 py-3 font-bold text-gray-600 ">
                   Időpont
                 </TableCell>
                 <TableCell
                   isHeader
-                  className="px-2 py-3 font-bold text-gray-600"
-                >
+                  className="px-2 py-3 font-bold text-gray-600">
                   {""}
                 </TableCell>
               </TableRow>
@@ -118,8 +125,10 @@ const MatchList = () => {
 
             {/* Table Body */}
             <TableBody className="divide-y divide-gray-100">
-              {matches.map((m) => (
-                <TableRow key={m._id} className="text-center text-sm">
+              {paginatedData.map((m) => (
+                <TableRow
+                  key={m._id}
+                  className="text-center text-sm">
                   <TableCell className="px-2 font-bold text-gray-600">
                     {m.type}
                   </TableCell>
@@ -147,9 +156,12 @@ const MatchList = () => {
                   <TableCell className="flex px-2 py-3 text-gray-500 text-theme-sm my-auto">
                     <button
                       onClick={() => handleSelectedMatch(m)}
-                      className="cursor-pointer text-blue-600 my-auto"
-                    >
-                      <Icon icon="lucide:eye" width="20" height="20" />
+                      className="cursor-pointer text-blue-600 my-auto">
+                      <Icon
+                        icon="lucide:eye"
+                        width="20"
+                        height="20"
+                      />
                     </button>
                   </TableCell>
                 </TableRow>
@@ -157,13 +169,16 @@ const MatchList = () => {
             </TableBody>
           </Table>
         </div>
+        <Pagination
+          itemsLength={matches.length}
+          itemsPerPage={Number(per_page)}
+        />
       </div>
       <Modal
         isOpen={isOpen}
         onClose={closeModal}
         showCloseButton={true}
-        className="max-w-[500px] p-5 lg:p-10"
-      >
+        className="max-w-[500px] p-5 lg:p-10">
         <MatchListTableModal
           selectedMatch={selectedMatch}
           closeModal={closeModal}
