@@ -18,6 +18,7 @@ import { Match } from "@/types/types";
 import { useModal } from "@/hooks/useModal";
 import { fetchMatches } from "@/lib/actions/fetchMatches";
 import { useSearchParams } from "next/navigation";
+import { checkCorrectPageNumber } from "@/lib/utils/checkCorrectPageNumber";
 
 const ITEMS_PER_PAGE = 10;
 
@@ -28,13 +29,9 @@ const MatchList = () => {
   const [loading, setLoading] = useState<boolean>(true);
   const [isPastMatch, setIsPastMatch] = useState<boolean>(false);
   const searchParams = useSearchParams();
+  const totalPages = Math.ceil(matches.length / ITEMS_PER_PAGE);
 
-  const page =
-    Number(searchParams.get("page")) > Math.ceil(matches.length / ITEMS_PER_PAGE) ||
-    Number(searchParams.get("page")) < 1 ||
-    !searchParams.get("page")
-      ? "1"
-      : Number(searchParams.get("page"));
+  const page = checkCorrectPageNumber(searchParams, totalPages);
   const per_page = searchParams.get("per_page") ?? ITEMS_PER_PAGE;
   const start = (Number(page) - 1) * Number(per_page);
   const end = start + Number(per_page);

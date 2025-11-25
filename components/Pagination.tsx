@@ -3,6 +3,7 @@
 import { FC } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { Route } from "next";
+import { checkCorrectPageNumber } from "@/lib/utils/checkCorrectPageNumber";
 
 interface PaginationProps {
   itemsPerPage: number;
@@ -16,13 +17,8 @@ const Pagination: FC<PaginationProps> = ({ itemsPerPage, itemsLength }) => {
 
   const per_page = searchParams.get("per_page") ?? itemsPerPage;
   const totalPages = Math.ceil(itemsLength / Number(per_page));
-  const currentPage =
-    Number(searchParams.get("page")) > totalPages ||
-    Number(searchParams.get("page")) < 1 ||
-    !searchParams.get("page")
-      ? "1"
-      : Number(searchParams.get("page"));
-
+  const currentPage = checkCorrectPageNumber(searchParams, totalPages);
+  
   const changePage = (newPage: number) => {
     const params = new URLSearchParams(window.location.search);
     params.set("page", newPage.toString());
@@ -74,11 +70,11 @@ const Pagination: FC<PaginationProps> = ({ itemsPerPage, itemsLength }) => {
         <button
           key={1}
           onClick={() => changePage(1)}
-          className={`px-4 py-2 rounded ${
+          className={`${
             Number(currentPage) === 1
               ? "bg-blue-500 text-white"
               : "text-gray-600"
-          } flex w-10 cursor-pointer items-center justify-center h-10 rounded-lg text-sm font-medium hover:bg-blue-600 hover:text-white`}>
+          } flex w-10 cursor-pointer px-4 py-2 items-center justify-center h-10 rounded-lg text-sm font-medium hover:bg-blue-600 hover:text-white`}>
           1
         </button>
         {/* Ellipsis before pagesAroundCurrent */}
