@@ -32,10 +32,7 @@ const Pagination: FC<PaginationProps> = ({ itemsPerPage, itemsLength }) => {
     (_, i) => {
       // Calculate the page number to show
       let page = Number(currentPage) - 1 + i;
-      console.log(page)
-      // Clamp to valid range
-      //page = Math.max(2, Math.min(page, totalPages - 1));
-      console.log("clamp", page)
+
       // Only show if not first or last page
       if (page === 1 || page >= totalPages || page === 0) return null;
       return (
@@ -50,10 +47,9 @@ const Pagination: FC<PaginationProps> = ({ itemsPerPage, itemsLength }) => {
           {page}
         </button>
       );
-      // i + Math.max(Number(currentPage) - 1, 1);
     }
   );
-//console.log(pagesAroundCurrent)
+
   return (
     <div className="flex gap-2 mx-auto w-full justify-between items-center p-4 mt-4">
       <button
@@ -78,36 +74,15 @@ const Pagination: FC<PaginationProps> = ({ itemsPerPage, itemsLength }) => {
           } flex w-10 cursor-pointer items-center justify-center h-10 rounded-lg text-sm font-medium hover:bg-blue-600 hover:text-white`}>
           1
         </button>
+        {/* Ellipsis before pagesAroundCurrent */}
         {Number(currentPage) > 2 && totalPages > 4 && (
           <span className="px-3">...</span>
         )}
-
         {pagesAroundCurrent}
-
-        {/* {Array.from(
-          { length: Math.ceil(itemsLength / itemsPerPage) },
-          (_, index) => {
-            const pageIndex = index + 1;
-            return (
-              <button
-                key={pageIndex}
-                onClick={() => changePage(pageIndex)}
-                className={`px-4 py-2 rounded ${
-                  Number(currentPage) === pageIndex
-                    ? "bg-blue-500 text-white"
-                    : "text-gray-600"
-                } flex w-10 cursor-pointer items-center justify-center h-10 rounded-lg text-sm font-medium hover:bg-blue-600 hover:text-white`}>
-                {pageIndex}
-              </button>
-            );
-          }
-        )} */}
-
         {/* Ellipsis after pagesAroundCurrent */}
         {Number(currentPage) < totalPages - 2 && totalPages > 4 && (
           <span className="px-3">...</span>
         )}
-
         {/* Last page button */}
         {totalPages > 1 && (
           <button
