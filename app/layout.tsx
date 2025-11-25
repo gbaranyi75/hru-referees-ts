@@ -10,7 +10,10 @@ import { Analytics } from "@vercel/analytics/next";
 import "./globals.css";
 
 const inter = Inter({ subsets: ["latin"] });
-const outfit = Outfit({ subsets: ["latin"] });
+const outfit = Outfit({
+  variable: "--font-outfit-sans",
+  subsets: ["latin"]
+});
 
 export const metadata: Metadata = {
   title: "HRU Referees",
