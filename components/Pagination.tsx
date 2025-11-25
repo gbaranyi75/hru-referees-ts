@@ -14,18 +14,25 @@ const Pagination: FC<PaginationProps> = ({ itemsPerPage, itemsLength }) => {
   const searchParams = useSearchParams();
   const pathName = usePathname();
 
-  const currentPage = searchParams.get("page") ?? "1";
   const per_page = searchParams.get("per_page") ?? itemsPerPage;
   const totalPages = Math.ceil(itemsLength / Number(per_page));
-  const hasPrev = Number(per_page) * (Number(currentPage) - 1) > 0;
-  const hasNext =
-    Number(per_page) * (Number(currentPage) - 1) + itemsPerPage < itemsLength;
+  const currentPage =
+    Number(searchParams.get("page")) > totalPages ||
+    Number(searchParams.get("page")) < 1 ||
+    !searchParams.get("page")
+      ? "1"
+      : Number(searchParams.get("page"));
 
   const changePage = (newPage: number) => {
     const params = new URLSearchParams(window.location.search);
     params.set("page", newPage.toString());
-    router.push(`${pathName}?${params}` as Route);
+    router.replace(`${pathName}?${params}` as Route);
   };
+
+  const hasPrev = Number(per_page) * (Number(currentPage) - 1) > 0;
+  const hasNext =
+    Number(per_page) * (Number(currentPage) - 1) + Number(per_page) <
+    itemsLength;
 
   const pagesAroundCurrent = Array.from(
     { length: Math.min(3, totalPages) },
@@ -39,11 +46,11 @@ const Pagination: FC<PaginationProps> = ({ itemsPerPage, itemsLength }) => {
         <button
           key={page}
           onClick={() => changePage(page)}
-          className={`px-4 py-2 rounded ${
+          className={`${
             Number(currentPage) === page
               ? "bg-blue-500 text-white"
               : "text-gray-600"
-          } flex w-10 cursor-pointer items-center justify-center h-10 rounded-lg text-sm font-medium hover:bg-blue-600 hover:text-white`}>
+          } flex w-10 cursor-pointer px-4 py-2 items-center justify-center h-10 rounded-lg text-sm font-medium hover:bg-blue-600 hover:text-white`}>
           {page}
         </button>
       );
@@ -88,11 +95,11 @@ const Pagination: FC<PaginationProps> = ({ itemsPerPage, itemsLength }) => {
           <button
             key={totalPages}
             onClick={() => changePage(totalPages)}
-            className={`px-4 py-2 rounded ${
+            className={`${
               Number(currentPage) === totalPages
                 ? "bg-blue-500 text-white"
                 : "text-gray-600"
-            } flex w-10 cursor-pointer items-center justify-center h-10 rounded-lg text-sm font-medium hover:bg-blue-600 hover:text-white`}>
+            } flex w-10 px-4 py-2 cursor-pointer items-center justify-center h-10 rounded-lg text-sm font-medium hover:bg-blue-600 hover:text-white`}>
             {totalPages}
           </button>
         )}

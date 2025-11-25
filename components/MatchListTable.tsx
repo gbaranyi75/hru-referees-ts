@@ -29,7 +29,12 @@ const MatchList = () => {
   const [isPastMatch, setIsPastMatch] = useState<boolean>(false);
   const searchParams = useSearchParams();
 
-  const page = searchParams.get("page") ?? "1";
+  const page =
+    Number(searchParams.get("page")) > Math.ceil(matches.length / ITEMS_PER_PAGE) ||
+    Number(searchParams.get("page")) < 1 ||
+    !searchParams.get("page")
+      ? "1"
+      : Number(searchParams.get("page"));
   const per_page = searchParams.get("per_page") ?? ITEMS_PER_PAGE;
   const start = (Number(page) - 1) * Number(per_page);
   const end = start + Number(per_page);
