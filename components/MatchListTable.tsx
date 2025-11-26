@@ -19,7 +19,7 @@ import { fetchMatches, fetchMatchesCount } from "@/lib/actions/fetchMatches";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { Route } from "next";
 
-const ITEMS_PER_PAGE = 10;
+const ITEMS_PER_PAGE = 12;
 
 const MatchList = () => {
   const searchParams = useSearchParams();
@@ -55,7 +55,7 @@ const MatchList = () => {
 
   const loadMatches = async () => {
     const totalPages = Math.ceil(count / ITEMS_PER_PAGE);
-    if (page <= 0 || page > totalPages) {
+    if (count > 0 && (page <= 0 || page > totalPages)) {
       setPage(1);
       const params = new URLSearchParams(window.location.search);
       params.set("page", "1");
@@ -71,7 +71,7 @@ const MatchList = () => {
 
   useEffect(() => {
     loadMatches();
-  }, [page]);
+  }, [page, count]);
 
   useEffect(() => {
     loadCount();
