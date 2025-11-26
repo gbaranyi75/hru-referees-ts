@@ -17,13 +17,12 @@ const NextMatchInfoBox = () => {
     setLoading(true);
     const fetchedMatches = await fetchMatches();
     if (!fetchedMatches) return setNoMatch(true);
+
     const firstDay = new Date();
     const nextWeek = new Date(firstDay.getTime() + 7 * 24 * 60 * 60 * 1000);
-    let sortedMatches: Match[] = fetchedMatches.sort((a: Match, b: Match) => {
-      return new Date(b.date).getTime() - new Date(a.date).getTime();
-    });
+
     let arr: Match[] = [];
-    sortedMatches.forEach((match) => {
+    fetchedMatches.forEach((match: Match) => {
       if (
         new Date(match.date) < nextWeek &&
         new Date(match.date) >= new Date()
@@ -61,8 +60,7 @@ const NextMatchInfoBox = () => {
               {matches.map((m) => (
                 <div
                   key={m._id}
-                  className="flex flex-col-reverse lg:flex-row items-center justify-between px-4 bg-gray-100 rounded-xl border-b border-gray-300 text-gray-600 py-4"
-                >
+                  className="flex flex-col-reverse lg:flex-row items-center justify-between px-4 bg-gray-100 rounded-xl border-b border-gray-300 text-gray-600 py-4">
                   <div className="flex mt-2 lg:flex-row lg:mt-0 lg:gap-16">
                     <div className="flex flex-col gap-1 lg:gap-2 justify-center text-sm items-center lg:items-start">
                       <div className="font-semibold">{m.venue}</div>
@@ -94,10 +92,10 @@ const NextMatchInfoBox = () => {
                           "bg-green-200 text-green-700":
                             m.type === "Extra Liga",
                           "bg-orange-200 text-orange-700": m.type === "7s",
-                          "bg-purple-200 text-purple-700": m.type === "UP torna",
+                          "bg-purple-200 text-purple-700":
+                            m.type === "UP torna",
                         }
-                      )}
-                    >
+                      )}>
                       <h3 className="pr-1 text-sm">{m.age}</h3>
                       <h3 className="px-1 text-sm">{m.gender}</h3>
                       <h3 className="pl-1 text-sm font-semibold">{m.type}</h3>
@@ -116,8 +114,7 @@ const NextMatchInfoBox = () => {
               </p>
               <Link
                 href={"/merkozesek" as Route}
-                className="inline-block bg-cyan-900 text-white text-center rounded-lg px-4 py-2 hover:opacity-80 mt-4"
-              >
+                className="inline-block bg-cyan-900 text-white text-center rounded-lg px-4 py-2 hover:opacity-80 mt-4">
                 További mérkőzések
               </Link>
             </div>

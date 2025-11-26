@@ -32,10 +32,7 @@ export default function MatchListTable() {
   const loadMatches = async () => {
     setLoading(true);
     const fetchedMatches = await fetchMatches();
-    let sortedMatches: Match[] = fetchedMatches.sort((a: Match, b: Match) => {
-      return new Date(b.date).getTime() - new Date(a.date).getTime();
-    });
-    setMatches(sortedMatches);
+    setMatches(fetchedMatches);
     setLoading(false);
   };
 
