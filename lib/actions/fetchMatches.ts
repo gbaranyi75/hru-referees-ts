@@ -1,7 +1,6 @@
 "use server";
 import connectDB from "@/config/database";
 import Match from "@/models/Match";
-import { Match as MatchType } from "@/types/types";
 import { convertToJSON } from "../utils/convertToJSON";
 
 interface IFetchMatchesProps {
@@ -25,7 +24,7 @@ export const fetchMatches = async ({
     return convertToJSON(matches);
   } catch (error) {
     console.error(error);
-    return new Error(error instanceof Error ? error.message : String(error));
+    //return new Error(error instanceof Error ? error.message : String(error));
   }
 };
 
@@ -36,6 +35,6 @@ export const fetchMatchesCount = async () => {
     return matchesCount;
   } catch (error) {
     console.error(error);
-    return new Error(error instanceof Error ? error.message : String(error));
+    //return new Error(error instanceof Error ? error.message : String(error));
   }
 };
