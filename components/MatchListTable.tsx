@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-
 import { Icon } from "@iconify/react/dist/iconify.js";
 import { Modal } from "@/components/common/Modal";
 import Skeleton from "@/components/common/Skeleton";
@@ -16,45 +15,67 @@ import { MatchListTableModal } from "./MatchListTableModal";
 import Pagination from "./Pagination";
 import { Match } from "@/types/types";
 import { useModal } from "@/hooks/useModal";
-import { fetchMatches } from "@/lib/actions/fetchMatches";
-import { useSearchParams } from "next/navigation";
-import { checkCorrectPageNumber } from "@/lib/utils/checkCorrectPageNumber";
+import { fetchMatches, fetchMatchesCount } from "@/lib/actions/fetchMatches";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { Route } from "next";
 
 const ITEMS_PER_PAGE = 10;
 
 const MatchList = () => {
-  const [selectedMatch, setSelectedMatch] = useState<Match | null>(null);
+  const searchParams = useSearchParams();
+  const router = useRouter();
+  const pathName = usePathname();
   const { isOpen, openModal, closeModal } = useModal();
+  const [selectedMatch, setSelectedMatch] = useState<Match | null>(null);
   const [matches, setMatches] = useState<Match[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
-  const [isPastMatch, setIsPastMatch] = useState<boolean>(false);
-  const searchParams = useSearchParams();
-  const totalPages = Math.ceil(matches.length / ITEMS_PER_PAGE);
-
-  const page = checkCorrectPageNumber(searchParams, totalPages);
-  const per_page = searchParams.get("per_page") ?? ITEMS_PER_PAGE;
-  const start = (Number(page) - 1) * Number(per_page);
-  const end = start + Number(per_page);
+  const [count, setCount] = useState<number>(0);
+  const [page, setPage] = useState<number>(
+    searchParams.get("page") ? +searchParams.get("page")! : 1
+  );
 
   const handleSelectedMatch = (match: Match) => {
     setSelectedMatch(match);
     openModal();
   };
 
+  const handlePageChange = (newPage: number) => {
+    const params = new URLSearchParams(window.location.search);
+    params.set("page", newPage.toString());
+    setPage(newPage);
+    router.replace(`${pathName}?${params}` as Route);
+  };
+
+  const loadCount = async () => {
+    const countData = await fetchMatchesCount();
+    if (typeof countData === "number") {
+      setCount(countData);
+    }
+  };
+
   const loadMatches = async () => {
-    const fetchedMatches = await fetchMatches();
-    let sortedMatches: Match[] = fetchedMatches.sort((a: Match, b: Match) => {
-      return new Date(b.date).getTime() - new Date(a.date).getTime();
+    const totalPages = Math.ceil(count / ITEMS_PER_PAGE);
+    if (page <= 0 || page > totalPages) {
+      setPage(1);
+      const params = new URLSearchParams(window.location.search);
+      params.set("page", "1");
+      router.replace(`${pathName}?${params}` as Route);
+    }
+    const matches = await fetchMatches({
+      limit: ITEMS_PER_PAGE,
+      skip: page <= 0 || page > totalPages ? 0 : (page - 1) * ITEMS_PER_PAGE,
     });
-    setMatches(sortedMatches);
+    setMatches(matches);
     setLoading(false);
   };
 
   useEffect(() => {
     loadMatches();
-  }, []);
+  }, [page]);
 
-  const paginatedData = matches.slice(start, end);
+  useEffect(() => {
+    loadCount();
+  }, []);
 
   if (loading)
     return (
@@ -127,7 +148,7 @@ const MatchList = () => {
 
             {/* Table Body */}
             <TableBody className="divide-y divide-gray-100">
-              {paginatedData.map((m) => (
+              {matches.map((m) => (
                 <TableRow
                   key={m._id}
                   className="text-center text-sm">
@@ -172,8 +193,10 @@ const MatchList = () => {
           </Table>
         </div>
         <Pagination
-          itemsLength={matches.length}
-          itemsPerPage={Number(per_page)}
+          itemsCount={count}
+          itemsPerPage={ITEMS_PER_PAGE}
+          currentPage={page}
+          changePage={handlePageChange}
         />
       </div>
       <Modal
