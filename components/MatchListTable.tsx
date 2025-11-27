@@ -71,7 +71,7 @@ const MatchList = () => {
 
   useEffect(() => {
     loadMatches();
-  }, [page, count]);
+  }, [page]);
 
   useEffect(() => {
     loadCount();
