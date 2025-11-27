@@ -24,7 +24,7 @@ export const fetchMatches = async ({
     return convertToJSON(matches);
   } catch (error) {
     console.error(error);
-    return null;
+    throw new Error("Error fetching matches");
   }
 };
 
@@ -35,6 +35,6 @@ export const fetchMatchesCount = async () => {
     return matchesCount;
   } catch (error) {
     console.error(error);
-    return null;
+    throw new Error("Error fetching matches count");
   }
 };
