@@ -9,7 +9,7 @@ import {
   TableRow,
   TableCell,
   TableBody,
-} from "@/components/common/Table";
+} from "@/components/common/DefaultTable";
 import { Media } from "@/types/types";
 import { useModal } from "@/hooks/useModal";
 import { Icon } from "@iconify/react/dist/iconify.js";

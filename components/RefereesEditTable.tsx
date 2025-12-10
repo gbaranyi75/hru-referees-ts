@@ -8,7 +8,7 @@ import {
   TableCell,
   TableHeader,
   TableRow,
-} from "@/components/common/Table";
+} from "@/components/common/DefaultTable";
 import Skeleton from "@/components/common/Skeleton";
 import Input from "@/components/common/InputField";
 import { GuestUser, User } from "@/types/types";

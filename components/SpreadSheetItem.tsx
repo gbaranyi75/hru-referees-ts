@@ -11,7 +11,7 @@ import {
   TableCell,
   TableHeader,
   TableRow,
-} from "@/components/common/Table";
+} from "@/components/common/DefaultTable";
 import { MdOutlineExpandMore, MdOutlineExpandLess } from "react-icons/md";
 import { fetchUserSelections } from "@/lib/actions/fetchUserSelections";
 import checkedImage from "@/public/images/checked.png";

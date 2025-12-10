@@ -11,7 +11,7 @@ import {
   TableRow,
   TableCell,
   TableBody,
-} from "@/components/common/Table";
+} from "@/components/common/DefaultTable";
 import { updateMedia } from "@/lib/actions/updateMedia";
 import { formatDate } from "@/lib/utils/formatUtils";
 
