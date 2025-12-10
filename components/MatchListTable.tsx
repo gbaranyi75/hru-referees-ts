@@ -10,7 +10,7 @@ import {
   TableRow,
   TableCell,
   TableBody,
-} from "@/components/common/Table";
+} from "@/components/common/DefaultTable";
 import { MatchListTableModal } from "./MatchListTableModal";
 import Pagination from "./Pagination";
 import { Match } from "@/types/types";

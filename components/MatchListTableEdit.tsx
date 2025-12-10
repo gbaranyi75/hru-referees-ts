@@ -9,7 +9,7 @@ import {
   TableRow,
   TableCell,
   TableBody,
-} from "@/components/common/Table";
+} from "@/components/common/DefaultTable";
 import { GuestUser, Match, User } from "@/types/types";
 import { useModal } from "@/hooks/useModal";
 import { fetchMatches } from "@/lib/actions/fetchMatches";

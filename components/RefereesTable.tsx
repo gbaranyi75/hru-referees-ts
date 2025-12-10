@@ -6,7 +6,7 @@ import {
   TableCell,
   TableHeader,
   TableRow,
-} from "@/components/common/Table";
+} from "@/components/common/DefaultTable";
 import { useModal } from "../hooks/useModal";
 import { Modal } from "./common/Modal";
 import Image from "next/image";
