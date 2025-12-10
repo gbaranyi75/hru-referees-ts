@@ -22,14 +22,15 @@ export const fetchMatches = async ({
       .lean()
       .exec();
 
-    if (!matches || matches.length === 0) {
+    if (matches.length === 0) {
       return [];
     }
     return convertToJSON(matches);
   } catch (error) {
     console.error(error);
     throw new Error(
-      `Error fetching matches: ${error instanceof Error ? error.message : "Unknown error"}`
+      `Error fetching matches: ${error instanceof Error ? error.message : "Unknown error"}`,
+      { cause: error }
     );
   }
 };
@@ -42,7 +43,8 @@ export const fetchMatchesCount = async (): Promise<number> => {
   } catch (error) {
     console.error(error);
     throw new Error(
-      `Error fetching matches count: ${error instanceof Error ? error.message : "Unknown error"}`
+      `Error fetching matches count: ${error instanceof Error ? error.message : "Unknown error"}`,
+      { cause: error }
     );
   }
 };

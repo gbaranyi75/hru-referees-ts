@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import Select, { SelectOption } from "./common/Select";
 import { Icon } from "@iconify/react/dist/iconify.js";
 import { toast } from "react-toastify";
@@ -80,7 +80,7 @@ const MatchesNew = () => {
   const [calendarOpen, setCalendarOpen] = useState<boolean>(false);
   const [isSingleMatch, setIsSingleMatch] = useState<boolean>(true);
   const [isSuccess, setIsSuccess] = useState<boolean>(false);
-  const [referees, setReferees] = useState<(User | GuestUser)[]>([]); // Fixed type
+  const [referees, setReferees] = useState<(User | GuestUser)[]>([]);
   const {
     home = "",
     away = "",
@@ -103,9 +103,9 @@ const MatchesNew = () => {
 
   const defaultClassNames = getDefaultClassNames();
 
-  const transformDateFormat = (date: Date) => {
+  const transformDateFormat = useCallback((date: Date) => {
     return date.toLocaleDateString("hu-HU", dateFormatOptions);
-  };
+  }, []);
 
 
   useEffect(() => {
@@ -117,13 +117,12 @@ const MatchesNew = () => {
         date: dateString || "",
       }));
     }
-  }, [selected]);
+  }, [selected, transformDateFormat]);
 
   const handleCalendarOpen = () => {
     setCalendarOpen((state) => !state);
   };
 
-  // Improved email sending with error handling
   const handleEmailSend = async () => {
     const list: {
       username: string;
@@ -181,29 +180,41 @@ const MatchesNew = () => {
       });
     }
 
-    try {
-      await Promise.all(
-        list.map(async (l) => {
-          const resp = await fetch("/api/send-email", {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              email: l.email,
-              username: l.username,
-              messageData: l.messageData,
-              subject: "Új küldés",
-            }),
-          });
-          if (!resp.ok) {
-            console.error(`Email küldés sikertelen: ${l.email}`);
-          }
-        })
+    // Using Promise.allSettled to attempt sending all emails even if some fail.
+    // This ensures all recipients are attempted rather than stopping at the first failure.
+    const results = await Promise.allSettled(
+      list.map(async (l) => {
+        const resp = await fetch("/api/send-email", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            email: l.email,
+            username: l.username,
+            messageData: l.messageData,
+            subject: "Új küldés",
+          }),
+        });
+        if (!resp.ok) {
+          throw new Error(`${l.email}`);
+        }
+        return l.email;
+      })
+    );
+
+    // Collect failed emails for user feedback
+    const failedEmails = results
+      .filter((result): result is PromiseRejectedResult => result.status === "rejected")
+      .map((result) => result.reason?.message || "Ismeretlen email");
+
+    if (failedEmails.length > 0) {
+      console.error("Email küldés sikertelen a következő címekre:", failedEmails);
+      toast.error(
+        `Email küldés sikertelen: ${failedEmails.join(", ")}`
       );
-    } catch (error) {
-      console.error("Email küldési hiba:", error);
-      toast.error("Hiba történt az email küldésekor");
+    } else if (list.length > 0) {
+      toast.success("Minden email sikeresen elküldve");
     }
   };
 
@@ -247,7 +258,6 @@ const MatchesNew = () => {
         return;
       }
       
-      // Improved validation - using some() instead of map()
       if (controllers.length > 0) {
         const hasDuplicate = controllers.some(
           (c) =>
@@ -287,7 +297,7 @@ const MatchesNew = () => {
     }
   };
 
-  // Improved reset - restore isSingleMatch
+
   const resetFormFields = () => {
     setFormFields(defaultFormFields);
     setControllersValue([]);
