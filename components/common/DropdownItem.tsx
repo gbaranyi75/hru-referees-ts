@@ -1,5 +1,6 @@
 import type React from "react";
 import Link from "next/link";
+import type { Route } from "next";
 
 interface DropdownItemProps {
   tag?: "a" | "button";
@@ -32,7 +33,7 @@ export const DropdownItem: React.FC<DropdownItemProps> = ({
 
   if (tag === "a" && href) {
     return (
-      <Link href={href} className={combinedClasses} onClick={handleClick}>
+      <Link href={href as Route} className={combinedClasses} onClick={handleClick}>
         {children}
       </Link>
     );
