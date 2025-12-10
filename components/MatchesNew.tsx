@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import Select, { SelectOption } from "./common/Select";
 import { Icon } from "@iconify/react/dist/iconify.js";
 import { toast } from "react-toastify";
@@ -80,7 +80,7 @@ const MatchesNew = () => {
   const [calendarOpen, setCalendarOpen] = useState<boolean>(false);
   const [isSingleMatch, setIsSingleMatch] = useState<boolean>(true);
   const [isSuccess, setIsSuccess] = useState<boolean>(false);
-  const [referees, setReferees] = useState<User[] | GuestUser[]>([]);
+  const [referees, setReferees] = useState<(User | GuestUser)[]>([]);
   const {
     home = "",
     away = "",
@@ -103,27 +103,34 @@ const MatchesNew = () => {
 
   const defaultClassNames = getDefaultClassNames();
 
-  const transformDateFormat = (date: Date) => {
+  const transformDateFormat = useCallback((date: Date) => {
     return date.toLocaleDateString("hu-HU", dateFormatOptions);
-  };
+  }, []);
+
 
   useEffect(() => {
     if (selected) {
       const dateString = transformDateFormat(selected).toString();
       setDateValue(dateString);
-      setFormFields({
-        ...formFields,
+      setFormFields((prev) => ({
+        ...prev,
         date: dateString || "",
-      });
+      }));
     }
-  }, [selected]);
+  }, [selected, transformDateFormat]);
 
   const handleCalendarOpen = () => {
     setCalendarOpen((state) => !state);
   };
 
   const handleEmailSend = async () => {
-    let list = [];
+    const list: {
+      username: string;
+      clerkUserId: string;
+      email: string | undefined;
+      messageData: Match;
+    }[] = [];
+
     if (formFields.referee.clerkUserId) {
       list.push({
         username: formFields.referee.username,
@@ -163,7 +170,6 @@ const MatchesNew = () => {
     if (formFields.referees.length > 0) {
       formFields.referees.forEach((referee) => {
         if (referee.clerkUserId) {
-          console.log(formFields);
           list.push({
             username: referee.username,
             clerkUserId: referee.clerkUserId,
@@ -174,21 +180,42 @@ const MatchesNew = () => {
       });
     }
 
-    list.forEach(async (l) => {
-      const resp = await fetch("/api/send-email", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          email: l.email,
-          username: l.username,
-          messageData: l.messageData,
-          subject: "Új küldés",
-        }),
-      });
-    });
-    list = [];
+    // Using Promise.allSettled to attempt sending all emails even if some fail.
+    // This ensures all recipients are attempted rather than stopping at the first failure.
+    const results = await Promise.allSettled(
+      list.map(async (l) => {
+        const resp = await fetch("/api/send-email", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            email: l.email,
+            username: l.username,
+            messageData: l.messageData,
+            subject: "Új küldés",
+          }),
+        });
+        if (!resp.ok) {
+          throw new Error(`${l.email}`);
+        }
+        return l.email;
+      })
+    );
+
+    // Collect failed emails for user feedback
+    const failedEmails = results
+      .filter((result): result is PromiseRejectedResult => result.status === "rejected")
+      .map((result) => result.reason?.message || "Ismeretlen email");
+
+    if (failedEmails.length > 0) {
+      console.error("Email küldés sikertelen a következő címekre:", failedEmails);
+      toast.error(
+        `Email küldés sikertelen: ${failedEmails.join(", ")}`
+      );
+    } else if (list.length > 0) {
+      toast.success("Minden email sikeresen elküldve");
+    }
   };
 
   const handleSubmit = async () => {
@@ -230,17 +257,18 @@ const MatchesNew = () => {
         toast.error("A nevek nem egyezhetnek meg");
         return;
       }
+      
       if (controllers.length > 0) {
-        controllers.map((c) => {
-          if (
+        const hasDuplicate = controllers.some(
+          (c) =>
             c.username === referee.username ||
             c.username === assist1.username ||
             c.username === assist2.username
-          ) {
-            toast.error("A nevek nem egyezhetnek meg");
-            return;
-          }
-        });
+        );
+        if (hasDuplicate) {
+          toast.error("A nevek nem egyezhetnek meg");
+          return;
+        }
       }
 
       if (
@@ -269,6 +297,7 @@ const MatchesNew = () => {
     }
   };
 
+
   const resetFormFields = () => {
     setFormFields(defaultFormFields);
     setControllersValue([]);
@@ -284,13 +313,15 @@ const MatchesNew = () => {
     setAssist2Value(undefined);
     setDateValue("");
     setTimeValue(undefined);
+    setSelected(undefined);
+    setIsSingleMatch(true);
   };
 
   const getUsers = async () => {
     try {
       const guestUsersData = await fetchGuestUsers();
       const usersData = await fetchUsers();
-      setReferees([ ...usersData, ...guestUsersData ]);
+      setReferees([...usersData, ...guestUsersData]);
     } catch (error) {
       console.error(error);
     }
@@ -337,12 +368,14 @@ const MatchesNew = () => {
                     placeholder="--Válassz típust--"
                     onChange={(o) => {
                       setTypeValue(o);
-                      setFormFields({
-                        ...formFields,
+                      setFormFields((prev) => ({
+                        ...prev,
                         type: String(o === undefined ? "" : o?.value),
-                      });
+                      }));
                       if (o?.value === "7s" || o?.value === "UP torna") {
                         setIsSingleMatch(false);
+                      } else {
+                        setIsSingleMatch(true);
                       }
                     }}
                     value={typeValue}
@@ -359,10 +392,10 @@ const MatchesNew = () => {
                     placeholder="--Válassz nemet--"
                     onChange={(o) => {
                       setGenderValue(o);
-                      setFormFields({
-                        ...formFields,
+                      setFormFields((prev) => ({
+                        ...prev,
                         gender: String(o === undefined ? "" : o?.value),
-                      });
+                      }));
                     }}
                     value={genderValue}
                   />
@@ -378,10 +411,10 @@ const MatchesNew = () => {
                     placeholder="--Válassz korosztályt--"
                     onChange={(o) => {
                       setAgeValue(o);
-                      setFormFields({
-                        ...formFields,
+                      setFormFields((prev) => ({
+                        ...prev,
                         age: String(o === undefined ? "" : o?.value),
-                      });
+                      }));
                     }}
                     value={ageValue}
                   />
@@ -397,10 +430,10 @@ const MatchesNew = () => {
                     placeholder="--Válassz helyszínt--"
                     onChange={(o) => {
                       setVenueValue(o);
-                      setFormFields({
-                        ...formFields,
+                      setFormFields((prev) => ({
+                        ...prev,
                         venue: String(o === undefined ? "" : o?.value),
-                      });
+                      }));
                     }}
                     value={venueValue}
                   />
@@ -418,10 +451,10 @@ const MatchesNew = () => {
                         placeholder="--Válassz csapatot--"
                         onChange={(o) => {
                           setHomeValue(o);
-                          setFormFields({
-                            ...formFields,
+                          setFormFields((prev) => ({
+                            ...prev,
                             home: String(o === undefined ? "" : o?.value),
-                          });
+                          }));
                         }}
                         value={homeValue}
                       />
@@ -437,10 +470,10 @@ const MatchesNew = () => {
                         placeholder="--Válassz csapatot--"
                         onChange={(o) => {
                           setAwayValue(o);
-                          setFormFields({
-                            ...formFields,
+                          setFormFields((prev) => ({
+                            ...prev,
                             away: String(o === undefined ? "" : o?.value),
-                          });
+                          }));
                         }}
                         value={awayValue}
                       />
@@ -451,21 +484,21 @@ const MatchesNew = () => {
                         options={referees.map((n) => ({
                           label: n.username,
                           value: n.username,
-                          email: "email" in n ? n.email : "", // Type guard to check if 'email' exists
+                          email: "email" in n ? n.email : "",
                           id: "clerkUserId" in n ? n.clerkUserId : "",
                           name: "referee",
                         }))}
                         placeholder="--Válassz játékvezetőt--"
                         onChange={(o) => {
                           setRefereeValue(o);
-                          setFormFields({
-                            ...formFields,
+                          setFormFields((prev) => ({
+                            ...prev,
                             referee: {
                               username: String(o === undefined ? "" : o?.value),
                               clerkUserId: o?.id || "",
                               email: o?.email || "",
                             },
-                          });
+                          }));
                         }}
                         value={refereeValue}
                       />
@@ -483,14 +516,14 @@ const MatchesNew = () => {
                         placeholder="--Válassz asszisztenst--"
                         onChange={(o) => {
                           setAssist1Value(o);
-                          setFormFields({
-                            ...formFields,
+                          setFormFields((prev) => ({
+                            ...prev,
                             assist1: {
                               username: String(o === undefined ? "" : o?.value),
                               clerkUserId: o?.id || "",
                               email: o?.email || "",
                             },
-                          });
+                          }));
                         }}
                         value={assist1Value}
                       />
@@ -508,14 +541,14 @@ const MatchesNew = () => {
                         placeholder="--Válassz asszisztenst--"
                         onChange={(o) => {
                           setAssist2Value(o);
-                          setFormFields({
-                            ...formFields,
+                          setFormFields((prev) => ({
+                            ...prev,
                             assist2: {
                               username: String(o === undefined ? "" : o?.value),
                               clerkUserId: o?.id || "",
                               email: o?.email || "",
                             },
-                          });
+                          }));
                         }}
                         value={assist2Value}
                       />
@@ -534,14 +567,14 @@ const MatchesNew = () => {
                         placeholder="--Válassz ellenőrt--"
                         onChange={(o) => {
                           setControllersValue(o);
-                          setFormFields({
-                            ...formFields,
+                          setFormFields((prev) => ({
+                            ...prev,
                             controllers: o.map((i) => ({
-                              username: String(i.value), // Ensure username is a string
-                              clerkUserId: i.id || "", // Provide a fallback to an empty string
+                              username: String(i.value),
+                              clerkUserId: i.id || "",
                               email: i.email || "",
                             })),
-                          });
+                          }));
                         }}
                         value={controllersValue}
                       />
@@ -563,14 +596,14 @@ const MatchesNew = () => {
                       }))}
                       onChange={(o) => {
                         setRefereesValue(o);
-                        setFormFields({
-                          ...formFields,
+                        setFormFields((prev) => ({
+                          ...prev,
                           referees: o.map((i) => ({
-                            username: String(i.value), // Ensure username is a string
-                            clerkUserId: i.id || "", // Provide a fallback to an empty string
+                            username: String(i.value),
+                            clerkUserId: i.id || "",
                             email: i.email || "",
                           })),
-                        });
+                        }));
                       }}
                       value={refereesValue}
                     />
@@ -587,10 +620,10 @@ const MatchesNew = () => {
                     placeholder="--Válassz időpontot--"
                     onChange={(o) => {
                       setTimeValue(o);
-                      setFormFields({
-                        ...formFields,
+                      setFormFields((prev) => ({
+                        ...prev,
                         time: String(o === undefined ? "" : o?.value),
-                      });
+                      }));
                     }}
                     value={timeValue}
                   />
@@ -610,6 +643,8 @@ const MatchesNew = () => {
                         e.stopPropagation();
                         e.preventDefault();
                         setDateValue("" as string);
+                        setSelected(undefined);
+                        setFormFields((prev) => ({ ...prev, date: "" }));
                       }}
                       className="cursor-pointer text text-gray-300"
                     >

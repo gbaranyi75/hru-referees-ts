@@ -9,7 +9,7 @@ import {
   TableRow,
   TableCell,
   TableBody,
-} from "./common/Table";
+} from "@/components/common/Table";
 import { GuestUser, Match, User } from "@/types/types";
 import { useModal } from "@/hooks/useModal";
 import { fetchMatches } from "@/lib/actions/fetchMatches";
@@ -56,7 +56,10 @@ export default function MatchListTable() {
       <>
         <Skeleton className="w-full h-12 mb-2 mt-1" />
         {Array.from({ length: 10 }).map((_, i) => (
-          <Skeleton key={i} className="w-full h-12 mb-2" />
+          <Skeleton
+            key={i}
+            className="w-full h-12 mb-2"
+          />
         ))}
       </>
     );
@@ -71,57 +74,48 @@ export default function MatchListTable() {
               <TableRow className="text-sm text-center">
                 <TableCell
                   isHeader
-                  className="px-2 py-3 font-bold text-gray-800 "
-                >
+                  className="px-2 py-3 font-bold text-gray-800 ">
                   Típus
                 </TableCell>
                 <TableCell
                   isHeader
-                  className="px-2 py-3 font-bold text-gray-600"
-                >
+                  className="px-2 py-3 font-bold text-gray-600">
                   Neme
                 </TableCell>
                 <TableCell
                   isHeader
-                  className="px-2 py-3 font-bold text-gray-500 "
-                >
+                  className="px-2 py-3 font-bold text-gray-500 ">
                   Kor
                 </TableCell>
                 <TableCell
                   isHeader
-                  className="px-2 py-3 font-bold text-gray-600 "
-                >
+                  className="px-2 py-3 font-bold text-gray-600 ">
                   Helyszín
                 </TableCell>
                 <TableCell
                   isHeader
-                  className="px-2 py-3 font-bold text-gray-600 "
-                >
+                  className="px-2 py-3 font-bold text-gray-600 ">
                   Hazai
                 </TableCell>
                 <TableCell
                   isHeader
-                  className="px-2 py-3 font-bold text-gray-600"
-                >
+                  className="px-2 py-3 font-bold text-gray-600">
                   Vendég
                 </TableCell>
 
                 <TableCell
                   isHeader
-                  className="px-2 py-3 font-bold text-gray-600 "
-                >
+                  className="px-2 py-3 font-bold text-gray-600 ">
                   Dátum
                 </TableCell>
                 <TableCell
                   isHeader
-                  className="px-2 py-3 font-bold text-gray-600 "
-                >
+                  className="px-2 py-3 font-bold text-gray-600 ">
                   Időpont
                 </TableCell>
                 <TableCell
                   isHeader
-                  className="px-2 py-3 font-bold text-gray-600"
-                >
+                  className="px-2 py-3 font-bold text-gray-600">
                   {""}
                 </TableCell>
               </TableRow>
@@ -130,7 +124,9 @@ export default function MatchListTable() {
             {/* Table Body */}
             <TableBody className="divide-y divide-gray-100">
               {matches.map((m) => (
-                <TableRow key={m._id} className="text-center text-sm">
+                <TableRow
+                  key={m._id}
+                  className="text-center text-sm">
                   <TableCell className="px-2 font-bold text-gray-600">
                     {m.type}
                   </TableCell>
@@ -158,14 +154,21 @@ export default function MatchListTable() {
                   <TableCell className="flex px-2 py-3 text-gray-500 text-theme-sm my-auto">
                     {new Date() > new Date(m.date) ? (
                       <button className="text-gray-300 my-auto">
-                        <Icon icon="lucide:edit" width="18" height="18" />
+                        <Icon
+                          icon="lucide:edit"
+                          width="18"
+                          height="18"
+                        />
                       </button>
                     ) : (
                       <button
                         onClick={() => handleSelectedMatch(m)}
-                        className="cursor-pointer text-blue-600 my-auto"
-                      >
-                        <Icon icon="lucide:edit" width="18" height="18" />
+                        className="cursor-pointer text-blue-600 my-auto">
+                        <Icon
+                          icon="lucide:edit"
+                          width="18"
+                          height="18"
+                        />
                       </button>
                     )}
                   </TableCell>
@@ -180,8 +183,7 @@ export default function MatchListTable() {
         isOpen={isOpen}
         onClose={closeModal}
         showCloseButton={true}
-        className="flex flex-col justify-between max-w-[900px] max-h-[700px] px-16 bg-white"
-      >
+        className="flex flex-col justify-between max-w-[900px] max-h-[700px] px-16 bg-white">
         <div className="py-10">
           <h4 className="font-semibold text-gray-800 mb-10 text-title-sm ">
             Mérkőzés szerkesztése
