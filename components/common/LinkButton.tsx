@@ -1,3 +1,4 @@
+import { Route } from "next";
 import Link from "next/link";
 
 const LinkButton = ({ text, link }: { text: string; link: string }) => {
@@ -7,7 +8,7 @@ const LinkButton = ({ text, link }: { text: string; link: string }) => {
         type="button"
         className="justify-center text-blue-500 hover:underline"
       >
-        <Link href={link}>{text}</Link>
+        <Link href={link as Route}>{text}</Link>
       </button>
     </>
   );
