@@ -12,7 +12,7 @@ import {
   TableCell,
   TableHeader,
   TableRow,
-} from "@/components/common/Table";
+} from "@/components/common/DefaultTable";
 import { formatSize, formatDate } from "@/lib/utils/formatUtils";
 import OutlinedButton from "./common/OutlinedButton";
 import PrimaryButton from "./common/PrimaryButton";
