@@ -11,7 +11,7 @@ import {
   TableRow,
   TableCell,
   TableBody,
-} from "./common/Table";
+} from "@/components/common/Table";
 import { updateMedia } from "@/lib/actions/updateMedia";
 import { formatDate } from "@/lib/utils/formatUtils";
 
@@ -66,7 +66,10 @@ export default function MediaEditList({
     return (
       <>
         {Array.from({ length: 10 }).map((_, i) => (
-          <Skeleton key={i} className="w-full h-18 mb-2" />
+          <Skeleton
+            key={i}
+            className="w-full h-18 mb-2"
+          />
         ))}
       </>
     );
@@ -80,26 +83,22 @@ export default function MediaEditList({
             <TableRow className="text-sm text-center">
               <TableCell
                 isHeader
-                className="px-2 py-4 font-bold text-gray-600 w-[166px]"
-              >
+                className="px-2 py-4 font-bold text-gray-600 w-[166px]">
                 Név
               </TableCell>
               <TableCell
                 isHeader
-                className="px-2 py-4 font-bold text-gray-600 w-[166px]"
-              >
+                className="px-2 py-4 font-bold text-gray-600 w-[166px]">
                 URL
               </TableCell>
               <TableCell
                 isHeader
-                className="px-2 py-4 font-bold text-gray-600 w-[166px]"
-              >
+                className="px-2 py-4 font-bold text-gray-600 w-[166px]">
                 Létrehozva
               </TableCell>
               <TableCell
                 isHeader
-                className="px-5 py-4 font-bold text-gray-600 w-[166px]"
-              >
+                className="px-5 py-4 font-bold text-gray-600 w-[166px]">
                 Szerkesztés
               </TableCell>
             </TableRow>
@@ -108,7 +107,9 @@ export default function MediaEditList({
           {/* Table Body */}
           <TableBody className="divide-y divide-gray-100">
             {mediaList.map((media) => (
-              <TableRow key={media._id} className="text-xs text-center h-16">
+              <TableRow
+                key={media._id}
+                className="text-xs text-center h-16">
                 <TableCell className="px-2 text-sm font-normal text-gray-600">
                   {isEditMode && selectedMedia?._id === media._id ? (
                     <Input
@@ -141,15 +142,21 @@ export default function MediaEditList({
                     <div className="flex gap-5 justify-center">
                       <button
                         onClick={handleCancel}
-                        className="text-sm cursor-pointer font-medium text-center text-blue-600 hover:underline py-1 sm:py-1"
-                      >
-                        <Icon icon="lucide:circle-x" width="20" height="20" />
+                        className="text-sm cursor-pointer font-medium text-center text-blue-600 hover:underline py-1 sm:py-1">
+                        <Icon
+                          icon="lucide:circle-x"
+                          width="20"
+                          height="20"
+                        />
                       </button>
                       <button
                         onClick={handleSave}
-                        className="text-sm cursor-pointer font-medium text-center text-blue-600 hover:underline py-1 sm:py-1"
-                      >
-                        <Icon icon="lucide:save" width="20" height="20" />
+                        className="text-sm cursor-pointer font-medium text-center text-blue-600 hover:underline py-1 sm:py-1">
+                        <Icon
+                          icon="lucide:save"
+                          width="20"
+                          height="20"
+                        />
                       </button>
                     </div>
                   ) : (
@@ -157,16 +164,22 @@ export default function MediaEditList({
                       {isEditMode ? (
                         <button
                           disabled
-                          className="text-sm font-medium text-center text-gray-400 mx-auto hover:underline py-1 sm:py-1"
-                        >
-                          <Icon icon="lucide:edit" width="20" height="20" />
+                          className="text-sm font-medium text-center text-gray-400 mx-auto hover:underline py-1 sm:py-1">
+                          <Icon
+                            icon="lucide:edit"
+                            width="20"
+                            height="20"
+                          />
                         </button>
                       ) : (
                         <button
                           onClick={() => handleSetToEdit(media)}
-                          className="text-sm cursor-pointer font-medium text-center text-blue-600 mx-auto hover:underline py-1 sm:py-1"
-                        >
-                          <Icon icon="lucide:edit" width="20" height="20" />
+                          className="text-sm cursor-pointer font-medium text-center text-blue-600 mx-auto hover:underline py-1 sm:py-1">
+                          <Icon
+                            icon="lucide:edit"
+                            width="20"
+                            height="20"
+                          />
                         </button>
                       )}
                     </>

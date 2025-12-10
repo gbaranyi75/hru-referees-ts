@@ -11,7 +11,7 @@ import {
   TableCell,
   TableHeader,
   TableRow,
-} from "./common/Table";
+} from "@/components/common/Table";
 import { MdOutlineExpandMore, MdOutlineExpandLess } from "react-icons/md";
 import { fetchUserSelections } from "@/lib/actions/fetchUserSelections";
 import checkedImage from "@/public/images/checked.png";
@@ -90,15 +90,13 @@ const SpreadSheetItem = ({
     <>
       <div className="flex flex-col border overflow-hidden rounded-xl border-gray-200 bg-white text-gray-600 text-center justify-center z-0">
         <div
-          className={`flex md:px-6 py-6 items-center justify-between ${isTableOpen ? "bg-gray-100" : "bg-white"}`}
-        >
+          className={`flex md:px-6 py-6 items-center justify-between ${isTableOpen ? "bg-gray-100" : "bg-white"}`}>
           <span className="ml-6">
             <h2 className="text-lg mr-1 font-semibold">{calendar?.name}</h2>
           </span>
           <span
             className="my-auto mr-6 p-2 rounded-full bg-gray-200 cursor-pointer"
-            onClick={handleOpenSpreadSheet}
-          >
+            onClick={handleOpenSpreadSheet}>
             {!isTableOpen ? (
               <MdOutlineExpandMore size={24} />
             ) : (
@@ -114,22 +112,19 @@ const SpreadSheetItem = ({
                   <TableRow className="text-sm text-center">
                     <TableCell
                       isHeader
-                      className="py-4 px-6 text-center min-w-[100px]"
-                    >
+                      className="py-4 px-6 text-center min-w-[100px]">
                       Név
                     </TableCell>
                     {currentDates?.map((date) => (
                       <TableCell
                         isHeader
                         className="py-4 px-2 text-center"
-                        key={date}
-                      >
+                        key={date}>
                         <a
                           data-tooltip-id="my-tooltip"
                           data-tooltip-content={date}
                           className="cursor-pointer"
-                          onClick={() => handleOpenModal(date)}
-                        >
+                          onClick={() => handleOpenModal(date)}>
                           {date}
                         </a>
                         <Tooltip
@@ -156,19 +151,22 @@ const SpreadSheetItem = ({
                 </TableHeader>
                 <TableBody className="divide-y divide-gray-100 text-sm">
                   {userSelections.map((user, idx) => (
-                    <TableRow key={idx} className="bg-white">
+                    <TableRow
+                      key={idx}
+                      className="bg-white">
                       {users.map((dbUser, idx) =>
                         dbUser.clerkUserId === user.clerkUserId ? (
                           <TableCell
                             key={idx}
-                            className="px-1 md:px-3 py-3 text-center"
-                          >
+                            className="px-1 md:px-3 py-3 text-center">
                             {dbUser.username}
                           </TableCell>
                         ) : null
                       )}
                       {currentDates?.map((date) => (
-                        <TableCell key={date} className="px-1 py-3 text-center">
+                        <TableCell
+                          key={date}
+                          className="px-1 py-3 text-center">
                           <div className="flex justify-center">
                             {user.selectedDays.includes(date) ? (
                               <Image
@@ -204,8 +202,7 @@ const SpreadSheetItem = ({
         isOpen={isOpen}
         showCloseButton={false}
         onClose={handleClosModal}
-        className="w-full md:max-w-[600px] m-8"
-      >
+        className="w-full md:max-w-[600px] m-8">
         <div className="no-scrollbar relative overflow-y-auto rounded-3xl bg-white py-8 px-4">
           <div className="px-4 pt-3">
             <div className="flex justify-center">
@@ -226,7 +223,10 @@ const SpreadSheetItem = ({
             </ul>
           </div>
           <div className="flex justify-center pt-6">
-            <OutlinedButton onClick={handleClosModal} text="Bezárás" />
+            <OutlinedButton
+              onClick={handleClosModal}
+              text="Bezárás"
+            />
           </div>
         </div>
       </Modal>

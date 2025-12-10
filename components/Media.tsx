@@ -9,7 +9,7 @@ import {
   TableRow,
   TableCell,
   TableBody,
-} from "./common/Table";
+} from "@/components/common/Table";
 import { Media } from "@/types/types";
 import { useModal } from "@/hooks/useModal";
 import { Icon } from "@iconify/react/dist/iconify.js";
@@ -66,7 +66,10 @@ const VideoList = () => {
     return (
       <>
         {Array.from({ length: 10 }).map((_, i) => (
-          <Skeleton key={i} className="w-full h-12 mb-2" />
+          <Skeleton
+            key={i}
+            className="w-full h-12 mb-2"
+          />
         ))}
       </>
     );
@@ -81,26 +84,22 @@ const VideoList = () => {
               <TableRow className="text-sm text-center">
                 <TableCell
                   isHeader
-                  className="px-2 py-4 font-bold text-gray-600 w-[166px]"
-                >
+                  className="px-2 py-4 font-bold text-gray-600 w-[166px]">
                   Név
                 </TableCell>
                 <TableCell
                   isHeader
-                  className="px-2 py-4 font-bold text-gray-600 w-[166px]"
-                >
+                  className="px-2 py-4 font-bold text-gray-600 w-[166px]">
                   URL
                 </TableCell>
                 <TableCell
                   isHeader
-                  className="px-2 py-4 font-bold text-gray-600 w-[166px]"
-                >
+                  className="px-2 py-4 font-bold text-gray-600 w-[166px]">
                   Létrehozva
                 </TableCell>
                 <TableCell
                   isHeader
-                  className="px-2 py-4 font-bold text-gray-600 w-[166px]"
-                >
+                  className="px-2 py-4 font-bold text-gray-600 w-[166px]">
                   Megtekintés
                 </TableCell>
               </TableRow>
@@ -109,12 +108,16 @@ const VideoList = () => {
             {/* Table Body */}
             <TableBody className="divide-y divide-gray-100">
               {mediaList.map((m) => (
-                <TableRow key={m._id} className="text-sm text-center h-16">
+                <TableRow
+                  key={m._id}
+                  className="text-sm text-center h-16">
                   <TableCell className="px-2 text-sm font-normal text-gray-600">
                     {m.name}
                   </TableCell>
                   <TableCell className="px-2 font-normal text-blue-500 underline">
-                    <Link href={m.mediaUrl as Route} target="_blank">
+                    <Link
+                      href={m.mediaUrl as Route}
+                      target="_blank">
                       {m.mediaUrl}
                     </Link>
                   </TableCell>
@@ -124,9 +127,12 @@ const VideoList = () => {
                   <TableCell className="px-2 text-sm font-normal text-gray-600">
                     <button
                       onClick={() => handleSelectedMedia(m)}
-                      className="cursor-pointer text-blue-600 my-auto"
-                    >
-                      <Icon icon="lucide:eye" width="20" height="20" />
+                      className="cursor-pointer text-blue-600 my-auto">
+                      <Icon
+                        icon="lucide:eye"
+                        width="20"
+                        height="20"
+                      />
                     </button>
                   </TableCell>
                 </TableRow>
@@ -139,8 +145,7 @@ const VideoList = () => {
         isOpen={isOpen}
         onClose={closeModal}
         showCloseButton={true}
-        className="max-w-[80%] p-0 overflow-hidden"
-      >
+        className="max-w-[80%] p-0 overflow-hidden">
         <EmbeddedMedia url={`${YOUTUBE_BASE_URL}${videoId}`} />
       </Modal>
     </>
