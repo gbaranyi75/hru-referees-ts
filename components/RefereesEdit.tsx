@@ -1,5 +1,5 @@
 "use client";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useState } from "react";
 import { Icon } from "@iconify/react/dist/iconify.js";
 import Input from "@/components/common/InputField";
 import DisabledButton from "./common/DisabledButton";
@@ -15,7 +15,7 @@ import { toast } from "react-toastify";
 import { fetchGuestUsers } from "@/lib/actions/fetchGuestUser";
 
 const RefereesEdit = () => {
-  const [loading, setLoading] = useState<boolean>(true);
+  const [loading] = useState<boolean>(true);
   const [editModeOpen, setEditModeOpen] = useState<boolean>(false);
   const [edited, setEdited] = useState<boolean>(false);
   const [userName, setUserName] = useState<string>("");

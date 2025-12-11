@@ -22,7 +22,7 @@ export const createNewMediaLink = async (mediaName: string, videoUrl: string) =>
     } catch (error) {
         console.error(error);
         return new Error(
-            (error as any) instanceof Error ? (error as Error).message : String(error)
+            error instanceof Error ? error.message : String(error)
         );
     }
 };

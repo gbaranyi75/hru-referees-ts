@@ -7,18 +7,18 @@ import { fetchUsers } from "@/lib/actions/fetchUsers";
 import { Calendar, User } from "@/types/types";
 
 const SpreadSheet = () => {
-  const [isTableOpen, setIsTableOpen] = useState(null);
+  const [isTableOpen, setIsTableOpen] = useState<number | null>(null);
   const [calendars, setCalendars] = useState<Calendar[]>([]);
   const [referees, setReferees] = useState<User[]>([]);
   const [loading, setLoading] = useState(false);
 
-  const toggleOpen = (id: any) => () =>
+  const toggleOpen = (id: number) => () =>
     setIsTableOpen((isTableOpen) => (isTableOpen === id ? null : id));
 
   const fetchCalendarsData = async () => {
     setLoading(true);
     const fetchedCalendars = await fetchCalendars();
-    let sortedCalendars: Calendar[] = fetchedCalendars.sort((a: Calendar, b: Calendar) => {
+    const sortedCalendars: Calendar[] = fetchedCalendars.sort((a: Calendar, b: Calendar) => {
       return new Date(b.days[0]).getTime() - new Date(a.days[0]).getTime();
     });
     const usersData = await fetchUsers();

@@ -2,6 +2,7 @@ import Documents from "@/components/Documents";
 import PageLayout from "@/components/common/PageLayout";
 import PageTitle from "@/components/common/PageTitle";
 import { checkRole } from "@/lib/utils/roles";
+export const dynamic = "force-dynamic";
 
 
 const DocumentsPage = async () => {

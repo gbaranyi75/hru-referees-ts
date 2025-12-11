@@ -21,7 +21,7 @@ const NextMatchInfoBox = () => {
     const firstDay = new Date();
     const nextWeek = new Date(firstDay.getTime() + 7 * 24 * 60 * 60 * 1000);
 
-    let arr: Match[] = [];
+    const arr: Match[] = [];
     fetchedMatches.forEach((match: Match) => {
       if (
         new Date(match.date) < nextWeek &&

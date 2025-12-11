@@ -1,14 +1,9 @@
 import PageLayout from "@/components/common/PageLayout";
 import PageTitle from "@/components/common/PageTitle";
-import { User } from "@/types/types";
-import { fetchUsers } from "@/lib/actions/fetchUsers";
-import { convertToJSON } from "@/lib/utils/convertToJSON";
 import RefereesEdit from "@/components/RefereesEdit";
+export const dynamic = "force-dynamic";
 
-
-const MatchesPage = async () => {
-  const usersData = await fetchUsers();
-  const users: User[] = await convertToJSON(usersData);
+const RefereesPage = async () => {
 
   return (
     <PageLayout>
@@ -18,4 +13,4 @@ const MatchesPage = async () => {
   );
 };
 
-export default MatchesPage;
+export default RefereesPage;

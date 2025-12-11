@@ -1,5 +1,6 @@
 import { SignIn } from "@clerk/nextjs";
 import PageLayout from "@/components/common/PageLayout";
+export const dynamic = "force-dynamic";
 
 export default function Page() {
   return (
