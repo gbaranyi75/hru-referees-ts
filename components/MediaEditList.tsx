@@ -42,8 +42,8 @@ export default function MediaEditList({
     try {
       if (!name && !mediaUrl) return;
       setLoading(true);
-      let mediaName = name ? name : (selectedMedia?.name as string);
-      let url = mediaUrl ? mediaUrl : (selectedMedia?.mediaUrl as string);
+      const mediaName = name ? name : (selectedMedia?.name as string);
+      const url = mediaUrl ? mediaUrl : (selectedMedia?.mediaUrl as string);
       const id = selectedMedia?._id;
       const response = await updateMedia(id, mediaName, url);
 

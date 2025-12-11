@@ -3,7 +3,6 @@
 import connectDB from "@/config/database";
 import User from "@/models/User";
 import bcrypt from "bcrypt";
-import { redirect } from "next/navigation";
 
 export async function updatePassword({ newPassword, token }: { newPassword: string; token: string }) {
   await connectDB();

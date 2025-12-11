@@ -101,14 +101,14 @@ const CalendarItem = ({
 
   /* Initializing current data from DB  */
   useEffect(() => {
-    let currentDays: Date[] = [];
+    const currentDays: Date[] = [];
     calendar.days.map((day) => currentDays.push(new Date(day)));
 
     setSelected(currentDays);
   }, []);
 
   useEffect(() => {
-    let days: string[] = [];
+    const days: string[] = [];
     if (selected?.length !== 0) setEdited(true);
     selected?.forEach((date) => {
       days.push(transformDateFormat(date).toString());
