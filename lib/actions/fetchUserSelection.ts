@@ -1,28 +1,49 @@
 "use server";
 import connectDB from "@/config/database";
 import UserSelection from "@/models/Userselection";
-import { convertToJSON } from "../utils/convertToJSON";
+import { Result, UserSelection as UserSelectionType } from "@/types/types";
 import { currentUser } from "@clerk/nextjs/server";
+import { handleAsyncOperation, createSuccessResult } from "@/lib/utils/errorHandling";
 
-export const fetchUserSelection = async (calendarId: string | undefined) => {
-  await connectDB();
-  try {
+/**
+ * Fetches a user's selection for a specific calendar
+ * 
+ * @param calendarId - The calendar ID
+ * @returns Result<UserSelectionType | null> - On success returns the selection or null, on error returns error message
+ * 
+ * @example
+ * ```typescript
+ * import { isSuccess, unwrapNullableResult } from "@/lib/utils/typeGuards";
+ * 
+ * const result = await fetchUserSelection(calendarId);
+ * 
+ * if (isSuccess(result)) {
+ *   if (result.data) {
+ *     setSelection(result.data);
+ *   }
+ * } else {
+ *   toast.error(result.error);
+ * }
+ * ```
+ */
+export const fetchUserSelection = async (calendarId: string | undefined): Promise<Result<UserSelectionType | null>> => {
+  return handleAsyncOperation(async () => {
+    await connectDB();
     const user = await currentUser();
 
-    if (!user) return null;
+    if (!user) {
+      throw new Error('Not logged in');
+    }
     
     const userSelectionData = await UserSelection.findOne({
       calendarId: calendarId,
       clerkUserId: user.id,
     }).lean();
     
-    if (!userSelectionData) return null;
+    if (!userSelectionData) {
+      return null;
+    }
     
-    const userSelection = convertToJSON(userSelectionData);
-    
-    return userSelection;
-  } catch (error) {
-    console.error(error);
-    return new Error(error instanceof Error ? error.message : String(error));
-  }
+    return JSON.parse(JSON.stringify(userSelectionData));
+  }, 'Error fetching user selection');
 };

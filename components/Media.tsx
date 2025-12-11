@@ -42,9 +42,9 @@ const VideoList = () => {
   const getMedia = async () => {
     try {
       setLoading(true);
-      const media: Media[] = await fetchMedia();
-      if (!media) return null;
-      const sortedMedia: Media[] = media.sort((a: Media, b: Media) => {
+      const result = await fetchMedia();
+      if (!result.success) return null;
+      let sortedMedia: Media[] = result.data.sort((a: Media, b: Media) => {
         return (
           new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
         );

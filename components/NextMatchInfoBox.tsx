@@ -15,14 +15,14 @@ const NextMatchInfoBox = () => {
 
   const loadMatches = async () => {
     setLoading(true);
-    const fetchedMatches = await fetchMatches();
-    if (!fetchedMatches) return setNoMatch(true);
+    const result = await fetchMatches();
+    if (!result.success) return setNoMatch(true);
 
     const firstDay = new Date();
     const nextWeek = new Date(firstDay.getTime() + 7 * 24 * 60 * 60 * 1000);
 
-    const arr: Match[] = [];
-    fetchedMatches.forEach((match: Match) => {
+    let arr: Match[] = [];
+    result.data.forEach((match: Match) => {
       if (
         new Date(match.date) < nextWeek &&
         new Date(match.date) >= new Date()

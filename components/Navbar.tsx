@@ -3,12 +3,11 @@ import NavbarProfileLinks from "./NavbarProfileLinks";
 import NavbarLogo from "./NavbarLogo";
 import NavbarDesktopWelcomeMsg from "./NavbarDesktopWelcomeMsg";
 import { fetchProfile } from "@/lib/actions/fetchProfile";
-import { convertToJSON } from "@/lib/utils/convertToJSON";
 
 const Navbar = async () => {
   await checkUser();
-  const loggedInUserData = await fetchProfile();
-  const loggedInUser = convertToJSON(loggedInUserData);
+  const result = await fetchProfile();
+  const loggedInUser = result.success ? result.data : null;
 
   return (
     <nav className="sticky inset-x-0 top-0 z-30 w-full transition-all border-b border-gray-300 bg-white">

@@ -1,16 +1,26 @@
 'use server'
 import connectDB from "@/config/database";
 import Media from "@/models/Media";
-import { convertToJSON } from "../utils/convertToJSON";
+import { Result, Media as MediaType } from "@/types/types";
+import { handleAsyncOperation } from "@/lib/utils/errorHandling";
 
-export const fetchMedia = async () => {
-  await connectDB();
-  try {
+/**
+ * Fetches media items from the database
+ * 
+ * @returns Result<MediaType[]> - On success returns array of media items, on error returns error message
+ * 
+ * @example
+ * ```typescript
+ * import { isSuccess, unwrapArrayResult } from "@/lib/utils/typeGuards";
+ * 
+ * const result = await fetchMedia();
+ * const media = unwrapArrayResult(result);
+ * ```
+ */
+export const fetchMedia = async (): Promise<Result<MediaType[]>> => {
+  return handleAsyncOperation(async () => {
+    await connectDB();
     const media = await Media.find().lean();
-    if (!media) return null;
-    return convertToJSON(media);
-  } catch (error) {
-    console.error(error);
-    return new Error(error instanceof Error ? error.message : String(error));
-  }
+    return JSON.parse(JSON.stringify(media));
+  }, 'Error fetching media');
 };

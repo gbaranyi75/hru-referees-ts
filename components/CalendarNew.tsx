@@ -56,15 +56,17 @@ const CalendarNew = () => {
         if (!session) {
           return;
         }
-        const res = await createNewCalendar(newCalendar);
-        const success = res instanceof Error ? false : res.success;
-        if (success) {
+        const result = await createNewCalendar(newCalendar);
+        if (result.success) {
           setCreateNewOpen(!createNewOpen);
           resetToBase();
           toast.success("Sikeres mentés");
+        } else {
+          toast.error(result.error);
         }
       } catch (error) {
         console.error(error);
+        toast.error("Hiba történt a mentés során");
       }
     } else if (eventName === "") {
       setShowErrorName(true);

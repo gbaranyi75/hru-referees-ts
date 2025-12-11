@@ -37,12 +37,18 @@ export default function RefereesTable() {
 
   const loadReferees = async () => {
     setLoading(true);
-    const guestUsersData = await fetchGuestUsers();
+    const guestUsersResult = await fetchGuestUsers();
     const usersData = await fetchUsers();
     const clerkUsers = await fetchClerkUserList();
-    setReferees(usersData);
-    setAuthUsers(clerkUsers.data);
-    setGuestReferees(guestUsersData);
+    if (usersData.success) {
+      setReferees(usersData.data);
+    }
+    if (clerkUsers.success) {
+      setAuthUsers(clerkUsers.data);
+    }
+    if (guestUsersResult.success) {
+      setGuestReferees(guestUsersResult.data);
+    }
     setLoading(false);
   };
 
@@ -107,10 +113,9 @@ export default function RefereesTable() {
   if (loading || !referees || !authUsers)
     return (
       <>
-        <Skeleton className="w-full h-18 mb-2" />
-        <Skeleton className="w-full h-18 mb-2" />
-        <Skeleton className="w-full h-18 mb-2" />
-        <Skeleton className="w-full h-18" />
+         {Array.from({ length: 10 }).map((_, i) => (
+            <Skeleton key={i} className="w-full h-18 mb-2" />
+          ))}
       </>
     );
 

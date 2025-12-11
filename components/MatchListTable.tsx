@@ -61,11 +61,13 @@ const MatchList = () => {
       params.set("page", "1");
       router.replace(`${pathName}?${params}` as Route);
     }
-    const matches = await fetchMatches({
+    const result = await fetchMatches({
       limit: ITEMS_PER_PAGE,
       skip: page <= 0 || page > totalPages ? 0 : (page - 1) * ITEMS_PER_PAGE,
     });
-    setMatches(matches);
+    if (result.success) {
+      setMatches(result.data);
+    }
     setLoading(false);
   };
 
