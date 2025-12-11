@@ -6,7 +6,7 @@ import { Icon } from "@iconify/react/dist/iconify.js";
 import { fetchCalendars } from "@/lib/actions/fetchCalendars";
 
 const CalendarEdit = () => {
-  const [isOpen, setIsOpen] = useState(null);
+  const [isOpen, setIsOpen] = useState<number | null>(null);
   const [calendars, setCalendars] = useState<Calendar[]>([]);
   const [editModeOpen, setEditModeOpen] = useState(false);
 
@@ -14,12 +14,12 @@ const CalendarEdit = () => {
     setEditModeOpen(!editModeOpen);
   };
 
-  const toggleOpen = (id: any) => () =>
+  const toggleOpen = (id: number) => () =>
     setIsOpen((isOpen) => (isOpen === id ? null : id));
 
   const fetchCalendarsData = async () => {
     const fetchedCalendars = await fetchCalendars();
-    let sortedCalendars: Calendar[] = fetchedCalendars.sort(
+    const sortedCalendars: Calendar[] = fetchedCalendars.sort(
       (a: Calendar, b: Calendar) => {
         return new Date(b.days[0]).getTime() - new Date(a.days[0]).getTime();
       }

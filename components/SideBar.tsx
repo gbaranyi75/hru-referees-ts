@@ -8,7 +8,6 @@ import { Icon } from "@iconify/react";
 import { useUser } from "@clerk/nextjs";
 import { NavItem } from "@/types/types";
 import NavbarLogo from "./NavbarLogo";
-import Skeleton from "./common/Skeleton";
 import Footer from "./Footer";
 
 const SideBar = ({ isAdmin }: { isAdmin: boolean }) => {

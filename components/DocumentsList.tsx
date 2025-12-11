@@ -151,7 +151,7 @@ const DocumentsList = ({
 
           {/* Table Body */}
           <TableBody className="divide-y divide-gray-100">
-            {files.map((file: any) => (
+            {files.map((file: FileProps) => (
               <TableRow key={file.Key} className="text-sm text-center">
                 <TableCell className="py-3 px-4 text-left font-normal text-gray-600">
                   {file.Key}
