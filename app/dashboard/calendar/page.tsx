@@ -2,6 +2,7 @@ import PageLayout from "@/components/common/PageLayout";
 import PageTitle from "@/components/common/PageTitle";
 import CalendarNew from "@/components/CalendarNew";
 import CalendarEdit from "@/components/CalendarEdit";
+export const dynamic = "force-dynamic";
 
 const CalendarPage = () => {
   return (

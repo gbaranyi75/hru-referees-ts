@@ -1,6 +1,7 @@
 import AddMatchDays from "@/components/AddMatchDays";
 import PageLayout from "@/components/common/PageLayout";
 import PageTitle from "@/components/common/PageTitle";
+export const dynamic = "force-dynamic";
 
 const MatchDaysPage = () => {
   return (
