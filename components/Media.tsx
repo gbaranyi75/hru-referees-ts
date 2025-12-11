@@ -12,7 +12,7 @@ import {
 } from "@/components/common/DefaultTable";
 import { Media } from "@/types/types";
 import { useModal } from "@/hooks/useModal";
-import { Icon } from "@iconify/react/dist/iconify.js";
+import { Icon } from "@iconify/react";
 import { fetchMedia } from "@/lib/actions/fetchMedia";
 import { formatDate } from "@/lib/utils/formatUtils";
 import Link from "next/link";

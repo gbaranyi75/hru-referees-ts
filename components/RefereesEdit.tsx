@@ -1,6 +1,6 @@
 "use client";
 import { useCallback, useState } from "react";
-import { Icon } from "@iconify/react/dist/iconify.js";
+import { Icon } from "@iconify/react";
 import { toast } from "react-toastify";
 import Input from "@/components/common/InputField";
 import DisabledButton from "@/components/common/DisabledButton";

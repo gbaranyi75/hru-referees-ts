@@ -3,8 +3,8 @@ import React, { useCallback, useState, useEffect } from "react";
 import { Route } from "next";
 import Link from "next/link";
 import Image from "next/image";
-import { Icon } from "@iconify/react";
 import { CldUploadButton } from "next-cloudinary";
+import { Icon } from "@iconify/react";
 import { useModal } from "../hooks/useModal";
 import { Modal } from "./common/Modal";
 import Input from "./common/InputField";
@@ -13,7 +13,8 @@ import OutlinedButton from "./common/OutlinedButton";
 import PrimaryButton from "./common/PrimaryButton";
 import { updateProfileData } from "@/lib/actions/updateProfileData";
 import { updateProfileImage } from "@/lib/actions/updateProfileImage";
-import { User, CloudinaryUploadResult } from "@/types/types";
+import { User } from "@/types/types";
+import type { CloudinaryUploadWidgetResults } from "next-cloudinary";
 import profileImage from "@/public/images/profile-image.png";
 
 type Props = {
@@ -55,7 +56,7 @@ export default function ProfileMetaCard({
   };
 
   const handleImageUpload = useCallback(
-    async (result: any) => {
+    async (result: CloudinaryUploadWidgetResults) => {
       const info = result?.info;
       if (info && typeof info === 'object' && 'secure_url' in info && 'public_id' in info) {
         const url = info.secure_url as string;

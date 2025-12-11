@@ -1,6 +1,6 @@
 "use client";
 import { useCallback, useEffect, useState } from "react";
-import { Icon } from "@iconify/react/dist/iconify.js";
+import { Icon } from "@iconify/react";
 import { toast } from "react-toastify";
 import MediaEditList from "./MediaEditList";
 import Input from "@/components/common/InputField";

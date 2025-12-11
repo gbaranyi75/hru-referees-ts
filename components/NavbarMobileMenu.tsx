@@ -1,12 +1,12 @@
 "use client";
 
-import React, { ReactNode, useEffect, useRef, useState } from "react";
+import React, { ReactNode, useRef, useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Variants, motion, useCycle } from "framer-motion";
+import { Variants, motion, useCycle, SVGMotionProps } from "framer-motion";
 import { ADMIN_LINKS, NAV_LINKS, PROFILE_LINKS } from "@/lib/utils/links";
 import { NavItem } from "@/types/types";
-import { Icon } from "@iconify/react/dist/iconify.js";
+import { Icon } from "@iconify/react";
 import { useUser } from "@clerk/nextjs";
 import { Route } from "next";
 
@@ -59,7 +59,7 @@ const MenuToggle = ({ toggle }: { toggle: () => void }) => (
   </button>
 );
 
-const Path = (props: React.ComponentProps<typeof motion.path>) => (
+const Path = (props: SVGMotionProps<SVGPathElement>) => (
   <motion.path
     fill="transparent"
     strokeWidth="2"
@@ -78,7 +78,7 @@ const variants = {
   },
 };
 
-const useDimensions = (ref: React.RefObject<HTMLElement>) => {
+const useDimensions = (ref: React.RefObject<HTMLDivElement | null>) => {
   const dimensions = useRef({ width: 0, height: 0 });
 
   useEffect(() => {
@@ -125,16 +125,10 @@ const MenuItemVariants = {
 };
 
 const NavbarMobileMenu = ({ isAdmin }: { isAdmin: boolean }) => {
-  const containerRef = useRef<HTMLElement>(null);
-  const [height, setHeight] = useState(0);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const { height } = useDimensions(containerRef);
   const [isOpen, toggleOpen] = useCycle(false, true);
   const { isSignedIn } = useUser();
-
-  useEffect(() => {
-    if (containerRef.current) {
-      setHeight(containerRef.current.offsetHeight);
-    }
-  }, [isOpen]);
 
   return (
     <motion.nav

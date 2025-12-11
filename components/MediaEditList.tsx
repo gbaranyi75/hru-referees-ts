@@ -1,7 +1,7 @@
 "use client";
 import { useCallback, useState } from "react";
 import { toast } from "react-toastify";
-import { Icon } from "@iconify/react/dist/iconify.js";
+import { Icon } from "@iconify/react";
 import { Media } from "@/types/types";
 import Skeleton from "@/components/common/Skeleton";
 import Input from "@/components/common/InputField";

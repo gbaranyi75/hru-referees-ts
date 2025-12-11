@@ -1,7 +1,7 @@
 "use client";
 import { useState, useEffect, useCallback } from "react";
 import Select, { SelectOption } from "./common/Select";
-import { Icon } from "@iconify/react/dist/iconify.js";
+import { Icon } from "@iconify/react";
 import { toast } from "react-toastify";
 import { DayPicker, getDefaultClassNames } from "react-day-picker";
 import "react-day-picker/dist/style.css";

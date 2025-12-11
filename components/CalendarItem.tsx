@@ -84,7 +84,8 @@ const CalendarItem = ({
     }
   }, [eventName, dates]);
 
-  const handleDeleteCalendar = async () => {
+  const handleDeleteCalendar = async (e?: React.MouseEvent<HTMLButtonElement>) => {
+    e?.preventDefault();
     try {
       const res = await deleteCalendar(calendarId);
       const success = res instanceof Error ? false : res.success;
@@ -104,7 +105,7 @@ const CalendarItem = ({
     calendar.days.map((day) => currentDays.push(new Date(day)));
 
     setSelected(currentDays);
-  }, []);
+  }, [calendar.days]);
 
   useEffect(() => {
     const days: string[] = [];

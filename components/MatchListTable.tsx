@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { Icon } from "@iconify/react/dist/iconify.js";
+import { Icon } from "@iconify/react";
 import { Modal } from "@/components/common/Modal";
 import Skeleton from "@/components/common/Skeleton";
 import {

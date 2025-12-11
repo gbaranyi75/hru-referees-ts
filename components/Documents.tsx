@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Icon } from "@iconify/react/dist/iconify.js";
+import { Icon } from "@iconify/react";
 import DocumentsList from "./DocumentsList";
 import DropZoneComponent from "./common/DropZone";
 

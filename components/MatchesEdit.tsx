@@ -1,7 +1,7 @@
 "use client";
 import { useState } from "react";
 import MatchListTableEdit from "./MatchListTableEdit";
-import { Icon } from "@iconify/react/dist/iconify.js";
+import { Icon } from "@iconify/react";
 
 const MatchesEdit = () => {
   const [editModeOpen, setEditModeOpen] = useState<boolean>(false);

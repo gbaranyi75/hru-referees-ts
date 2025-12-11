@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react";
 import CalendarItem from "./CalendarItem";
 import { Calendar } from "@/types/types";
-import { Icon } from "@iconify/react/dist/iconify.js";
+import { Icon } from "@iconify/react";
 import { fetchCalendars } from "@/lib/actions/fetchCalendars";
 
 const CalendarEdit = () => {
