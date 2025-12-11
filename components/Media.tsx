@@ -44,7 +44,7 @@ const VideoList = () => {
       setLoading(true);
       const media: Media[] = await fetchMedia();
       if (!media) return null;
-      let sortedMedia: Media[] = media.sort((a: Media, b: Media) => {
+      const sortedMedia: Media[] = media.sort((a: Media, b: Media) => {
         return (
           new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
         );

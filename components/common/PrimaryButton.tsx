@@ -5,7 +5,7 @@ const PrimaryButton = ({
 }: {
   text: string;
   type?: "submit" | "reset" | "button"; // Update the type to be optional and accept valid button types
-  onClick?: any;
+  onClick?: () => void;
 }) => {
   return (
     <>

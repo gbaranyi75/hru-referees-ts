@@ -20,6 +20,6 @@ export async function createGuestUser(data: { userName: string, address: Address
         return { success: true, error: false };
     } catch (error) {
         console.error(error);
-        return new Error(error instanceof Error ? error.message : String(error)) as any;
+        return new Error(error instanceof Error ? error.message : String(error));
     }
 }

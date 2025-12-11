@@ -1,6 +1,7 @@
 import { Route } from "next";
 import Link from "next/link";
 import { ReactNode } from "react";
+import { ButtonInfo } from "@/types/types";
 
 const InfoBox = ({
   heading,
@@ -10,7 +11,7 @@ const InfoBox = ({
 }: {
   heading: string;
   textColor?: string | undefined;
-  buttonInfo: any;
+  buttonInfo: ButtonInfo;
   children: ReactNode;
 }) => {
   return (
