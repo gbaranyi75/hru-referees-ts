@@ -1,26 +1,25 @@
 "use client";
 import { useCallback, useState } from "react";
 import { Icon } from "@iconify/react/dist/iconify.js";
-import Input from "@/components/common/InputField";
-import DisabledButton from "./common/DisabledButton";
-import Label from "./common/Label";
-import OutlinedButton from "./common/OutlinedButton";
-import PrimaryButton from "./common/PrimaryButton";
-import RefereesEditTable from "./RefereesEditTable";
-import Skeleton from "./common/Skeleton";
-import { createGuestUser } from "@/lib/actions/createGuestUser";
-import { Address } from "@/types/types";
-import Checkbox from "./common/Checkbox";
 import { toast } from "react-toastify";
+import Input from "@/components/common/InputField";
+import DisabledButton from "@/components/common/DisabledButton";
+import Label from "@/components/common/Label";
+import OutlinedButton from "@/components/common/OutlinedButton";
+import PrimaryButton from "@/components/common/PrimaryButton";
+import Skeleton from "@/components/common/Skeleton";
+import Checkbox from "@/components/common/Checkbox";
+import RefereesEditTable from "./RefereesEditTable";
+import { createGuestUser } from "@/lib/actions/createGuestUser";
 import { fetchGuestUsers } from "@/lib/actions/fetchGuestUser";
+import { Address } from "@/types/types";
 
 const RefereesEdit = () => {
-  const [loading] = useState<boolean>(true);
   const [editModeOpen, setEditModeOpen] = useState<boolean>(false);
   const [edited, setEdited] = useState<boolean>(false);
   const [userName, setUserName] = useState<string>("");
   const [status, setStatus] = useState<string>("");
-  const [address, setAddress] = useState<Address | null>(null); // Initialize with an empty object or appropriate default value
+  const [address, setAddress] = useState<Address>({ country: "" }); // Initialize with an empty Address object
   const [isGuest, setIsGuest] = useState<boolean>(false);
   const [keyValue, setKeyValue] = useState<number>(0);
   const toggleEditMode = () => {
@@ -61,29 +60,33 @@ const RefereesEdit = () => {
     setEdited(false);
     setUserName("");
     setStatus("");
+    setAddress({ country: "" });
   };
 
   const handleSave = useCallback(async () => {
     try {
       if (
         userName === "" ||
-        address === null ||
+        address.country === "" ||
         isGuest === false ||
         status === ""
       ) {
-        toast.error("Kérlek, tölts ki minden kötelezŐ mezőt");
+        toast.error("Kérlek, tölts ki minden kötelező mezőt");
         return;
       }
-      const res = await createGuestUser({ userName, address, status, isGuest });
-      const success = res instanceof Error ? false : res.success;
-      if (success) {
+      const result = await createGuestUser({ userName, address, status, isGuest });
+      if (result.success) {
         toast.success("Sikeres mentés");
         resetToDefault();
         toggleCreateNew();
         fetchGuestUsers()
         setKeyValue((prev) => prev + 1);
+      } else {
+        toast.error(result.error);
       }
-    } catch (error) {}
+    } catch (error) {
+      toast.error("Hiba történt a mentés során");
+    }
   }, [userName, address, status, isGuest]);
 
   return (
@@ -103,10 +106,10 @@ const RefereesEdit = () => {
             <div className="grid grid-cols-1 gap-x-10 gap-y-5 xl:grid-cols-2">
               
               <div className="col-span-2 lg:col-span-1">
-                <Label htmlFor="userame">Név:</Label>
+                <Label htmlFor="username">Név:</Label>
                 <Input
                   type="text"
-                  id="userame"
+                  id="username"
                   defaultValue={""}
                   onChange={handleUserNameChange}
                 />
@@ -153,15 +156,7 @@ const RefereesEdit = () => {
           </>
         )}
       </div>
-      {!loading ? (
-        <>
-          {Array.from({ length: 10 }).map((_, i) => (
-            <Skeleton key={i} className="w-full h-18 mb-2" />
-          ))}
-        </>
-      ) : (
-        <RefereesEditTable key={keyValue}/>
-      )}
+      <RefereesEditTable key={keyValue}/>
     </div>
   );
 };

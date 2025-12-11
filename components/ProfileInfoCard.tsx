@@ -55,14 +55,15 @@ export default function ProfileInfoCard({
 
   const handleSave = useCallback(async () => {
     if (!address) {
-      toast.error("Address is required.");
+      toast.error("Cím megadása kötelező");
       return;
     }
-    const res = await updateProfileContactData(address, status, phoneNumber);
-    const success = res instanceof Error ? false : res.success;
-    if (success) {
+    const result = await updateProfileContactData(address, status, phoneNumber);
+    if (result.success) {
       loadProfileAfterSaveAction();
       closeModal();
+    } else {
+      toast.error(result.error);
     }
   }, [
     city,

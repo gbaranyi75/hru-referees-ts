@@ -13,18 +13,18 @@ export default function ProfileCardWrapper() {
   const [loading, setLoading] = useState<boolean>(false);
   const loadProfile = async () => {
     setLoading(true);
-    const loggedInUserData = await fetchProfile();
-    if (loggedInUserData) {
-      setProfile(loggedInUserData);
+    const result = await fetchProfile();
+    if (result.success) {
+      setProfile(result.data);
     }
     setLoading(false);
   };
 
   const reloadProfile = useCallback(async () => {
     setLoading(true);
-    const loggedInUserData = await fetchProfile();
-    if (loggedInUserData) {
-      setProfile(loggedInUserData);
+    const result = await fetchProfile();
+    if (result.success) {
+      setProfile(result.data);
       toast.success("Sikeres mentés");
     }
     setLoading(false);

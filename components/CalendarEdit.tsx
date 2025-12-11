@@ -18,13 +18,13 @@ const CalendarEdit = () => {
     setIsOpen((isOpen) => (isOpen === id ? null : id));
 
   const fetchCalendarsData = async () => {
-    const fetchedCalendars = await fetchCalendars();
-    const sortedCalendars: Calendar[] = fetchedCalendars.sort(
-      (a: Calendar, b: Calendar) => {
-        return new Date(b.days[0]).getTime() - new Date(a.days[0]).getTime();
-      }
-    );
-    if (fetchedCalendars) {
+    const result = await fetchCalendars();
+    if (result.success) {
+      let sortedCalendars: Calendar[] = result.data.sort(
+        (a: Calendar, b: Calendar) => {
+          return new Date(b.days[0]).getTime() - new Date(a.days[0]).getTime();
+        }
+      );
       setCalendars(sortedCalendars);
     }
   };

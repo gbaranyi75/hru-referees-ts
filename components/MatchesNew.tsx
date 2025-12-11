@@ -319,8 +319,10 @@ const MatchesNew = () => {
 
   const getUsers = async () => {
     try {
-      const guestUsersData = await fetchGuestUsers();
-      const usersData = await fetchUsers();
+      const guestUsersResult = await fetchGuestUsers();
+      const usersResult = await fetchUsers();
+      const guestUsersData = guestUsersResult.success ? guestUsersResult.data : [];
+      const usersData = usersResult.success ? usersResult.data : [];
       setReferees([...usersData, ...guestUsersData]);
     } catch (error) {
       console.error(error);

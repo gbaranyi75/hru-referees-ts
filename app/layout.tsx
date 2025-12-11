@@ -35,7 +35,7 @@ export default function RootLayout({
             <div className="flex-1 lg:ml-[290px]">
               <Navbar />
               <NavbarMobileMenuWrapper />
-              <main className="bg-gray-100 p-4 mx-auto max-w-(--breakpoint-2xl) md:p-6 text-gray-600">
+              <main className="bg-gray-100 p-4 mx-auto max-w-screen-2xl md:p-6 text-gray-600">
                 {children}
               </main>
               {/* <Analytics /> */}

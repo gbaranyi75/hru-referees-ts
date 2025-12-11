@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import AddMatchDaysItem from "./AddMatchDaysItem";
 import Skeleton from "./common/Skeleton";
 import { Calendar, User } from "@/types/types";
@@ -11,31 +11,40 @@ import { fetchProfile } from "@/lib/actions/fetchProfile";
  * @returns A JSX component that displays a list of calendars and allows the user to add match days to them.
  */
 const AddMatchDays = () => {
-  const [isOpen, setIsOpen] = useState(null);
+  const [isOpen, setIsOpen] = useState<number | null>(null);
   const [loading, setLoading] = useState(false);
   const [calendars, setCalendars] = useState<Calendar[]>([]);
   const [profile, setProfile] = useState<User>({} as User);
 
-  const toggleOpen = (id: any) => () =>
+  const toggleOpen = (id: number) => () =>
     setIsOpen((isOpen) => (isOpen === id ? null : id));
 
-  const fetchData = async () => {
+  const fetchData = useCallback(async () => {
     setLoading(true);
-    const fetchedCalendars = await fetchCalendars();
-    let sortedCalendars: Calendar[] = fetchedCalendars.sort(
-      (a: Calendar, b: Calendar) => {
-        return new Date(b.days[0]).getTime() - new Date(a.days[0]).getTime();
+    try {
+      const fetchedCalendars = await fetchCalendars();
+      if (fetchedCalendars.success) {
+        const sortedCalendars: Calendar[] = fetchedCalendars.data.sort(
+          (a: Calendar, b: Calendar) => {
+            return new Date(b.days[0]).getTime() - new Date(a.days[0]).getTime();
+          }
+        );
+        setCalendars(sortedCalendars);
       }
-    );
-    const userProfile = await fetchProfile();
-    setCalendars(sortedCalendars);
-    setProfile(userProfile);
-    setLoading(false);
-  };
+      const userProfileResult = await fetchProfile();
+      if (userProfileResult.success) {
+        setProfile(userProfileResult.data);
+      }
+    } catch (error) {
+      console.error("Hiba az adatok betöltésekor:", error);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
 
   useEffect(() => {
     fetchData();
-  }, []);
+  }, [fetchData]);
 
   if (loading)
     return (

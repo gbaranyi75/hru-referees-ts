@@ -5,6 +5,27 @@ import User from "@/models/User";
 import { revalidatePath } from "next/cache";
 import { clerkClient } from "@clerk/nextjs/server";
 
+/**
+ * Updates user status and title, and syncs Clerk metadata
+ * 
+ * @param {string} clerkUserId - The Clerk user identifier
+ * @param {string} status - The new status
+ * @param {string} title - The new title
+ * @param {string} role - The new role (also updated in Clerk metadata)
+ * @returns {Promise<{success: boolean, error: boolean} | Error>} - On success returns success:true, on error returns Error object
+ * @throws {Error} - If database or Clerk API error occurs
+ * 
+ * @example
+ * const result = await updateProfileStatusAndTitle(
+ *   "user_123",
+ *   "active",
+ *   "President",
+ *   "admin"
+ * );
+ * if (result.success) {
+ *   console.log("Status, title and role successfully updated");
+ * }
+ */
 export const updateProfileStatusAndTitle = async (clerkUserId: string, status: string, title: string, role: string) => {
     await connectDB();
     try {
