@@ -55,21 +55,23 @@ export default function ProfileMetaCard({
   };
 
   const handleImageUpload = useCallback(
-    async (result: CloudinaryUploadResult) => {
-      const info = result.info;
-      const url = info.secure_url;
-      const public_id = info.public_id;
+    async (result: any) => {
+      const info = result?.info;
+      if (info && typeof info === 'object' && 'secure_url' in info && 'public_id' in info) {
+        const url = info.secure_url as string;
+        const public_id = info.public_id as string;
 
-      setImageUrl(url);
-      setPublicId(public_id);
+        setImageUrl(url);
+        setPublicId(public_id);
 
-      const res = await updateProfileImage(url);
-      const success = res instanceof Error ? false : res.success;
-      if (success) {
-        loadProfileAfterSaveAction();
+        const res = await updateProfileImage(url);
+        const success = res instanceof Error ? false : res.success;
+        if (success) {
+          loadProfileAfterSaveAction();
+        }
       }
     },
-    [imageUrl, publicId, loadProfileAfterSaveAction]
+    [loadProfileAfterSaveAction]
   );
 
   const handleSave = useCallback(async () => {

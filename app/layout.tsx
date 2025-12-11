@@ -9,6 +9,8 @@ import { huHU } from "@clerk/localizations";
 import { Analytics } from "@vercel/analytics/next";
 import "./globals.css";
 
+export const dynamic = 'force-dynamic';
+
 const inter = Inter({ subsets: ["latin"] });
 const outfit = Outfit({
   variable: "--font-outfit-sans",

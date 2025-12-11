@@ -84,8 +84,7 @@ const CalendarItem = ({
     }
   }, [eventName, dates]);
 
-  const handleDeleteCalendar = async (e: React.MouseEvent<HTMLSpanElement>) => {
-    e.preventDefault();
+  const handleDeleteCalendar = async () => {
     try {
       const res = await deleteCalendar(calendarId);
       const success = res instanceof Error ? false : res.success;

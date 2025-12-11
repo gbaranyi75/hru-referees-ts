@@ -11,7 +11,7 @@ export const updateProfileData = async (
   userName: string, fbUrl: string, instaUrl: string
 ): Promise<Result<null>> => {
   try {
-    // Validálás
+    // Validation
     const validation = profileUpdateSchema.safeParse({ 
       userName, 
       fbUrl: fbUrl || undefined, 

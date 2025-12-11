@@ -59,7 +59,7 @@ const MenuToggle = ({ toggle }: { toggle: () => void }) => (
   </button>
 );
 
-const Path = (props: React.SVGProps<SVGPathElement>) => (
+const Path = (props: React.ComponentProps<typeof motion.path>) => (
   <motion.path
     fill="transparent"
     strokeWidth="2"
@@ -125,10 +125,16 @@ const MenuItemVariants = {
 };
 
 const NavbarMobileMenu = ({ isAdmin }: { isAdmin: boolean }) => {
-  const containerRef = useRef(null);
-  const { height } = useDimensions(containerRef);
+  const containerRef = useRef<HTMLElement>(null);
+  const [height, setHeight] = useState(0);
   const [isOpen, toggleOpen] = useCycle(false, true);
   const { isSignedIn } = useUser();
+
+  useEffect(() => {
+    if (containerRef.current) {
+      setHeight(containerRef.current.offsetHeight);
+    }
+  }, [isOpen]);
 
   return (
     <motion.nav
