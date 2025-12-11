@@ -26,20 +26,17 @@ const AddMatchDaysItem = ({
   const eventName = calendar?.name;
 
   const [edited, setEdited] = useState(false);
-  const [isSelection, setIsSelection] = useState(false);
   const [selectionId, setSelectionId] = useState("");
   const [myCurrentDates, setMyCurrentDates] = useState<string[]>([]);
   const [selectedDates, setSelectedDates] = useState<string[]>(myCurrentDates);
   const [loading, setLoading] = useState(false);
-  const [isSuccess, setIsSuccess] = useState(false);
 
   const handleOpenCalendar = (e: { preventDefault: () => void }) => {
     e.preventDefault();
     toggle();
   };
 
-  const clearAndCloseCard = (e: { preventDefault: () => void }) => {
-    e.preventDefault();
+  const clearAndCloseCard = () => {
     setEdited(false);
     setSelectedDates(myCurrentDates);
     toggle();
@@ -51,7 +48,7 @@ const AddMatchDaysItem = ({
     if (!selectedDatesArray.includes(date)) {
       selectedDatesArray = [...selectedDates, date];
     } else {
-      selectedDatesArray.splice(selectedDates.indexOf(date), 1);
+      selectedDatesArray.splice(selectedDatesArray.indexOf(date), 1);
     }
     myCurrentDates.toString() === selectedDatesArray.toString()
       ? setEdited(false)
@@ -61,41 +58,57 @@ const AddMatchDaysItem = ({
 
   const handleSubmit = async () => {
     setLoading(true);
-    if (selectionId) {
-      const res = await updateUserSelection(selectionId, selectedDates);
-      const success = res instanceof Error ? false : res.success;
-      if (success) setIsSuccess(true);
-      toast.success("Sikeres mentés");
-    } else {
-      const res = await createNewUserSelection({
-        calendarName: calendar.name,
-        calendarId: calendar._id,
-        selectedDays: selectedDates,
-        username: profile.username,
-        clerkUserId: profile.clerkUserId,
-      });
-      const success = res instanceof Error ? false : res.success;
-      if (success) setSelectedDates(selectedDates);
-      toast.success("Sikeres mentés");
+    try {
+      if (selectionId) {
+        const res = await updateUserSelection(selectionId, selectedDates);
+        const success = res instanceof Error ? false : res.success;
+        if (success) {
+          setMyCurrentDates(selectedDates);
+          setEdited(false);
+          toast.success("Sikeres mentés");
+        }
+      } else {
+        const res = await createNewUserSelection({
+          calendarName: calendar.name,
+          calendarId: calendar._id,
+          selectedDays: selectedDates,
+          username: profile.username,
+          clerkUserId: profile.clerkUserId,
+        });
+        const success = res instanceof Error ? false : res.success;
+        if (success) {
+          setMyCurrentDates(selectedDates);
+          setEdited(false);
+          toast.success("Sikeres mentés");
+        }
+      }
+    } catch (error) {
+      console.error("Hiba a mentéskor:", error);
+      toast.error("Hiba történt a mentéskor");
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   };
 
   useEffect(() => {
-    setLoading(true);
     const fetchCurrentSelection = async () => {
-      const result = await fetchUserSelection(calendar._id);
-      if (result.success && result.data) {
-        const selection = result.data;
-        setIsSelection(true);
-        setMyCurrentDates(selection.selectedDays);
-        setSelectedDates(selection.selectedDays);
-        setSelectionId(selection._id);
+      setLoading(true);
+      try {
+        const result = await fetchUserSelection(calendar._id);
+        if (result.success && result.data) {
+          const selection = result.data;
+          setMyCurrentDates(selection.selectedDays);
+          setSelectedDates(selection.selectedDays);
+          setSelectionId(selection._id);
+        }
+      } catch (error) {
+        console.error("Hiba a kiválasztás betöltésekor:", error);
+      } finally {
+        setLoading(false);
       }
     };
     fetchCurrentSelection();
-    setLoading(false);
-  }, [calendar]);
+  }, [calendar._id]);
 
   const daysBadges = (day: string) => {
     return (

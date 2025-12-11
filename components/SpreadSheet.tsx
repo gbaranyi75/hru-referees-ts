@@ -21,7 +21,7 @@ const SpreadSheet = () => {
     const usersResult = await fetchUsers();
     
     if (calendarsResult.success) {
-      let sortedCalendars: Calendar[] = calendarsResult.data.sort((a: Calendar, b: Calendar) => {
+      const sortedCalendars: Calendar[] = calendarsResult.data.sort((a: Calendar, b: Calendar) => {
         return new Date(b.days[0]).getTime() - new Date(a.days[0]).getTime();
       });
       setCalendars(sortedCalendars);

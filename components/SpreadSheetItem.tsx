@@ -42,7 +42,7 @@ const SpreadSheetItem = ({
   };
 
   const fetchCurrentSelection = async () => {
-    let selectionsWithCorrectUserName: UserSelection[] = [];
+    const selectionsWithCorrectUserName: UserSelection[] = [];
     const result = await fetchUserSelections(calendar?._id);
     if (result.success) {
       result.data.map((selection: UserSelection) => {
