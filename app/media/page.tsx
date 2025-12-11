@@ -3,7 +3,7 @@ import PageTitle from "@/components/common/PageTitle";
 import VideoList from "@/components/Media";
 export const dynamic = "force-dynamic";
 
-const MatchesPage = () => {
+const MediaPage = () => {
   return (
     <PageLayout>
       <PageTitle title="Média" />
@@ -11,4 +11,4 @@ const MatchesPage = () => {
     </PageLayout>
   );
 };
-export default MatchesPage;
+export default MediaPage;

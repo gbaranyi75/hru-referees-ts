@@ -11,18 +11,7 @@ const MatchesPage = () => {
     <PageLayout>
       <PageTitle title="Mérkőzések" />
       <Suspense
-        fallback={
-          <div className="space-y-2">
-            <Skeleton className="w-full h-12" />
-            <Skeleton className="w-full h-12" />
-            <Skeleton className="w-full h-12" />
-            <Skeleton className="w-full h-12" />
-            <Skeleton className="w-full h-12" />
-            <Skeleton className="w-full h-12" />
-            <Skeleton className="w-full h-12" />
-            <Skeleton className="w-full h-12" />
-          </div>
-        }
+        fallback={null}
       >
         <MatchListTable />
       </Suspense>

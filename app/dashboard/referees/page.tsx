@@ -3,9 +3,7 @@ import PageTitle from "@/components/common/PageTitle";
 import RefereesEdit from "@/components/RefereesEdit";
 export const dynamic = "force-dynamic";
 
-
-const MatchesPage = async () => {
-
+const RefereesPage = async () => {
 
   return (
     <PageLayout>
@@ -15,4 +13,4 @@ const MatchesPage = async () => {
   );
 };
 
-export default MatchesPage;
+export default RefereesPage;
