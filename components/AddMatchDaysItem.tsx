@@ -28,7 +28,7 @@ const AddMatchDaysItem = ({
   const [edited, setEdited] = useState(false);
   const [isSelection, setIsSelection] = useState(false);
   const [selectionId, setSelectionId] = useState("");
-  const [myCurrentDates, setMyCurrentDates] = useState([]);
+  const [myCurrentDates, setMyCurrentDates] = useState<string[]>([]);
   const [selectedDates, setSelectedDates] = useState<string[]>(myCurrentDates);
   const [loading, setLoading] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
@@ -84,8 +84,9 @@ const AddMatchDaysItem = ({
   useEffect(() => {
     setLoading(true);
     const fetchCurrentSelection = async () => {
-      const selection = await fetchUserSelection(calendar._id);
-      if (selection?._id) {
+      const result = await fetchUserSelection(calendar._id);
+      if (result.success && result.data) {
+        const selection = result.data;
         setIsSelection(true);
         setMyCurrentDates(selection.selectedDays);
         setSelectedDates(selection.selectedDays);

@@ -32,12 +32,12 @@ export const checkUser = async () => {
       clerkUserId: user.id,
       username: `${user.lastName} ${user.firstName}`,
       image: user.imageUrl,
-      address: { city: '-', country: '-' },
-      phoneNumber: '0000-0000000000',
-      hasTitle: null,
-      status: '-',
-      facebookUrl: 'https://www.facebook.com/',
-      instagramUrl: 'https://www.instagram.com/',
+      address: { city: '', country: 'Magyarország' },
+      phoneNumber: '',
+      hasTitle: '',
+      status: 'Nincs megadva',
+      facebookUrl: '',
+      instagramUrl: '',
     })
 
     await newUser.save()

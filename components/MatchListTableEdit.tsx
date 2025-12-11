@@ -21,7 +21,7 @@ export default function MatchListTable() {
   const { isOpen, openModal, closeModal } = useModal();
   const [selectedMatch, setSelectedMatch] = useState<Match | null>(null);
   const [matches, setMatches] = useState<Match[]>([]);
-  const [referees, setReferees] = useState<User[] | GuestUser[]>([]);
+  const [referees, setReferees] = useState<(User | GuestUser)[]>([]);
   const [loading, setLoading] = useState(false);
 
   const handleSelectedMatch = (match: Match) => {
@@ -31,15 +31,19 @@ export default function MatchListTable() {
 
   const loadMatches = async () => {
     setLoading(true);
-    const fetchedMatches = await fetchMatches();
-    setMatches(fetchedMatches);
+    const result = await fetchMatches();
+    if (result.success) {
+      setMatches(result.data);
+    }
     setLoading(false);
   };
 
   const getUsers = async () => {
     try {
-      const guestUsersData = await fetchGuestUsers();
-      const usersData = await fetchUsers();
+      const guestUsersResult = await fetchGuestUsers();
+      const usersResult = await fetchUsers();
+      const guestUsersData = guestUsersResult.success ? guestUsersResult.data : [];
+      const usersData = usersResult.success ? usersResult.data : [];
       setReferees([...usersData, ...guestUsersData]);
     } catch (error) {
       console.error(error);

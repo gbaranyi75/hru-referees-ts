@@ -1,5 +1,4 @@
 import { Schema, model, models } from "mongoose";
-import { boolean } from "zod";
 
 const GuestUserSchema = new Schema(
     {
@@ -20,7 +19,7 @@ const GuestUserSchema = new Schema(
             required: true
         },
         isGuest: {
-            type: boolean,
+            type: Boolean,
             required: true
         }
     },

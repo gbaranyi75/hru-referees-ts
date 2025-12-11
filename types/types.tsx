@@ -99,3 +99,7 @@ export type CloudinaryUploadResult = {
     public_id: string;
   };
 };
+
+export type Result<T> =
+  | { success: true; data: T }
+  | { success: false; error: string };

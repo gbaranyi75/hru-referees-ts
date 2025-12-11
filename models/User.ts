@@ -24,11 +24,13 @@ const UserSchema = new Schema(
     {
       city: {
         type: String,
-        required: true
+        required: false,
+        default: ''
       },
       country: {
         type: String,
-        required: true
+        required: false,
+        default: ''
       },
     },
     phoneNumber: {

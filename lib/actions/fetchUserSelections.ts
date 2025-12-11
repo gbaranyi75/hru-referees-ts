@@ -1,22 +1,21 @@
 "use server";
 import connectDB from "@/config/database";
 import UserSelection from "@/models/Userselection";
-import { convertToJSON } from "../utils/convertToJSON";
+import { Result, UserSelection as UserSelectionType } from "@/types/types";
 
-export const fetchUserSelections = async (calendarId: string | undefined) => {
-  await connectDB();
-  try {    
+export const fetchUserSelections = async (calendarId: string | undefined): Promise<Result<UserSelectionType[]>> => {
+  try {
+    await connectDB();
     const userSelectionData = await UserSelection.find({
       calendarId: calendarId,
     }).lean();
     
-    if (!userSelectionData) return null;
-    
-    const userSelection = convertToJSON(userSelectionData);
-    
-    return userSelection;
+    return { success: true, data: JSON.parse(JSON.stringify(userSelectionData)) };
   } catch (error) {
-    console.error(error);
-    return new Error(error instanceof Error ? error.message : String(error));
+    console.error('Error fetching user selections:', error);
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : 'Error fetching user selections'
+    };
   }
 };

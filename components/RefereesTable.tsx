@@ -26,8 +26,13 @@ export default function RefereesTable() {
 
   const loadReferees = async () => {
     setLoading(true);
-    const usersData = await fetchUsers();
-    setReferees(usersData);
+    const result = await fetchUsers();
+    if (result.success) {
+      setReferees(result.data);
+    } else {
+      console.error(result.error);
+      setReferees([]);
+    }
     setLoading(false);
   };
 

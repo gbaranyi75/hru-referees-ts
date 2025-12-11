@@ -24,7 +24,7 @@ const MatchItemEditModal = ({
   selectedMatch,
   loadMatches,
 }: {
-  referees: User[] | GuestUser[];
+  referees: (User | GuestUser)[];
   closeModal: () => void;
   selectedMatch: Match | null;
   loadMatches: () => void;

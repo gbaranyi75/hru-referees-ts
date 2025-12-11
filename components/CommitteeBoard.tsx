@@ -9,14 +9,17 @@ const CommitteeBoard = () => {
 
   useEffect(() => {
     const getUsers = async () => {
-      const fetchedUsers = await fetchUsers();
-      setPresident(
-        () => fetchedUsers.filter((pres: User) => pres.hasTitle === "Elnök")[0]
-      );
-      setSecretary(
-        () =>
-          fetchedUsers.filter((pres: User) => pres.hasTitle === "Főtitkár")[0]
-      );
+      const result = await fetchUsers();
+      if (result.success) {
+        const fetchedUsers = result.data;
+        setPresident(
+          () => fetchedUsers.filter((pres: User) => pres.hasTitle === "Elnök")[0]
+        );
+        setSecretary(
+          () =>
+            fetchedUsers.filter((pres: User) => pres.hasTitle === "Főtitkár")[0]
+        );
+      }
       setLoading(false);
     };
     getUsers();

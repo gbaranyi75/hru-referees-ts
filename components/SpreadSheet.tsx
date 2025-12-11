@@ -17,14 +17,19 @@ const SpreadSheet = () => {
 
   const fetchCalendarsData = async () => {
     setLoading(true);
-    const fetchedCalendars = await fetchCalendars();
-    const sortedCalendars: Calendar[] = fetchedCalendars.sort((a: Calendar, b: Calendar) => {
-      return new Date(b.days[0]).getTime() - new Date(a.days[0]).getTime();
-    });
-    const usersData = await fetchUsers();
-    setCalendars(sortedCalendars);
+    const calendarsResult = await fetchCalendars();
+    const usersResult = await fetchUsers();
+    
+    if (calendarsResult.success) {
+      let sortedCalendars: Calendar[] = calendarsResult.data.sort((a: Calendar, b: Calendar) => {
+        return new Date(b.days[0]).getTime() - new Date(a.days[0]).getTime();
+      });
+      setCalendars(sortedCalendars);
+    }
 
-    setReferees(usersData);
+    if (usersResult.success) {
+      setReferees(usersResult.data);
+    }
     setLoading(false);
   };
 
