@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { FaExclamationTriangle } from "react-icons/fa";
+export const dynamic = "force-dynamic";
 
 const NotFoundPage = () => {
   return (

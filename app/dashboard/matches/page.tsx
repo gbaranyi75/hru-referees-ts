@@ -2,6 +2,7 @@ import MatchesNew from "@/components/MatchesNew";
 import PageLayout from "@/components/common/PageLayout";
 import PageTitle from "@/components/common/PageTitle";
 import MatchesEdit from "@/components/MatchesEdit";
+export const dynamic = "force-dynamic";
 
 const MatchesPage = () => {
 

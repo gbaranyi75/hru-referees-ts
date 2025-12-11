@@ -1,6 +1,7 @@
 import Referees from "@/components/Referees";
 import PageLayout from "@/components/common/PageLayout";
 import PageTitle from "@/components/common/PageTitle";
+export const dynamic = "force-dynamic";
 
 const RefereesPage = () => {
 
