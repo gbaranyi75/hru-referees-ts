@@ -3,9 +3,15 @@
 ## Pre-deployment Steps
 
 ### 1. Delete old ESLint config file
-Run the following command to remove the conflicting ESLint config:
 
-**Windows:**
+**Recommended (Cross-platform - Works on Windows, macOS, Linux):**
+```bash
+npm run cleanup:eslint
+```
+
+**Alternative Methods:**
+
+**Windows (Command Prompt/PowerShell):**
 ```bash
 del eslint.config.mjs
 ```
@@ -14,16 +20,18 @@ Or run the batch script:
 cleanup-eslint.bat
 ```
 
-**Unix/Linux/macOS:**
+**Unix/Linux/macOS (Terminal):**
 ```bash
 rm eslint.config.mjs
 ```
-
-**Cross-platform (Node.js):**
+Or run the shell script:
 ```bash
-npm install -g rimraf
-rimraf eslint.config.mjs
+chmod +x cleanup-eslint.sh
+./cleanup-eslint.sh
 ```
+
+**Manual (Any Platform):**
+Simply delete the `eslint.config.mjs` file from your project root using your file explorer or IDE.
 
 ### 2. Install dependencies
 ```bash
@@ -115,3 +123,10 @@ Next.js will create optimized production build in `.next` directory
 - Dynamic rendering is enabled for pages using server-side features
 - Clerk is configured with Hungarian localization
 - Cloudinary is used for image uploads
+
+## Cross-Platform Cleanup Scripts:
+The project includes multiple cleanup options:
+- `cleanup-eslint.js` - Node.js script (works on all platforms)
+- `cleanup-eslint.bat` - Windows batch file
+- `cleanup-eslint.sh` - Unix/Linux/macOS shell script
+- `npm run cleanup:eslint` - NPM script (recommended, works everywhere)
