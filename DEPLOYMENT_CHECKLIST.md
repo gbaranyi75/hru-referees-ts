@@ -4,12 +4,25 @@
 
 ### 1. Delete old ESLint config file
 Run the following command to remove the conflicting ESLint config:
+
+**Windows:**
 ```bash
 del eslint.config.mjs
 ```
 Or run the batch script:
 ```bash
 cleanup-eslint.bat
+```
+
+**Unix/Linux/macOS:**
+```bash
+rm eslint.config.mjs
+```
+
+**Cross-platform (Node.js):**
+```bash
+npm install -g rimraf
+rimraf eslint.config.mjs
 ```
 
 ### 2. Install dependencies

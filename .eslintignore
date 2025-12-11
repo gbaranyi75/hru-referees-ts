@@ -1,0 +1,6 @@
+.next/
+node_modules/
+*.d.ts
+out/
+build/
+dist/
