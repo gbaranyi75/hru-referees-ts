@@ -48,7 +48,11 @@ const AddMatchDaysItem = ({
     if (!selectedDatesArray.includes(date)) {
       selectedDatesArray = [...selectedDates, date];
     } else {
-      selectedDatesArray.splice(selectedDatesArray.indexOf(date), 1);
+      // Safe removal: only splice if date is found in array
+      const index = selectedDatesArray.indexOf(date);
+      if (index !== -1) {
+        selectedDatesArray.splice(index, 1);
+      }
     }
     myCurrentDates.toString() === selectedDatesArray.toString()
       ? setEdited(false)
