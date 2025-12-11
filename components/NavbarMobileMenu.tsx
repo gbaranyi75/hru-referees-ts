@@ -29,7 +29,7 @@ const sidebar: Variants = {
   },
 };
 
-const MenuToggle = ({ toggle }: { toggle: any }) => (
+const MenuToggle = ({ toggle }: { toggle: () => void }) => (
   <button
     onClick={toggle}
     className="pointer-events-auto absolute left-4 top-[23px] z-30"
@@ -59,7 +59,7 @@ const MenuToggle = ({ toggle }: { toggle: any }) => (
   </button>
 );
 
-const Path = (props: any) => (
+const Path = (props: React.SVGProps<SVGPathElement>) => (
   <motion.path
     fill="transparent"
     strokeWidth="2"
@@ -78,7 +78,7 @@ const variants = {
   },
 };
 
-const useDimensions = (ref: any) => {
+const useDimensions = (ref: React.RefObject<HTMLElement>) => {
   const dimensions = useRef({ width: 0, height: 0 });
 
   useEffect(() => {
@@ -232,7 +232,7 @@ const SideNavItem = ({
 }: {
   item: NavItem;
   className?: string;
-  toggle?: any;
+  toggle?: () => void;
 }) => {
   const pathname = usePathname();
   const [subMenuOpen, setSubMenuOpen] = useState(false);

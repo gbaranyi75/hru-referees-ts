@@ -21,6 +21,6 @@ export const getSessionUser = async () => {
     };
   } catch (error) {
     console.error(error);
-    return new Error(error instanceof Error ? error.message : String(error)) as any;
+    return new Error(error instanceof Error ? error.message : String(error));
   }
 };

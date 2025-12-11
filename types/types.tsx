@@ -85,4 +85,17 @@ export type GuestUser = {
   address: Address;
   status: string;
   isGuest: boolean;
-}
+};
+
+export type ButtonInfo = {
+  text: string;
+  link: string;
+  backgroundColor: string;
+};
+
+export type CloudinaryUploadResult = {
+  info: {
+    secure_url: string;
+    public_id: string;
+  };
+};

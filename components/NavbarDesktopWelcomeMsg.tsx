@@ -1,6 +1,7 @@
 import { SignedIn } from "@clerk/nextjs";
+import { User } from "@/types/types";
 
-const NavbarDesktopWelcomeMsg = ({loggedInUser}:{loggedInUser: any}) => {
+const NavbarDesktopWelcomeMsg = ({loggedInUser}:{loggedInUser: User | null}) => {
   
   return (
     <div className="hidden lg:block text-gray-600 text-sm">

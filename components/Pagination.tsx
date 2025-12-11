@@ -19,7 +19,7 @@ const Pagination: React.FC<IPaginationProps> = ({
     { length: Math.min(3, totalPages) },
     (_, i) => {
       // Calculate the page number to show
-      let page = (currentPage - 1) + i;
+      const page = (currentPage - 1) + i;
 
       // Only show if not first or last page
       if (page === 1 || page >= totalPages || page === 0) return null;

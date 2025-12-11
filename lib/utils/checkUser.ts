@@ -44,6 +44,6 @@ export const checkUser = async () => {
     return newUser;
   } catch (error) {
     console.error(error);
-    return new Error(error instanceof Error ? error.message : String(error)) as any;
+    return new Error(error instanceof Error ? error.message : String(error));
   }
 };

@@ -13,7 +13,8 @@ import NavbarUserIcon from "./NavbarUserIcon";
 import { Dropdown } from "./common/Dropdown";
 import Link from "next/link";
 import { DropdownItem } from "./common/DropdownItem";
-const NavbarProfileLinks = ({ loggedInUser }: { loggedInUser: any }) => {
+import { User } from "@/types/types";
+const NavbarProfileLinks = ({ loggedInUser }: { loggedInUser: User | null }) => {
   const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false);
   const { isLoaded } = useUser();
 

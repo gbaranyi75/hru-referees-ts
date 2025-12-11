@@ -13,7 +13,7 @@ import OutlinedButton from "./common/OutlinedButton";
 import PrimaryButton from "./common/PrimaryButton";
 import { updateProfileData } from "@/lib/actions/updateProfileData";
 import { updateProfileImage } from "@/lib/actions/updateProfileImage";
-import { User } from "@/types/types";
+import { User, CloudinaryUploadResult } from "@/types/types";
 import profileImage from "@/public/images/profile-image.png";
 
 type Props = {
@@ -55,10 +55,10 @@ export default function ProfileMetaCard({
   };
 
   const handleImageUpload = useCallback(
-    async (result: any) => {
-      const info = result.info as any;
-      const url = info.secure_url as string;
-      const public_id = info.public_id as string;
+    async (result: CloudinaryUploadResult) => {
+      const info = result.info;
+      const url = info.secure_url;
+      const public_id = info.public_id;
 
       setImageUrl(url);
       setPublicId(public_id);

@@ -74,7 +74,7 @@ const CalendarNew = () => {
   }, [eventName, dates]);
 
   useEffect(() => {
-    let days: string[] = [];
+    const days: string[] = [];
     if (selected?.length !== 0) setEdited(true);
     selected?.forEach((date) => {
       days.push(transformDateFormat(date).toString());
