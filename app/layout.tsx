@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { Outfit } from "next/font/google";
 import Navbar from "@/components/Navbar";
 import NavbarMobileMenuWrapper from "@/components/NavbarMobileMenuWrapper";
 import SideBarWrapper from "@/components/SideBarWrapper";
@@ -7,6 +8,12 @@ import { ClerkProvider } from "@clerk/nextjs";
 import { huHU } from "@clerk/localizations";
 import { Analytics } from "@vercel/analytics/next";
 import "./globals.css";
+
+const outfit = Outfit({
+  subsets: ["latin"],
+  weight: ["100", "200", "300", "400", "500", "600", "700", "800", "900"],
+  variable: "--font-outfit",
+});
 
 export const dynamic = 'force-dynamic';
 
@@ -24,12 +31,7 @@ export default function RootLayout({
   return (
     <ClerkProvider localization={huHU}>
       <html lang="en" suppressHydrationWarning>
-        <head>
-          <link rel="preconnect" href="https://fonts.googleapis.com" />
-          <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-          <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&display=swap" rel="stylesheet" />
-        </head>
-        <body className="font-outfit">
+        <body className={`${outfit.variable} font-outfit`}>
           <div className="min-h-screen lg:flex">
             <SideBarWrapper />
             <div className="flex-1 lg:ml-72.5">
@@ -38,7 +40,7 @@ export default function RootLayout({
               <main className="bg-gray-100 p-4 mx-auto max-w-screen-2xl md:p-6 text-gray-600">
                 {children}
               </main>
-              {/* <Analytics /> */}
+              <Analytics />
             </div>
             <ToastContainer
               position="top-right"
