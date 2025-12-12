@@ -103,3 +103,9 @@ export type CloudinaryUploadResult = {
 export type Result<T> =
   | { success: true; data: T }
   | { success: false; error: string };
+
+  export type ClerkUser = {
+    id: string;
+    emailAddresses: { emailAddress: string }[];
+    username: string;
+  };

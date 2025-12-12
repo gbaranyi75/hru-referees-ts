@@ -1,11 +1,11 @@
 const DeleteButton = ({
   text,
-  type = "button", // Assign a default value to 'type'
+  type = "button",
   onClick,
 }: {
   text: string;
-  type?: "submit" | "reset" | "button"; // Update the type to be optional and accept valid button types
-  onClick: () => void;
+  type?: "submit" | "reset" | "button";
+  onClick: (e?: React.MouseEvent<HTMLButtonElement>) => void;
 }) => {
   return (
     <>
@@ -21,4 +21,3 @@ const DeleteButton = ({
 };
 
 export default DeleteButton;
-

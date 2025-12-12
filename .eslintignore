@@ -1,0 +1,8 @@
+.next/
+node_modules/
+*.d.ts
+out/
+build/
+dist/
+cleanup-eslint.js
+tailwind.config.ts

@@ -41,27 +41,27 @@ const SpreadSheetItem = ({
     toggle();
   };
 
-  const fetchCurrentSelection = async () => {
-    let selectionsWithCorrectUserName: UserSelection[] = [];
-    const result = await fetchUserSelections(calendar?._id);
-    if (result.success) {
-      result.data.map((selection: UserSelection) => {
-        users.map((user) => {
-          if (selection.clerkUserId === user.clerkUserId) {
-            selectionsWithCorrectUserName.push({
-              ...selection,
-              username: user.username,
-            });
-          }
-        });
-      });
-    }
-    setUserSelection(selectionsWithCorrectUserName);
-  };
-
   useEffect(() => {
+    const fetchCurrentSelection = async () => {
+      const selectionsWithCorrectUserName: UserSelection[] = [];
+      const result = await fetchUserSelections(calendar?._id);
+      if (result.success) {
+        result.data.forEach((selection: UserSelection) => {
+          users.forEach((user) => {
+            if (selection.clerkUserId === user.clerkUserId) {
+              selectionsWithCorrectUserName.push({
+                ...selection,
+                username: user.username,
+              });
+            }
+          });
+        });
+      }
+      setUserSelection(selectionsWithCorrectUserName);
+    };
+    
     fetchCurrentSelection();
-  }, []);
+  }, [calendar?._id, users]);
 
   const handleOpenModal = (date: string) => {
     userSelections.forEach((selection) => {
@@ -114,7 +114,7 @@ const SpreadSheetItem = ({
                   <TableRow className="text-sm text-center">
                     <TableCell
                       isHeader
-                      className="py-4 px-6 text-center min-w-[100px]">
+                      className="py-4 px-6 text-center min-w-25">
                       Név
                     </TableCell>
                     {currentDates?.map((date) => (
@@ -204,7 +204,7 @@ const SpreadSheetItem = ({
         isOpen={isOpen}
         showCloseButton={false}
         onClose={handleClosModal}
-        className="w-full md:max-w-[600px] m-8">
+        className="w-full md:max-w-150 m-8">
         <div className="no-scrollbar relative overflow-y-auto rounded-3xl bg-white py-8 px-4">
           <div className="px-4 pt-3">
             <div className="flex justify-center">

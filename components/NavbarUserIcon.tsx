@@ -8,8 +8,8 @@ const NavbarUserIcon = ({
   image,
   username,
 }: {
-  image: string;
-  username: string;
+  image?: string;
+  username?: string;
 }) => {
   const splittedUserName = username?.split(" ") || "";
 
