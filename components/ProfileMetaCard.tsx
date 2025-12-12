@@ -91,7 +91,7 @@ export default function ProfileMetaCard({
           <div className="flex flex-col items-center w-full gap-6 xl:flex-row">
             <div className="w-20 h-20 relative border border-gray-200 rounded-full">
               <Image
-                className="rounded-full mx-auto relative object-contain w-[100%] aspect-square"
+                className="rounded-full mx-auto relative object-contain w-full aspect-square"
                 width={100}
                 height={100}
                 src={profile?.image || profileImage}
@@ -99,7 +99,7 @@ export default function ProfileMetaCard({
                 priority={true}
                 style={{ objectFit: "cover" }}
               />
-              <div className="absolute top-16 left-[28px]">
+              <div className="absolute top-16 left-7">
                 <CldUploadButton
                   options={{
                     sources: ["local", "url", "camera"],
@@ -202,8 +202,8 @@ export default function ProfileMetaCard({
           </button>
         </div>
       </div>
-      <Modal isOpen={isOpen} onClose={closeModal} className="max-w-[700px] m-4">
-        <div className="no-scrollbar relative w-full max-w-[700px] overflow-y-auto rounded-3xl bg-white p-4 lg:p-11">
+      <Modal isOpen={isOpen} onClose={closeModal} className="max-w-175 m-4">
+        <div className="no-scrollbar relative w-full max-w-175 overflow-y-auto rounded-3xl bg-white p-4 lg:p-11">
           <div className="px-2 pr-14">
             <h4 className="mb-2 text-2xl font-semibold text-gray-600 ">
               Személyes adatok módítása
@@ -213,7 +213,7 @@ export default function ProfileMetaCard({
             </p>
           </div>
           <form className="flex flex-col">
-            <div className="custom-scrollbar h-[450px] overflow-y-auto px-2 pb-3">
+            <div className="custom-scrollbar h-112.5 overflow-y-auto px-2 pb-3">
               <div>
                 <h5 className="mb-3 text-lg font-medium text-gray-600">
                   Személyes adatok

@@ -32,7 +32,7 @@ const sidebar: Variants = {
 const MenuToggle = ({ toggle }: { toggle: () => void }) => (
   <button
     onClick={toggle}
-    className="pointer-events-auto absolute left-4 top-[23px] z-30"
+    className="pointer-events-auto absolute left-4 top-5.75 z-30"
   >
     <svg width="23" height="23" viewBox="0 0 23 23">
       <Path
@@ -157,7 +157,7 @@ const NavbarMobileMenu = ({ isAdmin }: { isAdmin: boolean }) => {
         })}
         <motion.li
           variants={MenuItemVariants}
-          className="py-0 pt-1 m-0 mb-2 border-b-1 border-gray-300"
+          className="py-0 pt-1 m-0 mb-2 border-b border-gray-300"
         ></motion.li>
         {isSignedIn &&
           PROFILE_LINKS.map((item, idx) => {
@@ -170,7 +170,7 @@ const NavbarMobileMenu = ({ isAdmin }: { isAdmin: boolean }) => {
         {isSignedIn && (
           <motion.li
             variants={MenuItemVariants}
-            className="py-0 pt-1 m-0 mb-2 border-b-1 border-gray-300"
+            className="py-0 pt-1 m-0 mb-2 border-b border-gray-300"
           ></motion.li>
         )}
 
@@ -207,7 +207,7 @@ const NavbarMobileMenu = ({ isAdmin }: { isAdmin: boolean }) => {
           <>
             <motion.li
               variants={MenuItemVariants}
-              className="py-0 pt-1 m-0 mb-2 border-b-1 border-gray-300"
+              className="py-0 pt-1 m-0 mb-2 border-b border-gray-300"
             ></motion.li>
 
             {ADMIN_LINKS.map((item, idx) => {
