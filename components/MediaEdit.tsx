@@ -40,10 +40,10 @@ export default function MediaEdit() {
     setVideoUrl(e.target.value);
   };
 
-  const toggleCreateNew = () => {
+  const toggleCreateNew = useCallback(() => {
     setEditModeOpen(!editModeOpen);
     resetToDefault();
-  };
+  }, [editModeOpen]);
 
   const resetToDefault = () => {
     setEdited(false);
@@ -73,7 +73,7 @@ export default function MediaEdit() {
     } catch (error) {
       console.error(error);
     }
-  }, [mediaName, videoUrl]);
+  }, [mediaName, videoUrl, toggleCreateNew]);
 
   const getMedia = async () => {
     try {
