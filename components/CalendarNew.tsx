@@ -4,7 +4,7 @@ import { useSession } from "@clerk/nextjs";
 import { toast } from "react-toastify";
 import { DayPicker, getDefaultClassNames } from "react-day-picker";
 import { hu } from "react-day-picker/locale";
-import { Icon } from "@iconify/react/dist/iconify.js";
+import { Icon } from "@iconify/react";
 import Input from "@/components/common/InputField";
 import Label from "@/components/common/Label";
 import DisabledButton from "@/components/common/DisabledButton";

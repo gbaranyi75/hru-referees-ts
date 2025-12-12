@@ -3,6 +3,8 @@ import InfoBoxes from "@/components/InfoBoxes";
 import NextMatchInfoBox from "@/components/NextMatchInfoBox";
 import CommitteeBoard from "@/components/CommitteeBoard";
 
+export const dynamic = 'force-dynamic';
+
 const HomePage = () => {
   return (
     <div className="grid gap-4 md:gap-6">

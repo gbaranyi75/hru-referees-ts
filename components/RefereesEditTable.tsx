@@ -1,6 +1,6 @@
 "use client";
 import React, { useCallback, useEffect, useState } from "react";
-import { Icon } from "@iconify/react/dist/iconify.js";
+import { Icon } from "@iconify/react";
 import { toast } from "react-toastify";
 import {
   Table,
@@ -16,11 +16,7 @@ import { fetchUsers } from "@/lib/actions/fetchUsers";
 import { fetchClerkUserList } from "@/lib/actions/fetchClerkUserList";
 import { updateProfileStatusAndTitle } from "@/lib/actions/updateProfileStatusAndTitle";
 import { fetchGuestUsers } from "@/lib/actions/fetchGuestUser";
-
-type ClerkUser = {
-  id: string;
-  publicMetadata: { role: string };
-};
+import { User as ClerkUser } from "@clerk/nextjs/server";
 
 export default function RefereesTable() {
   const [selectedReferee, setSelectedReferee] = useState<
@@ -60,7 +56,7 @@ export default function RefereesTable() {
     setSelectedReferee(ref);
     setStatus(ref.status);
     setTitle("hasTitle" in ref ? ref.hasTitle : "");
-    setRole(user ? user.publicMetadata.role : "");
+    setRole(user && user.publicMetadata && typeof user.publicMetadata === 'object' && 'role' in user.publicMetadata ? String(user.publicMetadata.role) : "");
     setIsEditMode(!isEditMode);
   };
 

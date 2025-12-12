@@ -6,17 +6,19 @@
     "dev": "next dev --turbopack",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint",
+    "lint": "eslint .",
     "pretty": "prettier --write \"./**/*.{js,jsx,mjs,cjs,ts,tsx,json}\"",
-    "email": "email dev --dir components/Email.tsx"
+    "email": "email dev --dir components/Email.tsx",
+    "cleanup:eslint": "node cleanup-eslint.js"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.890.0",
     "@aws-sdk/s3-presigned-post": "^3.892.0",
     "@aws-sdk/s3-request-presigner": "^3.891.0",
     "@clerk/localizations": "^3.21.2",
-    "@clerk/nextjs": "^6.31.1",
+    "@clerk/nextjs": "^6.36.2",
     "@google-cloud/storage": "^7.17.1",
+    "@iconify/react": "^5.0.2",
     "@react-email/components": "^0.5.5",
     "@react-email/render": "1.3.1",
     "@tailwindcss/forms": "^0.5.10",
@@ -33,7 +35,7 @@
     "moment": "^2.30.1",
     "mongodb": "^6.18.0",
     "mongoose": "^8.17.1",
-    "next": "15.5.7",
+    "next": "^15.2.4",
     "next-cloudinary": "^6.16.0",
     "postcss": "^8.5.6",
     "react": "^19.2.0",
@@ -53,32 +55,31 @@
   },
   "devDependencies": {
     "@ianvs/prettier-plugin-sort-imports": "^4.6.2",
-    "@iconify/react": "^6.0.0",
     "@react-email/preview-server": "^4.2.12",
     "@tailwindcss/postcss": "^4.1.12",
-    "@tsconfig/recommended": "^1.0.13",
-    "@types/bcrypt": "^6.0.0",
+    "@types/bcrypt": "^5.0.2",
     "@types/caseless": "^0.12.5",
     "@types/cors": "^2.8.19",
     "@types/estree": "^1.0.8",
     "@types/json-schema": "^7.0.15",
     "@types/node": "^20.19.25",
-    "@types/react": "^19",
+    "@types/react": "19.2.7",
     "@types/react-dom": "^19",
     "@types/request": "^2.48.13",
     "@types/tough-cookie": "^4.0.5",
     "@types/uuid": "^10.0.0",
     "autoprefixer": "^10.4.22",
-    "eslint": "^9.33.0",
+    "eslint": "^8.57.0",
     "eslint-config-next": "^15.4.6",
     "prettier": "^3.6.2",
     "prettier-plugin-tailwindcss": "^0.6.14",
     "react-email": "^4.2.12",
     "tailwindcss": "^4.1.12",
     "tsx": "^4.20.6",
-    "typescript": "^5"
+    "typescript": "5.9.3"
   },
   "overrides": {
-    "@types/react": "^19"
+    "@types/react": "^19",
+    "typescript": "^5.9.3"
   }
 }

@@ -15,7 +15,7 @@ import { useModal } from "@/hooks/useModal";
 import { fetchMatches } from "@/lib/actions/fetchMatches";
 import { fetchGuestUsers } from "@/lib/actions/fetchGuestUser";
 import { fetchUsers } from "@/lib/actions/fetchUsers";
-import { Icon } from "@iconify/react/dist/iconify.js";
+import { Icon } from "@iconify/react";
 
 export default function MatchListTable() {
   const { isOpen, openModal, closeModal } = useModal();

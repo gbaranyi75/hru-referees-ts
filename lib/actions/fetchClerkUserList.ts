@@ -1,18 +1,18 @@
 'use server'
-import {  clerkClient } from "@clerk/nextjs/server";
+import {  clerkClient, User as ClerkUser } from "@clerk/nextjs/server";
 import { convertToJSON } from "../utils/convertToJSON";
 import { Result } from "@/types/types";
 
 /**
  * Fetches list of Clerk users
  * 
- * @returns Result<any> - On success returns Clerk users, on error returns error message
+ * @returns Result<ClerkUser[]> - On success returns Clerk users, on error returns error message
  */
-export const fetchClerkUserList = async (): Promise<Result<any>> => {
+export const fetchClerkUserList = async (): Promise<Result<ClerkUser[]>> => {
     try {
         const clerk = await clerkClient();
-        const users = await clerk.users.getUserList();
-        return { success: true, data: convertToJSON(users) };
+        const { data: users } = await clerk.users.getUserList();
+        return { success: true, data: convertToJSON(users) as ClerkUser[] };
     } catch (error) {
         console.error('Error fetching users:', error);
         return { 

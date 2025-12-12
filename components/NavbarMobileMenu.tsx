@@ -1,12 +1,12 @@
 "use client";
 
-import React, { ReactNode, useEffect, useRef, useState } from "react";
+import React, { ReactNode, useRef, useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Variants, motion, useCycle } from "framer-motion";
+import { Variants, motion, useCycle, SVGMotionProps } from "framer-motion";
 import { ADMIN_LINKS, NAV_LINKS, PROFILE_LINKS } from "@/lib/utils/links";
 import { NavItem } from "@/types/types";
-import { Icon } from "@iconify/react/dist/iconify.js";
+import { Icon } from "@iconify/react";
 import { useUser } from "@clerk/nextjs";
 import { Route } from "next";
 
@@ -32,7 +32,7 @@ const sidebar: Variants = {
 const MenuToggle = ({ toggle }: { toggle: () => void }) => (
   <button
     onClick={toggle}
-    className="pointer-events-auto absolute left-4 top-[23px] z-30"
+    className="pointer-events-auto absolute left-4 top-5.75 z-30"
   >
     <svg width="23" height="23" viewBox="0 0 23 23">
       <Path
@@ -59,7 +59,7 @@ const MenuToggle = ({ toggle }: { toggle: () => void }) => (
   </button>
 );
 
-const Path = (props: React.SVGProps<SVGPathElement>) => (
+const Path = (props: SVGMotionProps<SVGPathElement>) => (
   <motion.path
     fill="transparent"
     strokeWidth="2"
@@ -78,18 +78,31 @@ const variants = {
   },
 };
 
-const useDimensions = (ref: React.RefObject<HTMLElement>) => {
-  const dimensions = useRef({ width: 0, height: 0 });
+const useDimensions = (ref: React.RefObject<HTMLDivElement | null>) => {
+  const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
 
   useEffect(() => {
-    if (ref.current) {
-      dimensions.current.width = ref.current.offsetWidth;
-      dimensions.current.height = ref.current.offsetHeight;
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    if (!ref.current) return;
+
+    const updateDimensions = () => {
+      if (ref.current) {
+        setDimensions({
+          width: ref.current.offsetWidth,
+          height: ref.current.offsetHeight,
+        });
+      }
+    };
+
+    const resizeObserver = new ResizeObserver(updateDimensions);
+    resizeObserver.observe(ref.current);
+    updateDimensions();
+
+    return () => {
+      resizeObserver.disconnect();
+    };
   }, [ref]);
 
-  return dimensions.current;
+  return dimensions;
 };
 
 const MenuItem = ({
@@ -125,7 +138,7 @@ const MenuItemVariants = {
 };
 
 const NavbarMobileMenu = ({ isAdmin }: { isAdmin: boolean }) => {
-  const containerRef = useRef(null);
+  const containerRef = useRef<HTMLDivElement>(null);
   const { height } = useDimensions(containerRef);
   const [isOpen, toggleOpen] = useCycle(false, true);
   const { isSignedIn } = useUser();
@@ -157,7 +170,7 @@ const NavbarMobileMenu = ({ isAdmin }: { isAdmin: boolean }) => {
         })}
         <motion.li
           variants={MenuItemVariants}
-          className="py-0 pt-1 m-0 mb-2 border-b-1 border-gray-300"
+          className="py-0 pt-1 m-0 mb-2 border-b border-gray-300"
         ></motion.li>
         {isSignedIn &&
           PROFILE_LINKS.map((item, idx) => {
@@ -170,7 +183,7 @@ const NavbarMobileMenu = ({ isAdmin }: { isAdmin: boolean }) => {
         {isSignedIn && (
           <motion.li
             variants={MenuItemVariants}
-            className="py-0 pt-1 m-0 mb-2 border-b-1 border-gray-300"
+            className="py-0 pt-1 m-0 mb-2 border-b border-gray-300"
           ></motion.li>
         )}
 
@@ -207,7 +220,7 @@ const NavbarMobileMenu = ({ isAdmin }: { isAdmin: boolean }) => {
           <>
             <motion.li
               variants={MenuItemVariants}
-              className="py-0 pt-1 m-0 mb-2 border-b-1 border-gray-300"
+              className="py-0 pt-1 m-0 mb-2 border-b border-gray-300"
             ></motion.li>
 
             {ADMIN_LINKS.map((item, idx) => {

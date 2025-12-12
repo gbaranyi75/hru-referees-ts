@@ -1,3 +1,5 @@
+'use client';
+
 import { Match } from "@/types/types";
 import {
   Tailwind,
@@ -36,7 +38,7 @@ export const Email: React.FC<Readonly<Params>> = ({
           />
         </Head>
         <Body className="bg-[#e5e5e3] py-10 text-gray-600 ">
-          <Container className="mx-auto max-w-[600px] text-center">
+          <Container className="mx-auto max-w-150 text-center">
             {/* Email content here */}
             <Text className="text-2xl leading-tight font-bold text-gray-600 my-8 uppercase tracking-tight">
               Szia {username.toUpperCase()}!

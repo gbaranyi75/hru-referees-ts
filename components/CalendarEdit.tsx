@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react";
 import CalendarItem from "./CalendarItem";
 import { Calendar } from "@/types/types";
-import { Icon } from "@iconify/react/dist/iconify.js";
+import { Icon } from "@iconify/react";
 import { fetchCalendars } from "@/lib/actions/fetchCalendars";
 
 const CalendarEdit = () => {
@@ -20,7 +20,7 @@ const CalendarEdit = () => {
   const fetchCalendarsData = async () => {
     const result = await fetchCalendars();
     if (result.success) {
-      let sortedCalendars: Calendar[] = result.data.sort(
+      const sortedCalendars: Calendar[] = result.data.sort(
         (a: Calendar, b: Calendar) => {
           return new Date(b.days[0]).getTime() - new Date(a.days[0]).getTime();
         }
