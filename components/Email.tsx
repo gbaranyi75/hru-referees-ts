@@ -1,5 +1,3 @@
-'use client';
-
 import { Match } from "@/types/types";
 import {
   Tailwind,
