@@ -114,7 +114,9 @@ const AddMatchDaysItem = ({
     fetchCurrentSelection();
   }, [calendar._id]);
 
-  const daysBadges = (day: string) => {
+
+ /*  This code snippet will be used later */
+/*   const daysBadges = (day: string) => {
     return (
       <div className="flex">
         <span
@@ -183,7 +185,7 @@ const AddMatchDaysItem = ({
         </span>
       </div>
     );
-  };
+  }; */
 
   if (loading) return <Spinner />;
 
@@ -210,7 +212,7 @@ const AddMatchDaysItem = ({
         <>
           <div className="overflow-hidden">
             <div className="overflow-x-auto z-1">
-              <div className="min-w-[600px]">
+              <div className="min-w-150">
                 <MatchDayCalendar
                   calendar={calendar}
                   handleDateSelect={handleDateSelect}

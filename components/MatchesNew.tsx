@@ -95,18 +95,17 @@ const MatchesNew = () => {
     date = "",
     time = "",
   } = formFields || {};
-  const dateFormatOptions: Intl.DateTimeFormatOptions = {
-    year: "numeric",
-    month: "numeric",
-    day: "numeric",
-  };
 
   const defaultClassNames = getDefaultClassNames();
 
   const transformDateFormat = useCallback((date: Date) => {
+    const dateFormatOptions: Intl.DateTimeFormatOptions = {
+      year: "numeric",
+      month: "numeric",
+      day: "numeric",
+    };
     return date.toLocaleDateString("hu-HU", dateFormatOptions);
   }, []);
-
 
   useEffect(() => {
     if (selected) {
@@ -205,14 +204,18 @@ const MatchesNew = () => {
 
     // Collect failed emails for user feedback
     const failedEmails = results
-      .filter((result): result is PromiseRejectedResult => result.status === "rejected")
+      .filter(
+        (result): result is PromiseRejectedResult =>
+          result.status === "rejected"
+      )
       .map((result) => result.reason?.message || "Ismeretlen email");
 
     if (failedEmails.length > 0) {
-      console.error("Email küldés sikertelen a következő címekre:", failedEmails);
-      toast.error(
-        `Email küldés sikertelen: ${failedEmails.join(", ")}`
+      console.error(
+        "Email küldés sikertelen a következő címekre:",
+        failedEmails
       );
+      toast.error(`Email küldés sikertelen: ${failedEmails.join(", ")}`);
     } else if (list.length > 0) {
       toast.success("Minden email sikeresen elküldve");
     }
@@ -257,7 +260,7 @@ const MatchesNew = () => {
         toast.error("A nevek nem egyezhetnek meg");
         return;
       }
-      
+
       if (controllers.length > 0) {
         const hasDuplicate = controllers.some(
           (c) =>
@@ -297,7 +300,6 @@ const MatchesNew = () => {
     }
   };
 
-
   const resetFormFields = () => {
     setFormFields(defaultFormFields);
     setControllersValue([]);
@@ -321,7 +323,9 @@ const MatchesNew = () => {
     try {
       const guestUsersResult = await fetchGuestUsers();
       const usersResult = await fetchUsers();
-      const guestUsersData = guestUsersResult.success ? guestUsersResult.data : [];
+      const guestUsersData = guestUsersResult.success
+        ? guestUsersResult.data
+        : [];
       const usersData = usersResult.success ? usersResult.data : [];
       setReferees([...usersData, ...guestUsersData]);
     } catch (error) {
@@ -346,10 +350,13 @@ const MatchesNew = () => {
           </h2>
           <button
             onClick={toggleCreateNew}
-            className="flex w-full items-center justify-center gap-2 rounded-full border border-gray-300 bg-white px-4 py-3 text-sm font-medium text-gray-700 shadow-theme-xs hover:bg-gray-50 hover:text-gray-800  lg:inline-flex lg:w-auto"
-          >
+            className="flex w-full items-center justify-center gap-2 rounded-full border border-gray-300 bg-white px-4 py-3 text-sm font-medium text-gray-700 shadow-theme-xs hover:bg-gray-50 hover:text-gray-800  lg:inline-flex lg:w-auto">
             <span className="">
-              <Icon icon="lucide:plus" width="20" height="20" />
+              <Icon
+                icon="lucide:plus"
+                width="20"
+                height="20"
+              />
             </span>
             Létrehozás
           </button>
@@ -635,8 +642,7 @@ const MatchesNew = () => {
                   <div
                     onBlur={handleCalendarOpen}
                     onClick={handleCalendarOpen}
-                    className="flex overscroll-contain relative h-11 w-full appearance-none rounded-lg border border-gray-300  px-4 py-2.5 text-sm shadow-theme-xs placeholder:text-gray-400 focus:border-blue-500 focus:outline-hidden focus:ring-2 focus:ring-blue-300"
-                  >
+                    className="flex overscroll-contain relative h-11 w-full appearance-none rounded-lg border border-gray-300  px-4 py-2.5 text-sm shadow-theme-xs placeholder:text-gray-400 focus:border-blue-500 focus:outline-hidden focus:ring-2 focus:ring-blue-300">
                     <span className="flex flex-1 flex-wrap gap-2 text-gray-600  overflow-hidden">
                       {dateValue ? dateValue : "---Válassz dátumot---"}
                     </span>
@@ -648,13 +654,16 @@ const MatchesNew = () => {
                         setSelected(undefined);
                         setFormFields((prev) => ({ ...prev, date: "" }));
                       }}
-                      className="cursor-pointer text text-gray-300"
-                    >
+                      className="cursor-pointer text text-gray-300">
                       &times;
                     </button>
-                    <div className="bg-gray-300 self-stretch w-[2px] ml-2.5"></div>
+                    <div className="bg-gray-300 self-stretch w-0.5 ml-2.5"></div>
                     <div className="flex my-auto items-center text-gray-300 pl-2 pt-0.5">
-                      <Icon icon="lucide:chevron-down" width="20" height="20" />
+                      <Icon
+                        icon="lucide:chevron-down"
+                        width="20"
+                        height="20"
+                      />
                     </div>
                   </div>
                   {calendarOpen && (
@@ -697,7 +706,10 @@ const MatchesNew = () => {
                 </div>
               </div>
               <div className="mt-5 md:mt-10 px-4 py-3 text-center sm:px-6">
-                <PrimaryButton onClick={handleSubmit} text={"Mentés"} />
+                <PrimaryButton
+                  onClick={handleSubmit}
+                  text={"Mentés"}
+                />
               </div>
               <div className="mb-5 md:mb-10 px-4 py-3 text-center sm:px-6">
                 <OutlinedButton

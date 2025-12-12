@@ -79,17 +79,30 @@ const variants = {
 };
 
 const useDimensions = (ref: React.RefObject<HTMLDivElement | null>) => {
-  const dimensions = useRef({ width: 0, height: 0 });
+  const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
 
   useEffect(() => {
-    if (ref.current) {
-      dimensions.current.width = ref.current.offsetWidth;
-      dimensions.current.height = ref.current.offsetHeight;
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    if (!ref.current) return;
+
+    const updateDimensions = () => {
+      if (ref.current) {
+        setDimensions({
+          width: ref.current.offsetWidth,
+          height: ref.current.offsetHeight,
+        });
+      }
+    };
+
+    const resizeObserver = new ResizeObserver(updateDimensions);
+    resizeObserver.observe(ref.current);
+    updateDimensions();
+
+    return () => {
+      resizeObserver.disconnect();
+    };
   }, [ref]);
 
-  return dimensions.current;
+  return dimensions;
 };
 
 const MenuItem = ({

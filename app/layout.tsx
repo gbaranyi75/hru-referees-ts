@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import { Inter, Outfit } from "next/font/google";
 import Navbar from "@/components/Navbar";
 import NavbarMobileMenuWrapper from "@/components/NavbarMobileMenuWrapper";
 import SideBarWrapper from "@/components/SideBarWrapper";
@@ -10,12 +9,6 @@ import { Analytics } from "@vercel/analytics/next";
 import "./globals.css";
 
 export const dynamic = 'force-dynamic';
-
-const inter = Inter({ subsets: ["latin"] });
-const outfit = Outfit({
-  variable: "--font-outfit-sans",
-  subsets: ["latin"]
-});
 
 export const metadata: Metadata = {
   title: "HRU Referees",
@@ -31,10 +24,15 @@ export default function RootLayout({
   return (
     <ClerkProvider localization={huHU}>
       <html lang="en" suppressHydrationWarning>
-        <body className={outfit.className}>
+        <head>
+          <link rel="preconnect" href="https://fonts.googleapis.com" />
+          <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+          <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&display=swap" rel="stylesheet" />
+        </head>
+        <body className="font-outfit">
           <div className="min-h-screen lg:flex">
             <SideBarWrapper />
-            <div className="flex-1 lg:ml-[290px]">
+            <div className="flex-1 lg:ml-72.5">
               <Navbar />
               <NavbarMobileMenuWrapper />
               <main className="bg-gray-100 p-4 mx-auto max-w-screen-2xl md:p-6 text-gray-600">
