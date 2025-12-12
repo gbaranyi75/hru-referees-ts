@@ -22,7 +22,7 @@ export const checkUser = async () => {
     const loggedInUser = await User.findOne({
       email: user.emailAddresses[0].emailAddress,
     });
-
+console.log(loggedInUser)
     if (loggedInUser) {
       return loggedInUser;
     }
@@ -34,7 +34,7 @@ export const checkUser = async () => {
       image: user.imageUrl,
       address: { city: '', country: 'Magyarország' },
       phoneNumber: '',
-      hasTitle: '',
+      hasTitle: 'Nincs',
       status: 'Nincs megadva',
       facebookUrl: '',
       instagramUrl: '',
