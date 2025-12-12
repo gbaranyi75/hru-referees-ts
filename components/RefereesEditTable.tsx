@@ -60,13 +60,13 @@ export default function RefereesTable() {
     setIsEditMode(!isEditMode);
   };
 
-  const handleCancel = () => {
+  const handleCancel = useCallback(() => {
     setSelectedReferee(null);
     setStatus("");
     setTitle("");
     setRole("");
     setIsEditMode(!isEditMode);
-  };
+  }, [isEditMode]);
 
   const handleSave = useCallback(async () => {
     try {
@@ -100,7 +100,7 @@ export default function RefereesTable() {
     } catch (error) {
       console.error(error);
     }
-  }, [status, title, role]);
+  }, [status, title, role, handleCancel, selectedReferee]);
 
   useEffect(() => {
     loadReferees();
@@ -124,31 +124,31 @@ export default function RefereesTable() {
             <TableRow className="text-sm text-center">
               <TableCell
                 isHeader
-                className="px-2 py-4 font-bold text-gray-600 w-[166px]"
+                className="px-2 py-4 font-bold text-gray-600 w-41.5"
               >
                 Név
               </TableCell>
               <TableCell
                 isHeader
-                className="px-2 py-4 font-bold text-gray-600 w-[166px]"
+                className="px-2 py-4 font-bold text-gray-600 w-41.5"
               >
                 Státusz
               </TableCell>
               <TableCell
                 isHeader
-                className="px-5 py-4 font-bold text-gray-500 w-[166px]"
+                className="px-5 py-4 font-bold text-gray-500 w-41.5"
               >
                 Titulus
               </TableCell>
               <TableCell
                 isHeader
-                className="px-5 py-4 font-bold text-gray-500 w-[166px]"
+                className="px-5 py-4 font-bold text-gray-500 w-41.5"
               >
                 Szerepkör
               </TableCell>
               <TableCell
                 isHeader
-                className="px-5 py-4 font-bold text-gray-600 w-[166px]"
+                className="px-5 py-4 font-bold text-gray-600 w-41.5"
               >
                 Szerkesztés
               </TableCell>
@@ -199,7 +199,7 @@ export default function RefereesTable() {
                               key={ref.clerkUserId}
                               type="text"
                               name="role"
-                              defaultValue={user.publicMetadata.role}
+                              defaultValue={String(user.publicMetadata?.role ?? "")}
                               onChange={(e) => setRole(e.target.value)}
                             />
                           )
@@ -209,7 +209,7 @@ export default function RefereesTable() {
                     <span>
                       {authUsers.map((user) =>
                         user.id === ref.clerkUserId
-                          ? user.publicMetadata.role
+                          ? String(user.publicMetadata?.role ?? "")
                           : ""
                       )}
                     </span>
