@@ -35,9 +35,13 @@ const MatchDayCalendar: React.FC<Props> = ({
   selectedDates,
 }) => {
   const value = calendar.days[0];
+
   const eventDays = calendar.days;
+
   const currentDate = new Date(value as string);
+
   const firstDayOfMonth = startOfMonth(currentDate);
+
   const lastDayOfMonth = endOfMonth(currentDate);
 
   const daysInMonth = eachDayOfInterval({
@@ -45,7 +49,8 @@ const MatchDayCalendar: React.FC<Props> = ({
     end: lastDayOfMonth,
   });
 
-  const startingDayIndex = getDay(firstDayOfMonth) - 1;
+  const startingDayIndex = getDay(firstDayOfMonth) === 0 ? 6 : getDay(firstDayOfMonth) - 1;
+
   const endingDayIndex =
     7 - getDay(lastDayOfMonth) === 7 ? 0 : 7 - getDay(lastDayOfMonth);
 
