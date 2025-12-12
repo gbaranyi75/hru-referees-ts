@@ -54,9 +54,7 @@ const AddMatchDaysItem = ({
         selectedDatesArray.splice(index, 1);
       }
     }
-    myCurrentDates.toString() === selectedDatesArray.toString()
-      ? setEdited(false)
-      : setEdited(true);
+    setEdited(myCurrentDates.toString() !== selectedDatesArray.toString());
     setSelectedDates(selectedDatesArray);
   };
 
