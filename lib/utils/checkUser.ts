@@ -22,7 +22,7 @@ export const checkUser = async () => {
     const loggedInUser = await User.findOne({
       email: user.emailAddresses[0].emailAddress,
     });
-console.log(loggedInUser)
+
     if (loggedInUser) {
       return loggedInUser;
     }
