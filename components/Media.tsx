@@ -22,14 +22,14 @@ import EmbeddedMedia from "./EmbeddedMedia";
 const YOUTUBE_BASE_URL = "https://www.youtube.com/embed/";
 
 const VideoList = () => {
-  const [selectedMedia, setSelectedMedia] = useState<Media | null>(null);
+  //const [selectedMedia, setSelectedMedia] = useState<Media | null>(null);
   const { isOpen, openModal, closeModal } = useModal();
   const [loading, setLoading] = useState<boolean>(true);
   const [mediaList, setMediaList] = useState<Media[]>([]);
   const [videoId, setVideoId] = useState<string>("");
 
   const handleSelectedMedia = (media: Media) => {
-    setSelectedMedia(media);
+    //setSelectedMedia(media);
     //setVideoId(media.mediaUrl.split("?v=")[1]);
     getVideoId(media.mediaUrl);
     openModal();
@@ -76,7 +76,7 @@ const VideoList = () => {
 
   return (
     <>
-      <div className="overflow-hidden rounded-xl mt-1 border-1 border-gray-200 bg-white">
+      <div className="overflow-hidden rounded-xl mt-1 border border-gray-200 bg-white">
         <div className="overflow-x-auto">
           <Table className="w-full table-auto">
             {/* Table Header */}
@@ -84,22 +84,22 @@ const VideoList = () => {
               <TableRow className="text-sm text-center">
                 <TableCell
                   isHeader
-                  className="px-2 py-4 font-bold text-gray-600 w-[166px]">
+                  className="px-2 py-4 font-bold text-gray-600 w-41.5">
                   Név
                 </TableCell>
                 <TableCell
                   isHeader
-                  className="px-2 py-4 font-bold text-gray-600 w-[166px]">
+                  className="px-2 py-4 font-bold text-gray-600 w-41.5">
                   URL
                 </TableCell>
                 <TableCell
                   isHeader
-                  className="px-2 py-4 font-bold text-gray-600 w-[166px]">
+                  className="px-2 py-4 font-bold text-gray-600 w-41.5">
                   Létrehozva
                 </TableCell>
                 <TableCell
                   isHeader
-                  className="px-2 py-4 font-bold text-gray-600 w-[166px]">
+                  className="px-2 py-4 font-bold text-gray-600 w-41.5">
                   Megtekintés
                 </TableCell>
               </TableRow>
