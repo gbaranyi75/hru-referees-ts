@@ -36,7 +36,7 @@ const AddMatchDaysItem = ({
   );
   const [loading, setLoading] = useState(false);
 
-  // Frissítés ha az initialSelection változik
+   // Update if initialSelection changes
   useEffect(() => {
     if (initialSelection) {
       setSelectionId(initialSelection._id);

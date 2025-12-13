@@ -142,7 +142,6 @@ export const SOCIAL_LINKS: NavItem[] = [
   {
     label: "Facebook és web linkek",
     type: "social",
-    //path: "https://www.facebook.com/",
     icon: (
       <Icon
         icon="lucide:facebook"

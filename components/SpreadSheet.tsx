@@ -22,7 +22,7 @@ const SpreadSheet = () => {
     const fetchData = async () => {
       setLoading(true);
       try {
-        // Parallel fetch - calendars és users egyszerre
+        // Parallel fetch - calendars and users at once
         const [calendarsResult, usersResult] = await Promise.all([
           fetchCalendars(),
           fetchUsers(),
@@ -41,7 +41,7 @@ const SpreadSheet = () => {
           setCalendars(sortedCalendars);
         }
 
-        // Batch fetch: összes selection egyszerre
+        // Batch fetch: all selections at once
         if (sortedCalendars.length > 0 && usersResult.success) {
           const calendarIds = sortedCalendars
             .map((c) => c._id)
@@ -49,10 +49,10 @@ const SpreadSheet = () => {
           const selectionsResult = await fetchAllUserSelections(calendarIds);
 
           if (selectionsResult.success) {
-            // Map létrehozása: calendarId -> UserSelection[] (username-mel kiegészítve)
+            // Create Map: calendarId -> UserSelection[] (with username added)
             const selectionsMap = new Map<string, UserSelection[]>();
             selectionsResult.data.forEach((selection: UserSelection) => {
-              // Username hozzárendelése a user adatokból
+              // Assign username from user data
               const user = usersResult.data.find(
                 (u: User) => u.clerkUserId === selection.clerkUserId
               );
@@ -71,7 +71,7 @@ const SpreadSheet = () => {
           }
         }
       } catch (error) {
-        console.error("Hiba az adatok betöltésekor:", error);
+        console.error("Error loading data:", error);
       } finally {
         setLoading(false);
       }
@@ -93,7 +93,7 @@ const SpreadSheet = () => {
 
   return (
     <div className="col-span-12">
-      {!loading && calendars.length === 0 ? (
+      {calendars.length === 0 ? (
         <p>Nem találtam táblázatot!</p>
       ) : (
         <div className="flex flex-col gap-4 rounded-2xl border border-gray-200 bg-white p-5 mt-5">

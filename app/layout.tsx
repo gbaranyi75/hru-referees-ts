@@ -31,7 +31,7 @@ export default function RootLayout({
   return (
     <ClerkProvider localization={huHU}>
       <html lang="en" suppressHydrationWarning>
-        <body className={outfit.variable}>
+         <body className={`${outfit.variable} font-outfit`}>
           <div className="min-h-screen lg:flex">
             <SideBarWrapper />
             <div className="flex-1 lg:ml-72.5">

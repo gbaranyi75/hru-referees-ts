@@ -146,7 +146,7 @@ const SideNavItem = ({ item }: { item: NavItem }) => {
                     className="m-0 ml-8">
                     <Link
                       href={
-                        subItem.path ? subItem.path : (subItem.href as Route)
+                        subItem.path ?? subItem.href ?? "#"
                       }
                       target={subItem.href ? "_blank" : ""}
                       rel="noreferrer"

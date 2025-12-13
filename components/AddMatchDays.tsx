@@ -27,7 +27,7 @@ const AddMatchDays = () => {
     const fetchData = async () => {
       setLoading(true);
       try {
-        // Parallel fetch - calendars és profile egyszerre
+        // Parallel fetch - calendars and profile at once
         const [calendarsResult, profileResult] = await Promise.all([
           fetchCalendars(),
           fetchProfile(),
@@ -50,7 +50,7 @@ const AddMatchDays = () => {
           setProfile(profileResult.data);
         }
 
-        // Batch fetch: összes selection egyszerre (csak ha vannak calendars és profile)
+        // Batch fetch: all selections at once (only if calendars and profile exist)
         if (
           sortedCalendars.length > 0 &&
           profileResult.success &&
@@ -65,7 +65,7 @@ const AddMatchDays = () => {
           );
 
           if (selectionsResult.success) {
-            // Map létrehozása gyors lookup-hoz
+            // Create Map for fast lookup
             const selectionsMap = new Map<string, UserSelection>();
             selectionsResult.data.forEach((selection: UserSelection) => {
               selectionsMap.set(selection.calendarId, selection);
@@ -74,7 +74,7 @@ const AddMatchDays = () => {
           }
         }
       } catch (error) {
-        console.error("Hiba az adatok betöltésekor:", error);
+        console.error("Error loading data:", error);
       } finally {
         setLoading(false);
       }
@@ -94,7 +94,7 @@ const AddMatchDays = () => {
 
   return (
     <div className="col-span-12">
-      {!loading && calendars.length === 0 ? (
+      {calendars.length === 0 ? (
         <p>Nem találtam táblázatot!</p>
       ) : (
         <div className="flex flex-col gap-4 rounded-2xl border border-gray-200 bg-white p-5 mt-5">
