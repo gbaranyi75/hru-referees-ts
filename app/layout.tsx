@@ -1,12 +1,12 @@
 import type { Metadata } from "next";
 import { Outfit } from "next/font/google";
+import { huHU } from "@clerk/localizations";
+import { ClerkProvider } from "@clerk/nextjs";
+import { ToastContainer } from "react-toastify";
+import { Analytics } from "@vercel/analytics/next";
 import Navbar from "@/components/Navbar";
 import NavbarMobileMenuWrapper from "@/components/NavbarMobileMenuWrapper";
 import SideBarWrapper from "@/components/SideBarWrapper";
-import { ToastContainer } from "react-toastify";
-import { ClerkProvider } from "@clerk/nextjs";
-import { huHU } from "@clerk/localizations";
-import { Analytics } from "@vercel/analytics/next";
 import "./globals.css";
 
 const outfit = Outfit({
@@ -31,7 +31,7 @@ export default function RootLayout({
   return (
     <ClerkProvider localization={huHU}>
       <html lang="en" suppressHydrationWarning>
-        <body className={`${outfit.variable} font-outfit`}>
+        <body className={outfit.variable}>
           <div className="min-h-screen lg:flex">
             <SideBarWrapper />
             <div className="flex-1 lg:ml-72.5">

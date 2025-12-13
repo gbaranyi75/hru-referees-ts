@@ -5,31 +5,45 @@ import { toast } from "react-toastify";
 import OutlinedButton from "@/components/common/OutlinedButton";
 import DisabledButton from "@/components/common/DisabledButton";
 import PrimaryButton from "@/components/common/PrimaryButton";
-import Spinner from "@/components/common/Spinner";
 import { createNewUserSelection } from "@/lib/actions/createUserSelection";
-import { fetchUserSelection } from "@/lib/actions/fetchUserSelection";
 import { updateUserSelection } from "@/lib/actions/updateUserSelection";
-import { Calendar, User } from "@/types/types";
+import { Calendar, User, UserSelection } from "@/types/types";
 import MatchDayCalendar from "./MatchDayCalendar";
+import Skeleton from "./common/Skeleton";
 
 const AddMatchDaysItem = ({
   calendar,
   isOpen,
   toggle,
   profile,
+  initialSelection,
 }: {
   calendar: Calendar;
   isOpen: boolean;
   toggle: () => void;
   profile: User;
+  initialSelection?: UserSelection;
 }) => {
   const eventName = calendar?.name;
 
   const [edited, setEdited] = useState(false);
-  const [selectionId, setSelectionId] = useState("");
-  const [myCurrentDates, setMyCurrentDates] = useState<string[]>([]);
-  const [selectedDates, setSelectedDates] = useState<string[]>(myCurrentDates);
+  const [selectionId, setSelectionId] = useState(initialSelection?._id || "");
+  const [myCurrentDates, setMyCurrentDates] = useState<string[]>(
+    initialSelection?.selectedDays || []
+  );
+  const [selectedDates, setSelectedDates] = useState<string[]>(
+    initialSelection?.selectedDays || []
+  );
   const [loading, setLoading] = useState(false);
+
+  // Frissítés ha az initialSelection változik
+  useEffect(() => {
+    if (initialSelection) {
+      setSelectionId(initialSelection._id);
+      setMyCurrentDates(initialSelection.selectedDays);
+      setSelectedDates(initialSelection.selectedDays);
+    }
+  }, [initialSelection]);
 
   const handleOpenCalendar = (e: { preventDefault: () => void }) => {
     e.preventDefault();
@@ -92,26 +106,12 @@ const AddMatchDaysItem = ({
     }
   };
 
-  useEffect(() => {
-    const fetchCurrentSelection = async () => {
-      setLoading(true);
-      try {
-        const result = await fetchUserSelection(calendar._id);
-        if (result.success && result.data) {
-          const selection = result.data;
-          setMyCurrentDates(selection.selectedDays);
-          setSelectedDates(selection.selectedDays);
-          setSelectionId(selection._id);
-        }
-      } catch (error) {
-        console.error("Hiba a kiválasztás betöltésekor:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchCurrentSelection();
-  }, [calendar._id]);
-
+  if (loading)
+    return (
+      <>
+        <Skeleton className="w-full h-20 mb-3" />
+      </>
+    );
 
  /*  This code snippet will be used later */
 /*   const daysBadges = (day: string) => {
@@ -184,8 +184,6 @@ const AddMatchDaysItem = ({
       </div>
     );
   }; */
-
-  if (loading) return <Spinner />;
 
   return (
     <div className="flex flex-col border overflow-hidden rounded-xl border-gray-200 bg-white text-gray-600 text-center justify-center z-0">
