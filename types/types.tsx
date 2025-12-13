@@ -6,7 +6,7 @@ export type NavItem = {
   type: string;
   icon?: JSX.Element;
   submenu?: boolean;
-  subItems?: { label: string; path: string }[];
+  subItems?: { label: string; path?: string; href?: string }[];
 };
 
 export type UserSelection = {
@@ -104,8 +104,8 @@ export type Result<T> =
   | { success: true; data: T }
   | { success: false; error: string };
 
-  export type ClerkUser = {
-    id: string;
-    emailAddresses: { emailAddress: string }[];
-    username: string;
-  };
+export type ClerkUser = {
+  id: string;
+  emailAddresses: { emailAddress: string }[];
+  username: string;
+};
