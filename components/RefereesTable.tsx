@@ -65,7 +65,7 @@ export default function RefereesTable() {
               <TableRow className="text-sm text-center">
                 <TableCell
                   isHeader
-                  className="pl-16 pr-6 py-4 font-bold text-gray-600 text-start min-w-[200px]">
+                  className="pl-16 pr-6 py-4 font-bold text-gray-600 text-start min-w-50">
                   Név
                 </TableCell>
                 <TableCell
@@ -141,8 +141,8 @@ export default function RefereesTable() {
       <Modal
         isOpen={isOpen}
         onClose={closeModal}
-        className="max-w-[700px] m-4">
-        <div className="no-scrollbar relative w-full max-w-[700px] overflow-y-auto rounded-3xl bg-white p-4 lg:p-11">
+        className="max-w-175 m-4">
+        <div className="no-scrollbar relative w-full max-w-175 overflow-y-auto rounded-3xl bg-white p-4 lg:p-11">
           <h4 className="font-semibold text-gray-800 mb-10 text-title-sm ">
             Játékvezető profil
           </h4>
@@ -150,7 +150,7 @@ export default function RefereesTable() {
           <div className="flex flex-col items-center w-full gap-6 xl:flex-row">
             <div className="w-20 h-20 relative border border-gray-200 rounded-full ">
               <Image
-                className="rounded-full mx-auto relative object-contain w-[100%] aspect-square"
+                className="rounded-full mx-auto relative object-contain w-full aspect-square"
                 width={100}
                 height={100}
                 src={selectedReferee?.image || profileImage}

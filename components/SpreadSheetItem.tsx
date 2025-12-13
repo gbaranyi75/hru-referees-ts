@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import Image from "next/image";
 import { useModal } from "../hooks/useModal";
 import { Modal } from "./common/Modal";
@@ -13,26 +13,23 @@ import {
   TableRow,
 } from "@/components/common/DefaultTable";
 import { MdOutlineExpandMore, MdOutlineExpandLess } from "react-icons/md";
-import { fetchUserSelections } from "@/lib/actions/fetchUserSelections";
 import checkedImage from "@/public/images/checked.png";
 import unCheckedImage from "@/public/images/unchecked.png";
-import { UserSelection, Calendar, User } from "@/types/types";
-import Skeleton from "./common/Skeleton";
+import { UserSelection, Calendar } from "@/types/types";
 import OutlinedButton from "./common/OutlinedButton";
 
 const SpreadSheetItem = ({
   calendar,
   isTableOpen,
   toggle,
-  users,
+  initialSelections,
 }: {
   calendar: Calendar | undefined;
   isTableOpen: boolean;
   toggle: () => void;
-  users: User[];
+  initialSelections: UserSelection[];
 }) => {
   const [currentDates] = useState(calendar?.days);
-  const [userSelections, setUserSelection] = useState<UserSelection[]>([]);
   const [availableUsers, setAvailableUsers] = useState<UserSelection[]>([]);
   const { isOpen, openModal, closeModal } = useModal();
   const [selectedDate, setSelectedDate] = useState<string>("");
@@ -41,52 +38,22 @@ const SpreadSheetItem = ({
     toggle();
   };
 
-  useEffect(() => {
-    const fetchCurrentSelection = async () => {
-      const selectionsWithCorrectUserName: UserSelection[] = [];
-      const result = await fetchUserSelections(calendar?._id);
-      if (result.success) {
-        result.data.forEach((selection: UserSelection) => {
-          users.forEach((user) => {
-            if (selection.clerkUserId === user.clerkUserId) {
-              selectionsWithCorrectUserName.push({
-                ...selection,
-                username: user.username,
-              });
-            }
-          });
-        });
-      }
-      setUserSelection(selectionsWithCorrectUserName);
-    };
-    
-    fetchCurrentSelection();
-  }, [calendar?._id, users]);
-
   const handleOpenModal = (date: string) => {
-    userSelections.forEach((selection) => {
+    const available: UserSelection[] = [];
+    initialSelections.forEach((selection) => {
       if (selection.selectedDays.includes(date)) {
-        setAvailableUsers((prev) => [...prev, selection]);
-        setSelectedDate(date);
+        available.push(selection);
       }
     });
+    setAvailableUsers(available);
+    setSelectedDate(date);
     openModal();
   };
 
-  const handleClosModal = () => {
+  const handleCloseModal = () => {
     setAvailableUsers([]);
     closeModal();
   };
-
-  if (!userSelections)
-    return (
-      <>
-        <Skeleton className="w-full h-14 mb-2" />
-        <Skeleton className="w-full h-8 mb-2" />
-        <Skeleton className="w-full h-8 mb-2" />
-        <Skeleton className="w-full h-8 mb-4" />
-      </>
-    );
 
   return (
     <>
@@ -152,29 +119,19 @@ const SpreadSheetItem = ({
                   </TableRow>
                 </TableHeader>
                 <TableBody className="divide-y divide-gray-100 text-sm">
-                  {userSelections.map((user, idx) => (
-                    <TableRow
-                      key={idx}
-                      className="bg-white">
-                      {users.map((dbUser, idx) =>
-                        dbUser.clerkUserId === user.clerkUserId ? (
-                          <TableCell
-                            key={idx}
-                            className="px-1 md:px-3 py-3 text-center">
-                            {dbUser.username}
-                          </TableCell>
-                        ) : null
-                      )}
+                  {initialSelections.map((userSelection, idx) => (
+                    <TableRow key={idx} className="bg-white">
+                      <TableCell className="px-1 md:px-3 py-3 text-center">
+                        {userSelection.username}
+                      </TableCell>
                       {currentDates?.map((date) => (
-                        <TableCell
-                          key={date}
-                          className="px-1 py-3 text-center">
+                        <TableCell key={date} className="px-1 py-3 text-center">
                           <div className="flex justify-center">
-                            {user.selectedDays.includes(date) ? (
+                            {userSelection.selectedDays.includes(date) ? (
                               <Image
                                 className="h-5 w-5"
                                 src={checkedImage}
-                                alt="logo"
+                                alt="checked"
                                 width={10}
                                 height={10}
                                 priority
@@ -183,7 +140,7 @@ const SpreadSheetItem = ({
                               <Image
                                 className="h-5 w-5"
                                 src={unCheckedImage}
-                                alt="logo"
+                                alt="unchecked"
                                 width={10}
                                 height={10}
                                 priority
@@ -203,7 +160,7 @@ const SpreadSheetItem = ({
       <Modal
         isOpen={isOpen}
         showCloseButton={false}
-        onClose={handleClosModal}
+        onClose={handleCloseModal}
         className="w-full md:max-w-150 m-8">
         <div className="no-scrollbar relative overflow-y-auto rounded-3xl bg-white py-8 px-4">
           <div className="px-4 pt-3">
@@ -225,10 +182,7 @@ const SpreadSheetItem = ({
             </ul>
           </div>
           <div className="flex justify-center pt-6">
-            <OutlinedButton
-              onClick={handleClosModal}
-              text="Bezárás"
-            />
+            <OutlinedButton onClick={handleCloseModal} text="Bezárás" />
           </div>
         </div>
       </Modal>
