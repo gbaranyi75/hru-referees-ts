@@ -4,6 +4,7 @@ import { huHU } from "@clerk/localizations";
 import { ClerkProvider } from "@clerk/nextjs";
 import { ToastContainer } from "react-toastify";
 import { Analytics } from "@vercel/analytics/next";
+import { Providers } from "./providers";
 import Navbar from "@/components/Navbar";
 import NavbarMobileMenuWrapper from "@/components/NavbarMobileMenuWrapper";
 import SideBarWrapper from "@/components/SideBarWrapper";
@@ -15,7 +16,7 @@ const outfit = Outfit({
   variable: "--font-outfit",
 });
 
-export const dynamic = 'force-dynamic';
+export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
   title: "HRU Referees",
@@ -30,24 +31,28 @@ export default function RootLayout({
 }>) {
   return (
     <ClerkProvider localization={huHU}>
-      <html lang="en" suppressHydrationWarning>
-         <body className={`${outfit.variable} font-outfit`}>
-          <div className="min-h-screen lg:flex">
-            <SideBarWrapper />
-            <div className="flex-1 lg:ml-72.5">
-              <Navbar />
-              <NavbarMobileMenuWrapper />
-              <main className="bg-gray-100 p-4 mx-auto max-w-screen-2xl md:p-6 text-gray-600">
-                {children}
-              </main>
-              <Analytics />
+      <html
+        lang="en"
+        suppressHydrationWarning>
+        <body className={`${outfit.variable} font-outfit`}>
+          <Providers>
+            <div className="min-h-screen lg:flex">
+              <SideBarWrapper />
+              <div className="flex-1 lg:ml-72.5">
+                <Navbar />
+                <NavbarMobileMenuWrapper />
+                <main className="bg-gray-100 p-4 mx-auto max-w-screen-2xl md:p-6 text-gray-600">
+                  {children}
+                </main>
+                <Analytics />
+              </div>
+              <ToastContainer
+                position="top-right"
+                autoClose={3000}
+                style={{ zIndex: 20000000 }}
+              />
             </div>
-            <ToastContainer
-              position="top-right"
-              autoClose={3000}
-              style={{ zIndex: 20000000 }}
-            />
-          </div>
+          </Providers>
         </body>
       </html>
     </ClerkProvider>

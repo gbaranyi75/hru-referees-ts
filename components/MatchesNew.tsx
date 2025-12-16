@@ -6,9 +6,10 @@ import { toast } from "react-toastify";
 import { DayPicker, getDefaultClassNames } from "react-day-picker";
 import "react-day-picker/dist/style.css";
 import { hu } from "react-day-picker/locale";
-import { createMatch } from "@/lib/actions/createMatch";
+
 import { fetchUsers } from "@/lib/actions/fetchUsers";
 import { fetchGuestUsers } from "@/lib/actions/fetchGuestUser";
+import { useCreateMatch } from '@/hooks/useMatches';
 import { GuestUser, Match, MatchOfficial, User } from "@/types/types";
 import { hours } from "@/constants/matchUtils";
 import teams from "@/constants/matchData/teams.json";
@@ -95,6 +96,7 @@ const MatchesNew = () => {
     date = "",
     time = "",
   } = formFields || {};
+  const { mutate:  createMatch, isPending } = useCreateMatch();
 
   const defaultClassNames = getDefaultClassNames();
 
@@ -226,16 +228,15 @@ const MatchesNew = () => {
     if (type === "7s" || type === "UP torna") {
       if (date !== "" && time !== "" && venue !== "") {
         try {
-          const res = await createMatch(formFields);
-          const success = res instanceof Error ? false : res.success;
-
-          if (success) {
-            handleEmailSend();
-            setIsSuccess(true);
-            toast.success("Sikeres mentés");
-            resetFormFields();
-            toggleCreateNew();
-          }
+          await createMatch(formFields, {
+            onSuccess: () => {
+              handleEmailSend();
+              //setIsSuccess(true);
+              toast.success("Sikeres mentés");
+              resetFormFields();
+              toggleCreateNew();
+            },
+          });
         } catch (error) {
           console.error(error);
         }
@@ -282,15 +283,15 @@ const MatchesNew = () => {
         venue !== ""
       ) {
         try {
-          const res = await createMatch(formFields);
-          const success = res instanceof Error ? false : res.success;
-          if (success) {
-            handleEmailSend();
-            setIsSuccess(true);
-            toast.success("Sikeres mentés");
-            resetFormFields();
-            toggleCreateNew();
-          }
+          await createMatch(formFields, {
+            onSuccess: () => {
+              handleEmailSend();
+              setIsSuccess(true);
+              toast.success("Sikeres mentés");
+              resetFormFields();
+              toggleCreateNew();
+            },
+          });
         } catch (error) {
           console.error(error);
         }

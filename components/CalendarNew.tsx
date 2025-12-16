@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect } from "react";
 import { useSession } from "@clerk/nextjs";
 import { toast } from "react-toastify";
 import { DayPicker, getDefaultClassNames } from "react-day-picker";
@@ -10,7 +10,7 @@ import Label from "@/components/common/Label";
 import DisabledButton from "@/components/common/DisabledButton";
 import PrimaryButton from "@/components/common/PrimaryButton";
 import OutlinedButton from "@/components/common/OutlinedButton";
-import { createNewCalendar } from "@/lib/actions/createCalendar";
+import { useCreateCalendar } from "@/hooks/useCalendars";
 import "react-day-picker/dist/style.css";
 
 const CalendarNew = () => {
@@ -28,6 +28,9 @@ const CalendarNew = () => {
     day: "numeric",
   };
   const defaultClassNames = getDefaultClassNames();
+
+  // React Query mutation
+  const createMutation = useCreateCalendar();
 
   const handleEventNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.value !== "") {
@@ -49,23 +52,19 @@ const CalendarNew = () => {
     resetToBase();
   };
 
-  const handleSave = useCallback(async () => {
+  const handleSave = async () => {
     if (dates.length !== 0 && eventName !== "") {
       const newCalendar = { name: eventName, days: dates };
       try {
         if (!session) {
           return;
         }
-        const result = await createNewCalendar(newCalendar);
-        if (result.success) {
-          setCreateNewOpen(!createNewOpen);
-          resetToBase();
-          toast.success("Sikeres mentés");
-        } else {
-          toast.error(result.error);
-        }
+        await createMutation.mutateAsync(newCalendar);
+        setCreateNewOpen(!createNewOpen);
+        resetToBase();
+        toast.success("Sikeres mentés");
       } catch (error) {
-        console.error(error);
+        console.error("Error creating calendar:", error);
         toast.error("Hiba történt a mentés során");
       }
     } else if (eventName === "") {
@@ -73,7 +72,7 @@ const CalendarNew = () => {
     } else if (dates.length === 0) {
       setShowErrorDate(true);
     }
-  }, [eventName, dates]);
+  };
 
   useEffect(() => {
     const days: string[] = [];

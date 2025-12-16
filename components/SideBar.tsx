@@ -19,7 +19,7 @@ const SideBar = ({ isAdmin }: { isAdmin: boolean }) => {
   const { isSignedIn } = useUser();
 
   return (
-    <aside className="fixed top-0 left-0 h-screen hidden lg:block overflow-hidden overflow-y-auto lg:w-[290px] bg-white border-gray-300 border-r shadow-lg z-10">
+    <aside className="fixed top-0 left-0 h-screen hidden lg:block overflow-hidden overflow-y-auto lg:w-72.5 bg-white border-gray-300 border-r shadow-lg z-10">
       <nav className="flex flex-col w-full min-h-screen">
         <div className="grow">
           <div className="flex px-4">
