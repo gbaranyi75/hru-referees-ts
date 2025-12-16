@@ -1,14 +1,15 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import CalendarItem from "./CalendarItem";
-import { Calendar } from "@/types/types";
 import { Icon } from "@iconify/react";
-import { fetchCalendars } from "@/lib/actions/fetchCalendars";
+import { useCalendars } from "@/hooks/useCalendars";
 
 const CalendarEdit = () => {
   const [isOpen, setIsOpen] = useState<number | null>(null);
-  const [calendars, setCalendars] = useState<Calendar[]>([]);
   const [editModeOpen, setEditModeOpen] = useState(false);
+
+  // React Query hook for calendars
+  const { data: calendars = [] } = useCalendars();
 
   const toggleEditMode = () => {
     setEditModeOpen(!editModeOpen);
@@ -16,22 +17,6 @@ const CalendarEdit = () => {
 
   const toggleOpen = (id: number) => () =>
     setIsOpen((isOpen) => (isOpen === id ? null : id));
-
-  const fetchCalendarsData = async () => {
-    const result = await fetchCalendars();
-    if (result.success) {
-      const sortedCalendars: Calendar[] = result.data.sort(
-        (a: Calendar, b: Calendar) => {
-          return new Date(b.days[0]).getTime() - new Date(a.days[0]).getTime();
-        }
-      );
-      setCalendars(sortedCalendars);
-    }
-  };
-
-  useEffect(() => {
-    fetchCalendarsData();
-  }, []);
 
   return (
     <div className="p-5 border border-gray-200 rounded-2xl lg:p-6">
@@ -49,17 +34,15 @@ const CalendarEdit = () => {
       </div>
       {editModeOpen && (
         <div className="col-span-12">
-          {calendars &&
-            calendars.map((data, index) => (
-              <CalendarItem
-                key={index}
-                calendar={data}
-                isOpen={isOpen === index}
-                toggle={toggleOpen(index)}
-                toggleEditMode={toggleEditMode}
-                fetchCalendarsData={fetchCalendarsData}
-              />
-            ))}
+          {calendars.map((data, index) => (
+            <CalendarItem
+              key={data._id || index}
+              calendar={data}
+              isOpen={isOpen === index}
+              toggle={toggleOpen(index)}
+              toggleEditMode={toggleEditMode}
+            />
+          ))}
         </div>
       )}
     </div>

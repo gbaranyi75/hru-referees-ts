@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect } from "react";
 import { toast } from "react-toastify";
 import { DayPicker, getDefaultClassNames } from "react-day-picker";
 import { hu } from "react-day-picker/locale";
@@ -10,8 +10,7 @@ import OutlinedButton from "@/components/common/OutlinedButton";
 import DeleteButton from "./common/DeleteButton";
 import Input from "@/components/common/InputField";
 import Label from "@/components/common/Label";
-import { deleteCalendar } from "@/lib/actions/deleteCalendar";
-import { updateCalendar } from "@/lib/actions/updateCalendar";
+import { useUpdateCalendar, useDeleteCalendar } from "@/hooks/useCalendars";
 import { Calendar } from "@/types/types";
 
 const CalendarItem = ({
@@ -19,13 +18,11 @@ const CalendarItem = ({
   isOpen,
   toggle,
   toggleEditMode,
-  fetchCalendarsData,
 }: {
   calendar: Calendar;
   isOpen: boolean;
   toggle: () => void;
   toggleEditMode: () => void;
-  fetchCalendarsData: () => void;
 }) => {
   const [dates, setDates] = useState<string[]>(calendar.days);
   const [eventName, setEventName] = useState(calendar.name as string);
@@ -40,6 +37,10 @@ const CalendarItem = ({
     month: "numeric",
     day: "numeric",
   };
+
+  // React Query mutations
+  const updateMutation = useUpdateCalendar();
+  const deleteMutation = useDeleteCalendar();
 
   const defaultClassNames = getDefaultClassNames();
 
@@ -63,39 +64,38 @@ const CalendarItem = ({
     setShowError(false);
   }, [dates]);
 
-  /* Server Actions */
-  const handleUpdate = useCallback(async () => {
+  /* Handlers using React Query mutations */
+  const handleUpdate = async () => {
     if (dates.length !== 0 && eventName !== "") {
       const updatedCalendar = { name: eventName, days: dates };
       try {
-        const res = await updateCalendar(calendarId, updatedCalendar);
-        const success = res instanceof Error ? false : res.success;
-        if (success) {
-          resetToBase();
-          toggleEditMode();
-          fetchCalendarsData();
-          toast.success("Sikeres mentés");
-        }
+        await updateMutation.mutateAsync({
+          calendarId,
+          data: updatedCalendar,
+        });
+        resetToBase();
+        toggleEditMode();
+        toast.success("Sikeres mentés");
       } catch (error) {
-        console.error(error);
+        console.error("Error updating calendar:", error);
+        toast.error("Hiba történt a mentés során");
       }
     } else {
       setShowError(true);
+      setShowErrorDate(dates.length === 0);
+      setShowErrorName(eventName === "");
     }
-  }, [eventName, dates]);
+  };
 
   const handleDeleteCalendar = async (e?: React.MouseEvent<HTMLButtonElement>) => {
     e?.preventDefault();
     try {
-      const res = await deleteCalendar(calendarId);
-      const success = res instanceof Error ? false : res.success;
-      if (success) {
-        toggleEditMode();
-        fetchCalendarsData();
-        toast.success("Sikeres törlés");
-      }
+      await deleteMutation.mutateAsync(calendarId);
+      toggleEditMode();
+      toast.success("Sikeres törlés");
     } catch (error) {
-      console.error(error);
+      console.error("Error deleting calendar:", error);
+      toast.error("Hiba történt a törlés során");
     }
   };
 
@@ -115,6 +115,7 @@ const CalendarItem = ({
       days.sort();
     });
     setDates(days);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selected]);
 
   /* Util functions */
@@ -124,6 +125,7 @@ const CalendarItem = ({
     setSelected([]);
     setEdited(false);
     setShowErrorName(false);
+    setShowErrorDate(false);
   };
 
   return (

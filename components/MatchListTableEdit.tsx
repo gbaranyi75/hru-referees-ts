@@ -12,46 +12,44 @@ import {
 } from "@/components/common/DefaultTable";
 import { GuestUser, Match, User } from "@/types/types";
 import { useModal } from "@/hooks/useModal";
-import { fetchMatches } from "@/lib/actions/fetchMatches";
+import { useMatches } from "@/hooks/useMatches";
 import { fetchGuestUsers } from "@/lib/actions/fetchGuestUser";
 import { fetchUsers } from "@/lib/actions/fetchUsers";
 import { Icon } from "@iconify/react";
 
-export default function MatchListTable() {
+export default function MatchListTableEdit() {
   const { isOpen, openModal, closeModal } = useModal();
   const [selectedMatch, setSelectedMatch] = useState<Match | null>(null);
-  const [matches, setMatches] = useState<Match[]>([]);
   const [referees, setReferees] = useState<(User | GuestUser)[]>([]);
-  const [loading, setLoading] = useState(false);
+
+  // React Query hook for matches
+  const {
+    data: matches = [],
+    isLoading: loading,
+    refetch: loadMatches,
+  } = useMatches();
 
   const handleSelectedMatch = (match: Match) => {
     setSelectedMatch(match);
     openModal();
   };
 
-  const loadMatches = async () => {
-    setLoading(true);
-    const result = await fetchMatches();
-    if (result.success) {
-      setMatches(result.data);
-    }
-    setLoading(false);
-  };
-
-  const getUsers = async () => {
-    try {
-      const guestUsersResult = await fetchGuestUsers();
-      const usersResult = await fetchUsers();
-      const guestUsersData = guestUsersResult.success ? guestUsersResult.data : [];
-      const usersData = usersResult.success ? usersResult.data : [];
-      setReferees([...usersData, ...guestUsersData]);
-    } catch (error) {
-      console.error(error);
-    }
-  };
-
   useEffect(() => {
-    loadMatches();
+    const getUsers = async () => {
+      try {
+        // Parallel fetch - users and guest users at once
+        const [usersResult, guestUsersResult] = await Promise.all([
+          fetchUsers(),
+          fetchGuestUsers(),
+        ]);
+        const usersData = usersResult.success ? usersResult.data : [];
+        const guestUsersData = guestUsersResult.success ? guestUsersResult.data : [];
+        setReferees([...usersData, ...guestUsersData]);
+      } catch (error) {
+        console.error("Error loading users:", error);
+      }
+    };
+
     getUsers();
   }, []);
 
@@ -70,7 +68,7 @@ export default function MatchListTable() {
 
   return (
     <>
-      <div className="overflow-hidden rounded-xl mt-1 border-1 border-gray-200 bg-white">
+      <div className="overflow-hidden rounded-xl mt-1 border border-gray-200 bg-white">
         <div className="overflow-x-auto">
           <Table className="w-full table-auto">
             {/* Table Header */}
@@ -187,7 +185,7 @@ export default function MatchListTable() {
         isOpen={isOpen}
         onClose={closeModal}
         showCloseButton={true}
-        className="flex flex-col justify-between max-w-[900px] max-h-[700px] px-16 bg-white">
+        className="flex flex-col justify-between max-w-225 max-h-175 px-16 bg-white">
         <div className="py-10">
           <h4 className="font-semibold text-gray-800 mb-10 text-title-sm ">
             Mérkőzés szerkesztése
