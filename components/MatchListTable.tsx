@@ -73,7 +73,8 @@ const MatchList = () => {
     };
 
     loadMatches();
-  }, [page, count, pathName, router]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [page, count, pathName]);
 
   useEffect(() => {
     loadCount();

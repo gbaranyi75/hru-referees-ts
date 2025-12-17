@@ -229,7 +229,7 @@ const DropZoneComponent = ({
           {/* Hidden Input */}
           <input {...getInputProps()} />
 
-          <div className="dz-message flex flex-col items-center m-0!">
+          <div className="dz-message flex flex-col items-center !m-0">
             {/* Icon Container */}
             <div className="mb-5.5 flex justify-center">
               <div className="flex h-17 w-17  items-center justify-center rounded-full bg-gray-200 text-gray-700">

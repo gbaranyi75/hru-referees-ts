@@ -158,7 +158,6 @@ const MatchItemEditModal = ({
       email: string | undefined;
       messageData: Match;
     }[] = [];
-console.log(formFields)
     if (formFields.referee.clerkUserId) {
       list.push({
         username: formFields.referee.username,
@@ -254,7 +253,7 @@ console.log(formFields)
         : validateSingleMatch(formFields);
 
     if (!validation.isValid) {
-      toast.error(validation.error);
+      toast.error(validation.error ?? "Ismeretlen hiba a validáció során");
       return;
     }
 
@@ -446,7 +445,6 @@ console.log(formFields)
                   placeholder="--Válassz asszisztenst--"
                   onChange={(o) => {
                     setAssist1Value(o);
-                    console.log(assist1Value);
                     setFormFields({
                       ...formFields,
                       assist1: {

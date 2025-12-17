@@ -22,7 +22,7 @@ const RefereesEdit = () => {
   const [isGuest, setIsGuest] = useState<boolean>(false);
   const [keyValue, setKeyValue] = useState<number>(0);
   const toggleEditMode = () => {
-    setEditModeOpen(!editModeOpen);
+    setEditModeOpen((prev) => !prev);
     resetToDefault();
   };
 
@@ -50,17 +50,17 @@ const RefereesEdit = () => {
     }));
   };
 
-  const toggleCreateNew = useCallback(() => {
-    setEditModeOpen(!editModeOpen);
-    resetToDefault();
-  }, [editModeOpen]);
-
-  const resetToDefault = () => {
+  const resetToDefault = useCallback(() => {
     setEdited(false);
     setUserName("");
     setStatus("");
     setAddress({ country: "" });
-  };
+  }, []);
+
+  const toggleCreateNew = useCallback(() => {
+    setEditModeOpen((prev) => !prev);
+    resetToDefault();
+  }, [resetToDefault]);
 
   const handleSave = useCallback(async () => {
     try {
@@ -86,7 +86,7 @@ const RefereesEdit = () => {
     } catch {
       toast.error("Hiba történt a mentés során");
     }
-  }, [userName, address, status, isGuest, toggleCreateNew]);
+  }, [userName, address, isGuest, status, resetToDefault, toggleCreateNew]);
 
   return (
     <div className="rounded-2xl border border-gray-200 bg-white p-5 mt-5">

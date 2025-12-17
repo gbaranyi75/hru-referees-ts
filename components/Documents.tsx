@@ -28,11 +28,10 @@ const Documents = ({ isAdmin }: { isAdmin: boolean }) => {
       const filesData = await fetch("/api/r2/files").then((res) => res.json());
       setFileList(filesData.Contents);
       setLoading(false);
-      return fileList;
     } catch (err) {
       console.error("error", err);
     }
-  }, [fileList]);
+  }, []);
 
   useEffect(() => {
     fetchFiles();
