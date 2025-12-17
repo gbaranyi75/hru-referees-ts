@@ -20,6 +20,7 @@ import venues from "@/constants/matchData/venues.json";
 import OutlinedButton from "./common/OutlinedButton";
 import PrimaryButton from "./common/PrimaryButton";
 import Label from "./common/Label";
+import { validateSingleMatch, validateNonSingleMatch } from "@/lib/utils/matchValidation";
 
 const defaultFormFields = {
   type: "" as string,
@@ -224,79 +225,48 @@ const MatchesNew = () => {
   };
 
   const handleSubmit = async () => {
-    // test type xxx Not single matches
+    // Non-single matches (7s, UP torna)
     if (type === "7s" || type === "UP torna") {
-      if (date !== "" && time !== "" && venue !== "") {
-        try {
-          await createMatch(formFields, {
-            onSuccess: () => {
-              handleEmailSend();
-              //setIsSuccess(true);
-              toast.success("Sikeres mentés");
-              resetFormFields();
-              toggleCreateNew();
-            },
-          });
-        } catch (error) {
-          console.error(error);
-        }
-      } else {
-        toast.error("Kérlek, tölts ki minden kötelező mezőt");
+      const validation = validateNonSingleMatch(formFields);
+      if (!validation.isValid) {
+        toast.error(validation.error);
+        return;
+      }
+
+      try {
+        await createMatch(formFields, {
+          onSuccess: () => {
+            handleEmailSend();
+            //setIsSuccess(true);
+            toast.success("Sikeres mentés");
+            resetFormFields();
+            toggleCreateNew();
+          },
+        });
+      } catch (error) {
+        console.error(error);
       }
     }
     // Single match
     else {
-      if (home === away) {
-        toast.error("A hazai és a vendég csapat nem lehet ugyanaz");
-        return;
-      }
-      if (
-        (referee.username !== "" &&
-          assist1.username !== "" &&
-          referee.username === assist1.username) ||
-        (referee.username !== "" &&
-          assist2.username !== "" &&
-          referee.username === assist2.username)
-      ) {
-        toast.error("A nevek nem egyezhetnek meg");
+      const validation = validateSingleMatch(formFields);
+      if (!validation.isValid) {
+        toast.error(validation.error);
         return;
       }
 
-      if (controllers.length > 0) {
-        const hasDuplicate = controllers.some(
-          (c) =>
-            c.username === referee.username ||
-            c.username === assist1.username ||
-            c.username === assist2.username
-        );
-        if (hasDuplicate) {
-          toast.error("A nevek nem egyezhetnek meg");
-          return;
-        }
-      }
-
-      if (
-        home !== "" &&
-        away !== "" &&
-        date !== "" &&
-        time !== "" &&
-        venue !== ""
-      ) {
-        try {
-          await createMatch(formFields, {
-            onSuccess: () => {
-              handleEmailSend();
-              setIsSuccess(true);
-              toast.success("Sikeres mentés");
-              resetFormFields();
-              toggleCreateNew();
-            },
-          });
-        } catch (error) {
-          console.error(error);
-        }
-      } else {
-        toast.error("Kérlek, tölts ki minden kötelező mezőt");
+      try {
+        await createMatch(formFields, {
+          onSuccess: () => {
+            handleEmailSend();
+            setIsSuccess(true);
+            toast.success("Sikeres mentés");
+            resetFormFields();
+            toggleCreateNew();
+          },
+        });
+      } catch (error) {
+        console.error(error);
       }
     }
   };
