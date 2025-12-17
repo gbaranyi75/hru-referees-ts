@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Icon } from "@iconify/react";
 import DocumentsList from "./DocumentsList";
 import DropZoneComponent from "./common/DropZone";
@@ -22,21 +22,20 @@ const Documents = ({ isAdmin }: { isAdmin: boolean }) => {
     setEditModeOpen(!editModeOpen);
   };
 
-  const fetchFiles = async () => {
+  const fetchFiles = useCallback(async () => {
     try {
       setLoading(true);
       const filesData = await fetch("/api/r2/files").then((res) => res.json());
       setFileList(filesData.Contents);
       setLoading(false);
-      return fileList;
     } catch (err) {
       console.error("error", err);
     }
-  };
+  }, []);
 
   useEffect(() => {
     fetchFiles();
-  }, []);
+  }, [fetchFiles]);
 
   return (
     <div className="rounded-2xl border border-gray-200 bg-white p-5 mt-5">

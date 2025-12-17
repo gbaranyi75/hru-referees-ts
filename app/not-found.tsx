@@ -4,7 +4,7 @@ export const dynamic = "force-dynamic";
 
 const NotFoundPage = () => {
   return (
-    <section className="min-h-screen flex-grow">
+    <section className="min-h-screen grow">
       <div className="m-auto max-w-2xl py-24">
         <div className="bg-white px-6 py-24 mb-4 rounded-2xl border border-gray-200 m-4 md:m-0">
           <div className="flex justify-center">
@@ -26,7 +26,7 @@ const NotFoundPage = () => {
           </div>
         </div>
       </div>
-      <div className="flex-grow"></div>
+      <div className="grow"></div>
     </section>
   );
 };

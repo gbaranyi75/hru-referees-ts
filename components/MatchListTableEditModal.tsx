@@ -17,6 +17,10 @@ import { DayPicker, getDefaultClassNames } from "react-day-picker";
 import { hu } from "react-day-picker/locale";
 import "react-day-picker/dist/style.css";
 import updateMatch from "@/lib/actions/updateMatch";
+import {
+  validateNonSingleMatch,
+  validateSingleMatch,
+} from "@/lib/utils/matchValidation";
 
 const MatchItemEditModal = ({
   referees,
@@ -110,50 +114,50 @@ const MatchItemEditModal = ({
       : false
   );
 
-  const {
-    home = "",
-    away = "",
-    type = "",
-    gender = "",
-    age = "",
-    venue = "",
-    referee = {} as User,
-    assist1 = {} as User,
-    assist2 = {} as User,
-    controllers = [],
-    date = "",
-    time = "",
-  } = formFields || {};
+  const { type = "" } = formFields || {};
 
-  const dateFormatOptions: Intl.DateTimeFormatOptions = {
+  /* const dateFormatOptions: Intl.DateTimeFormatOptions = {
     year: "numeric",
     month: "numeric",
     day: "numeric",
-  };
+  }; */
 
   const defaultClassNames = getDefaultClassNames();
 
-  const transformDateFormat = (date: Date) => {
+ /*  const transformDateFormat = (date: Date) => {
     return date.toLocaleDateString("hu-HU", dateFormatOptions);
-  };
+  }; */
+  const transformDateFormat = useCallback((date: Date) => {
+      const dateFormatOptions: Intl.DateTimeFormatOptions = {
+        year: "numeric",
+        month: "numeric",
+        day: "numeric",
+      };
+      return date.toLocaleDateString("hu-HU", dateFormatOptions);
+    }, []);
 
   useEffect(() => {
     if (selected) {
       const dateString = transformDateFormat(selected).toString();
       setDateValue(dateString);
-      setFormFields({
-        ...formFields,
+      setFormFields((prev) => ({
+        ...prev,
         date: dateString || "",
-      });
+      }));
     }
-  }, [selected]);
+  }, [selected, transformDateFormat]);
 
   const handleCalendarOpen = () => {
     setCalendarOpen((state) => !state);
   };
 
   const handleEmailSend = async () => {
-    let list = [];
+    const list: {
+      username: string;
+      clerkUserId: string;
+      email: string | undefined;
+      messageData: Match;
+    }[] = [];
     if (formFields.referee.clerkUserId) {
       list.push({
         username: formFields.referee.username,
@@ -191,116 +195,94 @@ const MatchItemEditModal = ({
       });
     }
     if (formFields.referees.length > 0) {
-      formFields.referees.forEach((referee) => {
-        if (referee.clerkUserId) {
+      formFields.referees.forEach((refereeItem) => {
+        if (refereeItem.clerkUserId) {
           list.push({
-            username: referee.username,
-            clerkUserId: referee.clerkUserId,
-            email: referee.email,
+            username: refereeItem.username,
+            clerkUserId: refereeItem.clerkUserId,
+            email: refereeItem.email,
             messageData: formFields,
           });
         }
       });
     }
-    list.forEach(async (l) => {
-      console.log(l);
-      const resp = await fetch("/api/send-email", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          email: l.email,
-          username: l.username,
-          messageData: l.messageData,
-          subject: "Új küldés",
-        }),
-      });
-    });
-    list = [];
+
+    const results = await Promise.allSettled(
+      list.map(async (l) => {
+        const resp = await fetch("/api/send-email", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            email: l.email,
+            username: l.username,
+            messageData: l.messageData,
+            subject: "Új küldés",
+          }),
+        });
+        if (!resp.ok) {
+          throw new Error(`${l.email}`);
+        }
+        return l.email;
+      })
+    );
+
+    const failedEmails = results
+      .filter(
+        (result): result is PromiseRejectedResult =>
+          result.status === "rejected"
+      )
+      .map((result) => result.reason?.message || "Ismeretlen email");
+
+    if (failedEmails.length > 0) {
+      console.error(
+        "Email küldés sikertelen a következő címekre:",
+        failedEmails
+      );
+      toast.error(`Email küldés sikertelen: ${failedEmails.join(", ")}`);
+    } else if (list.length > 0) {
+      toast.success("Minden email sikeresen elküldve");
+    }
   };
 
-  const handleSubmit = useCallback(async () => {
-    // test type
-    if (type === "7s" || type === "UP torna") {
-      if (date !== "" && time !== "" && venue !== "") {
-        try {
-          const res = await updateMatch(selectedMatch?._id, formFields);
-          const success = res instanceof Error ? false : res.success;
-          if (success) {
-            handleEmailSend();
-            loadMatches();
-            toast.success("Sikeres mentés");
-            resetFormFields();
-            closeModal();
-          }
-        } catch (error) {
-          console.error(error);
-        }
-      } else {
-        toast.error("Kérlek, tölts ki minden kötelező mezőt");
-      }
-    } else {
-      if (home === away) {
-        toast.error("A hazai és a vendég csapat nem lehet ugyanaz");
-        return;
-      }
-      if (
-        (referee.username !== "" &&
-          assist1.username !== "" &&
-          referee.username === assist1.username) ||
-        (referee.username !== "" &&
-          assist2.username !== "" &&
-          referee.username === assist2.username)
-      ) {
-        toast.error("A nevek nem egyezhetnek meg");
-        return;
-      }
-      if (controllers.length > 0) {
-        controllers.map((c) => {
-          if (
-            c.username === referee.username ||
-            c.username === assist1.username ||
-            c.username === assist2.username
-          ) {
-            toast.error("A nevek nem egyezhetnek meg");
-            return;
-          }
-        });
-      }
+  const handleSubmit = async () => {
+    const validation =
+      type === "7s" || type === "UP torna"
+        ? validateNonSingleMatch(formFields)
+        : validateSingleMatch(formFields);
 
-      if (
-        home !== "" &&
-        away !== "" &&
-        date !== "" &&
-        time !== "" &&
-        venue !== ""
-      ) {
-        try {
-          const res = await updateMatch(selectedMatch?._id, formFields);
-          const success = res instanceof Error ? false : res.success;
-          if (success) {
-            handleEmailSend();
-            loadMatches();
-            toast.success("Sikeres mentés");
-            closeModal();
-            resetFormFields();
-          }
-        } catch (error) {
-          console.error(error);
-        }
-      } else {
-        toast.error("Kérlek, tölts ki minden kötelező mezőt");
-      }
+    if (!validation.isValid) {
+      toast.error(validation.error ?? "Ismeretlen hiba a validáció során");
+      return;
     }
-  }, [selectedMatch, formFields, closeModal, handleEmailSend]);
+
+    if (!selectedMatch?._id) {
+      toast.error("Hiányzó mérkőzés azonosító");
+      return;
+    }
+
+    try {
+      const res = await updateMatch(selectedMatch._id, formFields);
+      const success = res instanceof Error ? false : res.success;
+      if (success) {
+        handleEmailSend();
+        loadMatches();
+        toast.success("Sikeres mentés");
+        resetFormFields();
+        closeModal();
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
   const resetFormFields = () => {
     setFormFields(defaultFormFields);
   };
 
   return (
-    <div className="text-gray-600 overflow-auto max-h-[560px]">
+    <div className="text-gray-600 overflow-auto max-h-140">
       <form className="flex flex-col overscroll-y-auto">
         <div className="grid grid-cols-1 gap-x-10 gap-y-5 xl:grid-cols-2">
           <div className="col-span-2 lg:col-span-1">
@@ -431,8 +413,8 @@ const MatchItemEditModal = ({
                   options={referees.map((n) => ({
                     label: n.username,
                     value: n.username,
-                    id: "email" in n ? n.email : "",
-                    email: "clerkUserId" in n ? n.clerkUserId : "",
+                    email: "email" in n ? n.email : "",
+                    id: "clerkUserId" in n ? n.clerkUserId : "",
                     name: "referee",
                   }))}
                   placeholder="--Válassz játékvezetőt--"
@@ -463,7 +445,6 @@ const MatchItemEditModal = ({
                   placeholder="--Válassz asszisztenst--"
                   onChange={(o) => {
                     setAssist1Value(o);
-                    console.log(assist1Value);
                     setFormFields({
                       ...formFields,
                       assist1: {
@@ -596,7 +577,7 @@ const MatchItemEditModal = ({
               >
                 &times;
               </button>
-              <div className="bg-gray-300 self-stretch w-[2px] ml-2.5"></div>
+              <div className="bg-gray-300 self-stretch w-0.5 ml-2.5"></div>
               <div className="flex my-auto items-center text-gray-300 pl-2 pt-0.5">
                 <Icon icon="lucide:chevron-down" width="20" height="20" />
               </div>

@@ -2,7 +2,7 @@
 import connectDB from "@/config/database";
 import User from "@/models/User";
 import { Result, User as UserType } from "@/types/types";
-import { handleAsyncOperation, createErrorResult } from "@/lib/utils/errorHandling";
+import { handleAsyncOperation } from "@/lib/utils/errorHandling";
 
 /**
  * Fetches a single user by Clerk User ID

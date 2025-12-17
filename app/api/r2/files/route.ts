@@ -6,7 +6,7 @@ export async function GET() {
   try {
     const files = await listFiles()
     return NextResponse.json(files)
-  } catch (error) {
+  } catch {
     return NextResponse.json({ error: 'Error listing files' }, { status: 500 })
   }
 }
@@ -43,7 +43,7 @@ export async function POST(request: NextRequest) {
   try {
     const signedUrl = await getSignedUrlForDownload(key)
     return NextResponse.json({ signedUrl })
-  } catch (error) {
+  } catch {
     return NextResponse.json(
       { error: 'Error generating download URL' },
       { status: 500 }

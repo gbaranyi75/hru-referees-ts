@@ -60,7 +60,7 @@ export default function MediaEditList({
       console.error(error);
     }
     setLoading(false);
-  }, [name, mediaUrl]);
+  }, [name, mediaUrl, loadMediaAction, selectedMedia?.name, selectedMedia?.mediaUrl, selectedMedia?._id]);
 
   if (loading || !mediaList)
     return (
@@ -83,22 +83,22 @@ export default function MediaEditList({
             <TableRow className="text-sm text-center">
               <TableCell
                 isHeader
-                className="px-2 py-4 font-bold text-gray-600 w-[166px]">
+                className="px-2 py-4 font-bold text-gray-600 w-41.5">
                 Név
               </TableCell>
               <TableCell
                 isHeader
-                className="px-2 py-4 font-bold text-gray-600 w-[166px]">
+                className="px-2 py-4 font-bold text-gray-600 w-41.5">
                 URL
               </TableCell>
               <TableCell
                 isHeader
-                className="px-2 py-4 font-bold text-gray-600 w-[166px]">
+                className="px-2 py-4 font-bold text-gray-600 w-41.5">
                 Létrehozva
               </TableCell>
               <TableCell
                 isHeader
-                className="px-5 py-4 font-bold text-gray-600 w-[166px]">
+                className="px-5 py-4 font-bold text-gray-600 w-41.5">
                 Szerkesztés
               </TableCell>
             </TableRow>

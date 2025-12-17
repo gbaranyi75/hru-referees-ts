@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { toast } from "react-toastify";
 import { DayPicker, getDefaultClassNames } from "react-day-picker";
 import { hu } from "react-day-picker/locale";
@@ -12,6 +12,12 @@ import Input from "@/components/common/InputField";
 import Label from "@/components/common/Label";
 import { useUpdateCalendar, useDeleteCalendar } from "@/hooks/useCalendars";
 import { Calendar } from "@/types/types";
+
+const DATE_FORMAT_OPTIONS: Intl.DateTimeFormatOptions = {
+  year: "numeric",
+  month: "numeric",
+  day: "numeric",
+};
 
 const CalendarItem = ({
   calendar,
@@ -27,16 +33,10 @@ const CalendarItem = ({
   const [dates, setDates] = useState<string[]>(calendar.days);
   const [eventName, setEventName] = useState(calendar.name as string);
   const [edited, setEdited] = useState(false);
-  const [showError, setShowError] = useState(false);
   const [showErrorDate, setShowErrorDate] = useState(false);
   const [showErrorName, setShowErrorName] = useState(false);
   const [selected, setSelected] = useState<Date[] | undefined>([]);
   const calendarId = calendar._id;
-  const dateFormatOptions: Intl.DateTimeFormatOptions = {
-    year: "numeric",
-    month: "numeric",
-    day: "numeric",
-  };
 
   // React Query mutations
   const updateMutation = useUpdateCalendar();
@@ -56,12 +56,12 @@ const CalendarItem = ({
     setEventName(e.target.value);
   };
 
-  const transformDateFormat = (date: Date) => {
-    return date.toLocaleDateString("hu-HU", dateFormatOptions);
-  };
+  const transformDateFormat = useCallback((date: Date) => {
+    return date.toLocaleDateString("hu-HU", DATE_FORMAT_OPTIONS);
+  }, []);
 
   useEffect(() => {
-    setShowError(false);
+    setShowErrorDate(false);
   }, [dates]);
 
   /* Handlers using React Query mutations */
@@ -81,7 +81,6 @@ const CalendarItem = ({
         toast.error("Hiba történt a mentés során");
       }
     } else {
-      setShowError(true);
       setShowErrorDate(dates.length === 0);
       setShowErrorName(eventName === "");
     }
@@ -115,8 +114,7 @@ const CalendarItem = ({
       days.sort();
     });
     setDates(days);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selected]);
+  }, [selected, transformDateFormat]);
 
   /* Util functions */
   const resetToBase = () => {

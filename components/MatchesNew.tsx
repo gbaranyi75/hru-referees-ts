@@ -81,23 +81,9 @@ const MatchesNew = () => {
   const [createNewOpen, setCreateNewOpen] = useState<boolean>(false);
   const [calendarOpen, setCalendarOpen] = useState<boolean>(false);
   const [isSingleMatch, setIsSingleMatch] = useState<boolean>(true);
-  const [isSuccess, setIsSuccess] = useState<boolean>(false);
   const [referees, setReferees] = useState<(User | GuestUser)[]>([]);
-  const {
-    home = "",
-    away = "",
-    type = "",
-    gender = "",
-    age = "",
-    venue = "",
-    referee = {} as User,
-    assist1 = {} as User,
-    assist2 = {} as User,
-    controllers = [],
-    date = "",
-    time = "",
-  } = formFields || {};
-  const { mutate:  createMatch, isPending } = useCreateMatch();
+  const { type = "" } = formFields || {};
+  const { mutate:  createMatch } = useCreateMatch();
 
   const defaultClassNames = getDefaultClassNames();
 
@@ -229,7 +215,7 @@ const MatchesNew = () => {
     if (type === "7s" || type === "UP torna") {
       const validation = validateNonSingleMatch(formFields);
       if (!validation.isValid) {
-        toast.error(validation.error);
+        toast.error(validation.error ?? "Ismeretlen hiba a validáció során");
         return;
       }
 
@@ -237,7 +223,6 @@ const MatchesNew = () => {
         await createMatch(formFields, {
           onSuccess: () => {
             handleEmailSend();
-            //setIsSuccess(true);
             toast.success("Sikeres mentés");
             resetFormFields();
             toggleCreateNew();
@@ -251,7 +236,7 @@ const MatchesNew = () => {
     else {
       const validation = validateSingleMatch(formFields);
       if (!validation.isValid) {
-        toast.error(validation.error);
+        toast.error(validation.error ?? "Ismeretlen hiba a validáció során");
         return;
       }
 
@@ -259,7 +244,6 @@ const MatchesNew = () => {
         await createMatch(formFields, {
           onSuccess: () => {
             handleEmailSend();
-            setIsSuccess(true);
             toast.success("Sikeres mentés");
             resetFormFields();
             toggleCreateNew();

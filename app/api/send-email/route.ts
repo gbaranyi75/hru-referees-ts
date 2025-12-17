@@ -8,12 +8,18 @@ export async function POST(request: NextRequest) {
     try {
         const body = await request.json();
         const { email, username, messageData, subject } = body;
-        const { data, error } = await resend.emails.send({
+        const { error } = await resend.emails.send({
             from: "MRGSZ Játékvezetői Bizottság <info@hru-referees.hu>",
             to: [email],
             subject: subject,
             react: Email({ username, messageData }) as React.ReactNode,
         });
+        if (error) {
+            return NextResponse.json(
+                { message: "Email not sent", error },
+                { status: 500 }
+            );
+        }
         return NextResponse.json({ message: "Email sent successfully" });
     } catch (error) {
         console.error("Error sending email:", error);
