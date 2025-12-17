@@ -22,11 +22,6 @@ const CalendarNew = () => {
   const [createNewOpen, setCreateNewOpen] = useState(false);
   const [showErrorName, setShowErrorName] = useState(false);
   const [showErrorDate, setShowErrorDate] = useState(false);
-  const dateFormatOptions: Intl.DateTimeFormatOptions = {
-    year: "numeric",
-    month: "numeric",
-    day: "numeric",
-  };
   const defaultClassNames = getDefaultClassNames();
 
   // React Query mutation
@@ -39,9 +34,14 @@ const CalendarNew = () => {
     setEventName(e.target.value);
   };
 
-  const transformDateFormat = (date: Date) => {
+  const transformDateFormat = React.useCallback((date: Date) => {
+    const dateFormatOptions: Intl.DateTimeFormatOptions = {
+      year: "numeric",
+      month: "numeric",
+      day: "numeric",
+    };
     return date.toLocaleDateString("hu-HU", dateFormatOptions);
-  };
+  }, []);
 
   useEffect(() => {
     setShowErrorDate(false);
@@ -82,7 +82,7 @@ const CalendarNew = () => {
       days.sort();
     });
     setDates(days);
-  }, [selected]);
+  }, [selected, transformDateFormat]);
 
   const resetToBase = () => {
     setDates([]);

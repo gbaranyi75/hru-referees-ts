@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { Icon } from "@iconify/react";
 
 export type SelectOption = {
@@ -42,10 +42,14 @@ const Select = ({
   const clearOptions = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.stopPropagation();
     e.preventDefault();
-    multiple ? onChange([]) : onChange(undefined);
+    if (multiple) {
+      onChange([]);
+    } else {
+      onChange(undefined);
+    }
   };
 
-  const selectOption = (option: SelectOption) => {
+  const selectOption = useCallback((option: SelectOption) => {
     if (multiple) {
       if (value.some((o) => o.value === option.value)) {
         onChange(value.filter((o) => o.value !== option.value));
@@ -55,7 +59,7 @@ const Select = ({
     } else {
       if (option !== value) onChange(option);
     }
-  };
+  }, [multiple, value, onChange]);
 
   const isOptionSelected = (option: SelectOption) => {
     return multiple ? value.includes(option) : option === value;
@@ -66,8 +70,9 @@ const Select = ({
   }, [isOpen]);
 
   useEffect(() => {
+    const container = containerRef.current;
     const handler = (e: KeyboardEvent) => {
-      if (e.target != containerRef.current) return;
+      if (e.target != container) return;
       switch (e.code) {
         case "Enter":
         case "Space":
@@ -92,12 +97,12 @@ const Select = ({
           break;
       }
     };
-    containerRef.current?.addEventListener("keydown", handler);
+    container?.addEventListener("keydown", handler);
 
     return () => {
-      containerRef.current?.removeEventListener("keydown", handler);
+      container?.removeEventListener("keydown", handler);
     };
-  }, [isOpen, highlightedIndex, options]);
+  }, [isOpen, highlightedIndex, options, selectOption]);
 
   return (
     <div
@@ -137,7 +142,7 @@ const Select = ({
           &times;
         </button>
       )}
-      <div className="bg-gray-300 self-stretch w-[2px] ml-2.5"></div>
+      <div className="bg-gray-300 self-stretch w-0.5 ml-2.5"></div>
       <div className="flex my-auto items-center text-gray-300 pl-2 pt-0.5">
         <Icon icon="lucide:chevron-down" width="20" height="20" />
       </div>
@@ -147,8 +152,9 @@ const Select = ({
             <li
               onClick={(e) => {
                 e.stopPropagation();
-                isOptionSelected(option) ? null : selectOption(option);
-
+                if (!isOptionSelected(option)) {
+                  selectOption(option);
+                }
                 setIsOpen(false);
               }}
               onMouseEnter={() => setHighlightedIndex(index)}

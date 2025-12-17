@@ -29,19 +29,15 @@ export default function ProfileMetaCard({
   const [userName, setUserName] = useState("");
   const [fbUrl, setFbUrl] = useState("");
   const [instaUrl, setInstaUrl] = useState("");
-  const [imageUrl, setImageUrl] = useState("");
   const [profile, setProfile] = useState<User | null>(null);
-  const [dbImageUrl, setDbImageUrl] = useState("");
-  const [publicId, setPublicId] = useState("");
   const { isOpen, openModal, closeModal } = useModal();
 
   useEffect(() => {
     setUserName(profileData?.username as string);
     setFbUrl(profileData?.facebookUrl as string);
     setInstaUrl(profileData?.instagramUrl as string);
-    setDbImageUrl(profileData?.image as string);
     setProfile(profileData);
-  }, []);
+  }, [profileData]);
 
   const handleUserNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setUserName(e.target.value);
@@ -60,10 +56,7 @@ export default function ProfileMetaCard({
       const info = result?.info;
       if (info && typeof info === 'object' && 'secure_url' in info && 'public_id' in info) {
         const url = info.secure_url as string;
-        const public_id = info.public_id as string;
-
-        setImageUrl(url);
-        setPublicId(public_id);
+        //const public_id = info.public_id as string;  will be used later
 
         const res = await updateProfileImage(url);
         const success = res instanceof Error ? false : res.success;

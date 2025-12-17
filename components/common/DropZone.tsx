@@ -61,7 +61,7 @@ const DropZoneComponent = ({
     onFilesChange?.(files);
   }, [files, onFilesChange]);
 
-  const uploadFile = async (file: File) => {
+  const uploadFile = useCallback(async (file: File) => {
     setFiles((prevFiles) =>
       prevFiles.map((f) => (f.file === file ? { ...f, uploading: true } : f))
     );
@@ -145,7 +145,7 @@ const DropZoneComponent = ({
         xhr.setRequestHeader("Content-Type", file.type);
         xhr.send(file);
       });
-    } catch (error) {
+    } catch {
       toast.error("Sikertelen feltöltés");
       setFiles((prevFiles) =>
         prevFiles.map((f) =>
@@ -159,7 +159,7 @@ const DropZoneComponent = ({
       setUploadProgress(0);
       abortControllerRef.current = null;
     }
-  };
+  }, [fetchFiles, uploadSuccess]);
 
   const onDrop = useCallback((acceptedFiles: File[]) => {
     if (acceptedFiles.length) {
@@ -184,7 +184,7 @@ const DropZoneComponent = ({
         uploadFile(file.file);
       }
     });
-  }, [files]);
+  }, [files, uploadFile]);
 
   const onDropRejected = useCallback(
     (fileRejections: FileRejection[]) => {
@@ -200,7 +200,7 @@ const DropZoneComponent = ({
         }
       }
     },
-    [maxFiles, maxSize]
+    [maxSize]
   );
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
@@ -229,10 +229,10 @@ const DropZoneComponent = ({
           {/* Hidden Input */}
           <input {...getInputProps()} />
 
-          <div className="dz-message flex flex-col items-center !m-0">
+          <div className="dz-message flex flex-col items-center m-0!">
             {/* Icon Container */}
-            <div className="mb-[22px] flex justify-center">
-              <div className="flex h-[68px] w-[68px]  items-center justify-center rounded-full bg-gray-200 text-gray-700">
+            <div className="mb-5.5 flex justify-center">
+              <div className="flex h-17 w-17  items-center justify-center rounded-full bg-gray-200 text-gray-700">
                 <svg
                   className="fill-current"
                   width="29"
@@ -254,7 +254,7 @@ const DropZoneComponent = ({
               {isDragActive ? "Húzd ide a fájlokat" : "Fájl böngeszése"}
             </h4>
 
-            <span className=" text-center mb-5 block w-full max-w-[290px] text-sm text-gray-700">
+            <span className=" text-center mb-5 block w-full max-w-72.5 text-sm text-gray-700">
               Húzd ide a feltöltendő fájlokat, vagy böngéssz
             </span>
 
@@ -268,8 +268,8 @@ const DropZoneComponent = ({
       {/* File Preview */}
 
       {files.length > 0 && (
-        <div className="my-2 flex flex-col gap-3 max-w-[500px] mx-auto">
-          <div className="flex flex-row gap-3 max-w-[500px] mx-auto justify-center items-center py-4">
+        <div className="my-2 flex flex-col gap-3 max-w-125 mx-auto">
+          <div className="flex flex-row gap-3 max-w-125 mx-auto justify-center items-center py-4">
             <p className="text-sm">{files[0]?.file?.name}</p>
             {isUploading ? (
               <DisabledButton text="Feltöltés..." />

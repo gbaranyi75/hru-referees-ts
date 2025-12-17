@@ -60,7 +60,7 @@ const DocumentsList = ({
       setIsDeleting(false);
       closeModal();
       toast.success("A fájl sikeresen törölve");
-    } catch (error) {
+    } catch {
       toast.error("A fájlt nem sikerült törölni");
     }
   };
@@ -130,13 +130,13 @@ const DocumentsList = ({
               </TableCell>
               <TableCell
                 isHeader
-                className="py-3 px-4 text-left font-medium text-gray-600 min-w-[150px]"
+                className="py-3 px-4 text-left font-medium text-gray-600 min-w-37.5"
               >
                 Módosítás dátuma
               </TableCell>
               <TableCell
                 isHeader
-                className="py-3 px-4 text-left font-medium text-gray-600 min-w-[120px]"
+                className="py-3 px-4 text-left font-medium text-gray-600 min-w-30"
               >
                 Méret
               </TableCell>
@@ -200,7 +200,7 @@ const DocumentsList = ({
         isOpen={isOpen}
         onClose={closeModal}
         showCloseButton={true}
-        className="max-w-[500px] p-5 lg:p-8"
+        className="max-w-125 p-5 lg:p-8"
       >
         <div className="flex justify-center pt-4 px-2">
           <h6 className="mb-2 text-xl font-semibold text-gray-600 ">
