@@ -7,7 +7,6 @@ import DisabledButton from "@/components/common/DisabledButton";
 import Label from "@/components/common/Label";
 import OutlinedButton from "@/components/common/OutlinedButton";
 import PrimaryButton from "@/components/common/PrimaryButton";
-import Skeleton from "@/components/common/Skeleton";
 import Checkbox from "@/components/common/Checkbox";
 import RefereesEditTable from "./RefereesEditTable";
 import { createGuestUser } from "@/lib/actions/createGuestUser";
@@ -51,10 +50,10 @@ const RefereesEdit = () => {
     }));
   };
 
-  const toggleCreateNew = () => {
+  const toggleCreateNew = useCallback(() => {
     setEditModeOpen(!editModeOpen);
     resetToDefault();
-  };
+  }, [editModeOpen]);
 
   const resetToDefault = () => {
     setEdited(false);
@@ -84,10 +83,10 @@ const RefereesEdit = () => {
       } else {
         toast.error(result.error);
       }
-    } catch (error) {
+    } catch {
       toast.error("Hiba történt a mentés során");
     }
-  }, [userName, address, status, isGuest]);
+  }, [userName, address, status, isGuest, toggleCreateNew]);
 
   return (
     <div className="rounded-2xl border border-gray-200 bg-white p-5 mt-5">

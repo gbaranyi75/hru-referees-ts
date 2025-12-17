@@ -53,27 +53,27 @@ const MatchList = () => {
     }
   };
 
-  const loadMatches = async () => {
-    const totalPages = Math.ceil(count / ITEMS_PER_PAGE);
-    if (count > 0 && (page <= 0 || page > totalPages)) {
-      setPage(1);
-      const params = new URLSearchParams(window.location.search);
-      params.set("page", "1");
-      router.replace(`${pathName}?${params}` as Route);
-    }
-    const result = await fetchMatches({
-      limit: ITEMS_PER_PAGE,
-      skip: page <= 0 || page > totalPages ? 0 : (page - 1) * ITEMS_PER_PAGE,
-    });
-    if (result.success) {
-      setMatches(result.data);
-    }
-    setLoading(false);
-  };
-
   useEffect(() => {
+    const loadMatches = async () => {
+      const totalPages = Math.ceil(count / ITEMS_PER_PAGE);
+      if (count > 0 && (page <= 0 || page > totalPages)) {
+        setPage(1);
+        const params = new URLSearchParams(window.location.search);
+        params.set("page", "1");
+        router.replace(`${pathName}?${params}` as Route);
+      }
+      const result = await fetchMatches({
+        limit: ITEMS_PER_PAGE,
+        skip: page <= 0 || page > totalPages ? 0 : (page - 1) * ITEMS_PER_PAGE,
+      });
+      if (result.success) {
+        setMatches(result.data);
+      }
+      setLoading(false);
+    };
+
     loadMatches();
-  }, [page]);
+  }, [page, count, pathName, router]);
 
   useEffect(() => {
     loadCount();
@@ -93,7 +93,7 @@ const MatchList = () => {
 
   return (
     <>
-      <div className="overflow-hidden rounded-xl mt-1 border-1 border-gray-200 bg-white">
+      <div className="overflow-hidden rounded-xl mt-1 border border-gray-200 bg-white">
         <div className="overflow-x-auto">
           <Table className="w-full table-auto">
             {/* Table Header */}
@@ -205,7 +205,7 @@ const MatchList = () => {
         isOpen={isOpen}
         onClose={closeModal}
         showCloseButton={true}
-        className="max-w-[500px] p-5 lg:p-10">
+        className="max-w-125 p-5 lg:p-10">
         <MatchListTableModal
           selectedMatch={selectedMatch}
           closeModal={closeModal}

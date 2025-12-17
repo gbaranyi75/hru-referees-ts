@@ -20,8 +20,6 @@ export default function ProfileInfoCard({
   loadProfileAfterSaveAction,
 }: Props) {
   const [phoneNumber, setPhoneNumber] = useState("");
-  const [city, setCity] = useState("");
-  const [country, setCountry] = useState("");
   const [status, setStatus] = useState("");
   const [address, setAddress] = useState<Address | null>(null);
   const [profile, setProfile] = useState<User | null>(null);
@@ -32,7 +30,6 @@ export default function ProfileInfoCard({
   };
 
   const handleCountryChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setCountry(e.target.value);
     setAddress((prevAddress) => ({
       ...prevAddress,
       city: prevAddress?.city || "",
@@ -41,7 +38,6 @@ export default function ProfileInfoCard({
   };
 
   const handleCityChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setCity(e.target.value);
     setAddress((prevAddress) => ({
       ...prevAddress,
       city: e.target.value,
@@ -66,8 +62,6 @@ export default function ProfileInfoCard({
       toast.error(result.error);
     }
   }, [
-    city,
-    country,
     closeModal,
     status,
     phoneNumber,
@@ -77,12 +71,10 @@ export default function ProfileInfoCard({
 
   useEffect(() => {
     setPhoneNumber(profileData?.phoneNumber as string);
-    setCity(profileData?.address?.city as string);
-    setCountry(profileData?.address?.country as string);
     setStatus(profileData?.status as string);
     setAddress(profileData?.address || null);
     setProfile(profileData);
-  }, []);
+  }, [profileData]);
 
   return (
     <div className="p-5 border border-gray-200 rounded-2xl  lg:p-6">
@@ -167,8 +159,8 @@ export default function ProfileInfoCard({
         </button>
       </div>
 
-      <Modal isOpen={isOpen} onClose={closeModal} className="max-w-[700px] m-4">
-        <div className="no-scrollbar relative w-full max-w-[700px] overflow-y-auto rounded-3xl bg-white p-4 lg:p-11">
+      <Modal isOpen={isOpen} onClose={closeModal} className="max-w-175 m-4">
+        <div className="no-scrollbar relative w-full max-w-175 overflow-y-auto rounded-3xl bg-white p-4 lg:p-11">
           <div className="px-2 pr-14">
             <h4 className="mb-2 text-2xl font-semibold text-gray-600 ">
               Személyes adatok módítása
@@ -178,7 +170,7 @@ export default function ProfileInfoCard({
             </p>
           </div>
           <form className="flex flex-col">
-            <div className="custom-scrollbar h-[450px] overflow-y-auto px-2 pb-3">
+            <div className="custom-scrollbar h-112.5 overflow-y-auto px-2 pb-3">
               <div className="">
                 <h5 className="mb-5 text-lg font-medium text-gray-800 lg:mb-6">
                   Lakhely, elérhetőség, státusz
