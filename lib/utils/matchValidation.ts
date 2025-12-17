@@ -9,6 +9,15 @@ export type ValidationResult = {
 };
 
 /**
+ * Error messages
+ */
+const ERROR_MESSAGES = {
+  DUPLICATE_TEAMS: "A hazai és a vendég csapat nem lehet ugyanaz",
+  DUPLICATE_OFFICIALS: "A nevek nem egyezhetnek meg",
+  REQUIRED_FIELDS: "Kérlek, tölts ki minden kötelező mezőt",
+} as const;
+
+/**
  * Validates that home and away teams are different
  * Only validates if both teams are provided
  */
@@ -16,10 +25,25 @@ export const validateTeams = (home: string, away: string): ValidationResult => {
   if (home !== "" && away !== "" && home === away) {
     return {
       isValid: false,
-      error: "A hazai és a vendég csapat nem lehet ugyanaz",
+      error: ERROR_MESSAGES.DUPLICATE_TEAMS,
     };
   }
   return { isValid: true };
+};
+
+/**
+ * Helper function to check if two officials have the same username
+ * Only returns true if both usernames are non-empty and match
+ */
+const areOfficialsDuplicate = (
+  official1: MatchOfficial,
+  official2: MatchOfficial
+): boolean => {
+  return (
+    official1.username !== "" &&
+    official2.username !== "" &&
+    official1.username === official2.username
+  );
 };
 
 /**
@@ -34,25 +58,17 @@ export const validateOfficialsDuplication = (
   controllers: MatchOfficial[]
 ): ValidationResult => {
   // Check referee vs assistants (only if both are filled)
-  if (
-    referee.username !== "" &&
-    assist1.username !== "" &&
-    referee.username === assist1.username
-  ) {
+  if (areOfficialsDuplicate(referee, assist1)) {
     return {
       isValid: false,
-      error: "A nevek nem egyezhetnek meg",
+      error: ERROR_MESSAGES.DUPLICATE_OFFICIALS,
     };
   }
 
-  if (
-    referee.username !== "" &&
-    assist2.username !== "" &&
-    referee.username === assist2.username
-  ) {
+  if (areOfficialsDuplicate(referee, assist2)) {
     return {
       isValid: false,
-      error: "A nevek nem egyezhetnek meg",
+      error: ERROR_MESSAGES.DUPLICATE_OFFICIALS,
     };
   }
 
@@ -60,14 +76,14 @@ export const validateOfficialsDuplication = (
   if (controllers.length > 0) {
     const hasDuplicate = controllers.some(
       (c) =>
-        c.username === referee.username ||
-        c.username === assist1.username ||
-        c.username === assist2.username
+        (c.username !== "" && c.username === referee.username) ||
+        (c.username !== "" && c.username === assist1.username) ||
+        (c.username !== "" && c.username === assist2.username)
     );
     if (hasDuplicate) {
       return {
         isValid: false,
-        error: "A nevek nem egyezhetnek meg",
+        error: ERROR_MESSAGES.DUPLICATE_OFFICIALS,
       };
     }
   }
@@ -92,7 +108,7 @@ export const validateRequiredFieldsSingleMatch = (
   ) {
     return {
       isValid: false,
-      error: "Kérlek, tölts ki minden kötelező mezőt",
+      error: ERROR_MESSAGES.REQUIRED_FIELDS,
     };
   }
   return { isValid: true };
@@ -108,7 +124,7 @@ export const validateRequiredFieldsNonSingleMatch = (
   if (date === "" || time === "" || venue === "") {
     return {
       isValid: false,
-      error: "Kérlek, tölts ki minden kötelező mezőt",
+      error: ERROR_MESSAGES.REQUIRED_FIELDS,
     };
   }
   return { isValid: true };
