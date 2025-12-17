@@ -76,9 +76,9 @@ export const validateOfficialsDuplication = (
   if (controllers.length > 0) {
     const hasDuplicate = controllers.some(
       (c) =>
-        (c.username !== "" && c.username === referee.username) ||
-        (c.username !== "" && c.username === assist1.username) ||
-        (c.username !== "" && c.username === assist2.username)
+        areOfficialsDuplicate(c, referee) ||
+        areOfficialsDuplicate(c, assist1) ||
+        areOfficialsDuplicate(c, assist2)
     );
     if (hasDuplicate) {
       return {
