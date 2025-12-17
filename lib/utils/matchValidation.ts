@@ -22,7 +22,9 @@ const ERROR_MESSAGES = {
  * Only validates if both teams are provided
  */
 export const validateTeams = (home: string, away: string): ValidationResult => {
-  if (home !== "" && away !== "" && home === away) {
+  const homeTeam = home || "";
+  const awayTeam = away || "";
+  if (homeTeam !== "" && awayTeam !== "" && homeTeam === awayTeam) {
     return {
       isValid: false,
       error: ERROR_MESSAGES.DUPLICATE_TEAMS,
@@ -39,10 +41,12 @@ const areOfficialsDuplicate = (
   official1: MatchOfficial,
   official2: MatchOfficial
 ): boolean => {
+  const username1 = official1.username || "";
+  const username2 = official2.username || "";
   return (
-    official1.username !== "" &&
-    official2.username !== "" &&
-    official1.username === official2.username
+    username1 !== "" &&
+    username2 !== "" &&
+    username1 === username2
   );
 };
 
@@ -100,11 +104,11 @@ export const validateRequiredFieldsSingleMatch = (
 ): ValidationResult => {
   const { home, away, date, time, venue } = match;
   if (
-    home === "" ||
-    away === "" ||
-    date === "" ||
-    time === "" ||
-    venue === ""
+    !home ||
+    !away ||
+    !date ||
+    !time ||
+    !venue
   ) {
     return {
       isValid: false,
@@ -121,7 +125,7 @@ export const validateRequiredFieldsNonSingleMatch = (
   match: Match
 ): ValidationResult => {
   const { date, time, venue } = match;
-  if (date === "" || time === "" || venue === "") {
+  if (!date || !time || !venue) {
     return {
       isValid: false,
       error: ERROR_MESSAGES.REQUIRED_FIELDS,
