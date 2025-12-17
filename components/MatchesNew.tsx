@@ -215,7 +215,7 @@ const MatchesNew = () => {
     if (type === "7s" || type === "UP torna") {
       const validation = validateNonSingleMatch(formFields);
       if (!validation.isValid) {
-        toast.error(validation.error);
+        toast.error(validation.error ?? "Ismeretlen hiba a validáció során");
         return;
       }
 
@@ -236,7 +236,7 @@ const MatchesNew = () => {
     else {
       const validation = validateSingleMatch(formFields);
       if (!validation.isValid) {
-        toast.error(validation.error);
+        toast.error(validation.error ?? "Ismeretlen hiba a validáció során");
         return;
       }
 
