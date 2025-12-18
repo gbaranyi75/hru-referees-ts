@@ -673,14 +673,13 @@ const MatchesNew = () => {
                 )}
 
                 {isPending && <DisabledButton text="Mentés..." />}
-
-                <div className="mb-5 md:mb-10 px-4 py-3 text-center sm:px-6">
-                  <OutlinedButton
-                    onClick={toggleCreateNew}
-                    type={"button"}
-                    text={"Mégse"}
-                  />
-                </div>
+              </div>
+              <div className="mb-5 md:mb-10 px-4 py-3 text-center sm:px-6">
+                <OutlinedButton
+                  onClick={toggleCreateNew}
+                  type={"button"}
+                  text={"Mégse"}
+                />
               </div>
             </div>
           </form>

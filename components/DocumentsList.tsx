@@ -99,7 +99,7 @@ const DocumentsList = ({
       setFiles([]);
       return;
     }
-    const sortedList: FileProps[] = fileList.sort(
+    const sortedList: FileProps[] = [...fileList].sort(
       (a: FileProps, b: FileProps) => {
         return (
           new Date(b.LastModified).getTime() -
