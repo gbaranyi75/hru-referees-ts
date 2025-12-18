@@ -9,7 +9,7 @@ import { hu } from "react-day-picker/locale";
 
 import { fetchUsers } from "@/lib/actions/fetchUsers";
 import { fetchGuestUsers } from "@/lib/actions/fetchGuestUser";
-import { useCreateMatch } from '@/hooks/useMatches';
+import { useCreateMatch } from "@/hooks/useMatches";
 import { GuestUser, Match, MatchOfficial, User } from "@/types/types";
 import { hours } from "@/constants/matchUtils";
 import teams from "@/constants/matchData/teams.json";
@@ -20,7 +20,11 @@ import venues from "@/constants/matchData/venues.json";
 import OutlinedButton from "./common/OutlinedButton";
 import PrimaryButton from "./common/PrimaryButton";
 import Label from "./common/Label";
-import { validateSingleMatch, validateNonSingleMatch } from "@/lib/utils/matchValidation";
+import {
+  validateSingleMatch,
+  validateNonSingleMatch,
+} from "@/lib/utils/matchValidation";
+import DisabledButton from "./common/DisabledButton";
 
 const defaultFormFields = {
   type: "" as string,
@@ -83,7 +87,7 @@ const MatchesNew = () => {
   const [isSingleMatch, setIsSingleMatch] = useState<boolean>(true);
   const [referees, setReferees] = useState<(User | GuestUser)[]>([]);
   const { type = "" } = formFields || {};
-  const { mutate:  createMatch } = useCreateMatch();
+  const { mutate: createMatch, isPending } = useCreateMatch();
 
   const defaultClassNames = getDefaultClassNames();
 
@@ -661,10 +665,14 @@ const MatchesNew = () => {
                 </div>
               </div>
               <div className="mt-5 md:mt-10 px-4 py-3 text-center sm:px-6">
-                <PrimaryButton
-                  onClick={handleSubmit}
-                  text={"Mentés"}
-                />
+                {!isPending && (
+                  <PrimaryButton
+                    onClick={handleSubmit}
+                    text={"Mentés"}
+                  />
+                )}
+
+                {isPending && <DisabledButton text="Mentés..." />}
               </div>
               <div className="mb-5 md:mb-10 px-4 py-3 text-center sm:px-6">
                 <OutlinedButton

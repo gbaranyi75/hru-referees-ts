@@ -27,12 +27,12 @@ interface FileProps {
 }
 
 const DocumentsList = ({
-  fileList,
+  fileList = [],
   loading,
   isAdmin,
   fetchFiles,
 }: {
-  fileList: FileProps[];
+  fileList?: FileProps[];
   loading: boolean;
   isAdmin: boolean;
   fetchFiles: () => void;
@@ -95,7 +95,11 @@ const DocumentsList = ({
   };
 
   useEffect(() => {
-    const sortedList: FileProps[] = fileList.sort(
+    if (!fileList.length) {
+      setFiles([]);
+      return;
+    }
+    const sortedList: FileProps[] = [...fileList].sort(
       (a: FileProps, b: FileProps) => {
         return (
           new Date(b.LastModified).getTime() -
@@ -124,26 +128,22 @@ const DocumentsList = ({
             <TableRow className="text-sm text-center">
               <TableCell
                 isHeader
-                className="py-3 px-4 text-left font-medium text-gray-600 min-w-[320px]"
-              >
+                className="py-3 px-4 text-left font-medium text-gray-600 min-w-[320px]">
                 Fájl neve
               </TableCell>
               <TableCell
                 isHeader
-                className="py-3 px-4 text-left font-medium text-gray-600 min-w-37.5"
-              >
+                className="py-3 px-4 text-left font-medium text-gray-600 min-w-37.5">
                 Módosítás dátuma
               </TableCell>
               <TableCell
                 isHeader
-                className="py-3 px-4 text-left font-medium text-gray-600 min-w-30"
-              >
+                className="py-3 px-4 text-left font-medium text-gray-600 min-w-30">
                 Méret
               </TableCell>
               <TableCell
                 isHeader
-                className="py-3 px-4 text-left font-medium text-gray-600"
-              >
+                className="py-3 px-4 text-left font-medium text-gray-600">
                 {""}
               </TableCell>
             </TableRow>
@@ -152,7 +152,9 @@ const DocumentsList = ({
           {/* Table Body */}
           <TableBody className="divide-y divide-gray-100">
             {files.map((file: FileProps) => (
-              <TableRow key={file.Key} className="text-sm text-center">
+              <TableRow
+                key={file.Key}
+                className="text-sm text-center">
                 <TableCell className="py-3 px-4 text-left font-normal text-gray-600">
                   {file.Key}
                 </TableCell>
@@ -166,8 +168,7 @@ const DocumentsList = ({
                   <div className="flex flex-row gap-2 items-center">
                     <button
                       className="cursor-pointer"
-                      onClick={() => handleDownload(file)}
-                    >
+                      onClick={() => handleDownload(file)}>
                       <Icon
                         icon="lucide:download"
                         width="20"
@@ -178,8 +179,7 @@ const DocumentsList = ({
                     {isAdmin && (
                       <button
                         className="cursor-pointer"
-                        onClick={() => handleOpenModal(file)}
-                      >
+                        onClick={() => handleOpenModal(file)}>
                         <Icon
                           icon="lucide:trash-2"
                           width="20"
@@ -200,19 +200,24 @@ const DocumentsList = ({
         isOpen={isOpen}
         onClose={closeModal}
         showCloseButton={true}
-        className="max-w-125 p-5 lg:p-8"
-      >
+        className="max-w-125 p-5 lg:p-8">
         <div className="flex justify-center pt-4 px-2">
           <h6 className="mb-2 text-xl font-semibold text-gray-600 ">
             Biztosan törlöd ezt a fájlt?
           </h6>
         </div>
         <div className="flex items-center gap-3 px-2 pt-8 justify-around">
-          <OutlinedButton onClick={closeModal} text="Mégsem" />
+          <OutlinedButton
+            onClick={closeModal}
+            text="Mégsem"
+          />
           {isDeleting ? (
             <DisabledButton text="Törlés..." />
           ) : (
-            <PrimaryButton onClick={handleDelete} text="Törlés" />
+            <PrimaryButton
+              onClick={handleDelete}
+              text="Törlés"
+            />
           )}
         </div>
       </Modal>

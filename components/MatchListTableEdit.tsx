@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import MatchListTableEditModal from "./MatchListTableEditModal";
 import { Modal } from "./common/Modal";
 import Skeleton from "./common/Skeleton";
@@ -16,11 +16,17 @@ import { useMatches } from "@/hooks/useMatches";
 import { fetchGuestUsers } from "@/lib/actions/fetchGuestUser";
 import { fetchUsers } from "@/lib/actions/fetchUsers";
 import { Icon } from "@iconify/react";
+import OutlinedButton from "./common/OutlinedButton";
+import { smoothScrollTo } from "@/lib/utils/scrollUtils";
+
+const ITEMS_PER_PAGE = 10;
 
 export default function MatchListTableEdit() {
   const { isOpen, openModal, closeModal } = useModal();
   const [selectedMatch, setSelectedMatch] = useState<Match | null>(null);
   const [referees, setReferees] = useState<(User | GuestUser)[]>([]);
+  const [displayCount, setDisplayCount] = useState(ITEMS_PER_PAGE);
+  const loadMoreRef = useRef<HTMLDivElement>(null);
 
   // React Query hook for matches
   const {
@@ -34,6 +40,19 @@ export default function MatchListTableEdit() {
     openModal();
   };
 
+  const handleLoadMore = () => {
+    setDisplayCount((prev) => prev + ITEMS_PER_PAGE);
+    // Scroll with custom easing after DOM update
+    setTimeout(() => {
+      if (loadMoreRef.current) {
+        smoothScrollTo(loadMoreRef.current, 800);
+      }
+    }, 100);
+  };
+
+  const displayedMatches = matches.slice(0, displayCount);
+  const hasMoreMatches = matches.length > displayCount;
+
   useEffect(() => {
     const getUsers = async () => {
       try {
@@ -43,7 +62,9 @@ export default function MatchListTableEdit() {
           fetchGuestUsers(),
         ]);
         const usersData = usersResult.success ? usersResult.data : [];
-        const guestUsersData = guestUsersResult.success ? guestUsersResult.data : [];
+        const guestUsersData = guestUsersResult.success
+          ? guestUsersResult.data
+          : [];
         setReferees([...usersData, ...guestUsersData]);
       } catch (error) {
         console.error("Error loading users:", error);
@@ -58,10 +79,7 @@ export default function MatchListTableEdit() {
       <>
         <Skeleton className="w-full h-12 mb-2 mt-1" />
         {Array.from({ length: 10 }).map((_, i) => (
-          <Skeleton
-            key={i}
-            className="w-full h-12 mb-2"
-          />
+          <Skeleton key={i} className="w-full h-12 mb-2" />
         ))}
       </>
     );
@@ -74,50 +92,31 @@ export default function MatchListTableEdit() {
             {/* Table Header */}
             <TableHeader className="border-b border-gray-100 bg-gray-50">
               <TableRow className="text-sm text-center">
-                <TableCell
-                  isHeader
-                  className="px-2 py-3 font-bold text-gray-800 ">
+                <TableCell isHeader className="px-2 py-3 font-bold text-gray-800">
                   Típus
                 </TableCell>
-                <TableCell
-                  isHeader
-                  className="px-2 py-3 font-bold text-gray-600">
+                <TableCell isHeader className="px-2 py-3 font-bold text-gray-600">
                   Neme
                 </TableCell>
-                <TableCell
-                  isHeader
-                  className="px-2 py-3 font-bold text-gray-500 ">
+                <TableCell isHeader className="px-2 py-3 font-bold text-gray-500">
                   Kor
                 </TableCell>
-                <TableCell
-                  isHeader
-                  className="px-2 py-3 font-bold text-gray-600 ">
+                <TableCell isHeader className="px-2 py-3 font-bold text-gray-600">
                   Helyszín
                 </TableCell>
-                <TableCell
-                  isHeader
-                  className="px-2 py-3 font-bold text-gray-600 ">
+                <TableCell isHeader className="px-2 py-3 font-bold text-gray-600">
                   Hazai
                 </TableCell>
-                <TableCell
-                  isHeader
-                  className="px-2 py-3 font-bold text-gray-600">
+                <TableCell isHeader className="px-2 py-3 font-bold text-gray-600">
                   Vendég
                 </TableCell>
-
-                <TableCell
-                  isHeader
-                  className="px-2 py-3 font-bold text-gray-600 ">
+                <TableCell isHeader className="px-2 py-3 font-bold text-gray-600">
                   Dátum
                 </TableCell>
-                <TableCell
-                  isHeader
-                  className="px-2 py-3 font-bold text-gray-600 ">
+                <TableCell isHeader className="px-2 py-3 font-bold text-gray-600">
                   Időpont
                 </TableCell>
-                <TableCell
-                  isHeader
-                  className="px-2 py-3 font-bold text-gray-600">
+                <TableCell isHeader className="px-2 py-3 font-bold text-gray-600">
                   {""}
                 </TableCell>
               </TableRow>
@@ -125,10 +124,8 @@ export default function MatchListTableEdit() {
 
             {/* Table Body */}
             <TableBody className="divide-y divide-gray-100">
-              {matches.map((m) => (
-                <TableRow
-                  key={m._id}
-                  className="text-center text-sm">
+              {displayedMatches.map((m) => (
+                <TableRow key={m._id} className="text-center text-sm">
                   <TableCell className="px-2 font-bold text-gray-600">
                     {m.type}
                   </TableCell>
@@ -156,21 +153,14 @@ export default function MatchListTableEdit() {
                   <TableCell className="flex px-2 py-3 text-gray-500 text-theme-sm my-auto">
                     {new Date() > new Date(m.date) ? (
                       <button className="text-gray-300 my-auto">
-                        <Icon
-                          icon="lucide:edit"
-                          width="18"
-                          height="18"
-                        />
+                        <Icon icon="lucide:edit" width="18" height="18" />
                       </button>
                     ) : (
                       <button
                         onClick={() => handleSelectedMatch(m)}
-                        className="cursor-pointer text-blue-600 my-auto">
-                        <Icon
-                          icon="lucide:edit"
-                          width="18"
-                          height="18"
-                        />
+                        className="cursor-pointer text-blue-600 my-auto"
+                      >
+                        <Icon icon="lucide:edit" width="18" height="18" />
                       </button>
                     )}
                   </TableCell>
@@ -181,13 +171,28 @@ export default function MatchListTableEdit() {
         </div>
       </div>
 
+      {/* Load More Button */}
+      <div ref={loadMoreRef} className="flex justify-center mt-4">
+        {hasMoreMatches ? (
+          <OutlinedButton
+            text={`További ${Math.min(ITEMS_PER_PAGE, matches.length - displayCount)} mérkőzés betöltése`}
+            onClick={handleLoadMore}
+          />
+        ) : (
+          <p className="text-gray-500 text-sm">
+            Összesen {matches.length} mérkőzés
+          </p>
+        )}
+      </div>
+
       <Modal
         isOpen={isOpen}
         onClose={closeModal}
         showCloseButton={true}
-        className="flex flex-col justify-between max-w-225 max-h-175 px-16 bg-white">
+        className="flex flex-col justify-between max-w-225 max-h-175 px-16 bg-white"
+      >
         <div className="py-10">
-          <h4 className="font-semibold text-gray-800 mb-10 text-title-sm ">
+          <h4 className="font-semibold text-gray-800 mb-10 text-title-sm">
             Mérkőzés szerkesztése
           </h4>
           <MatchListTableEditModal
