@@ -23,13 +23,18 @@ const Documents = ({ isAdmin }: { isAdmin: boolean }) => {
   };
 
   const fetchFiles = useCallback(async () => {
+    setLoading(true);
     try {
-      setLoading(true);
       const filesData = await fetch("/api/r2/files").then((res) => res.json());
-      setFileList(filesData.Contents);
-      setLoading(false);
+      const contents = Array.isArray(filesData?.Contents)
+        ? filesData.Contents
+        : [];
+      setFileList(contents);
     } catch (err) {
       console.error("error", err);
+      setFileList([]);
+    } finally {
+      setLoading(false);
     }
   }, []);
 
@@ -44,9 +49,12 @@ const Documents = ({ isAdmin }: { isAdmin: boolean }) => {
           <div className="flex flex-col gap-5 xl:flex-row xl:items-center xl:justify-end">
             <button
               onClick={toggleEditMode}
-              className="flex w-full items-center justify-center gap-2 rounded-full border mb-4 border-gray-300 bg-white px-4 py-3 text-sm font-medium text-gray-700 shadow-theme-xs hover:bg-gray-50 hover:text-gray-800  lg:inline-flex lg:w-auto"
-            >
-              <Icon icon="lucide:plus" width="20" height="20" />
+              className="flex w-full items-center justify-center gap-2 rounded-full border mb-4 border-gray-300 bg-white px-4 py-3 text-sm font-medium text-gray-700 shadow-theme-xs hover:bg-gray-50 hover:text-gray-800  lg:inline-flex lg:w-auto">
+              <Icon
+                icon="lucide:plus"
+                width="20"
+                height="20"
+              />
               {editModeOpen ? "Mégsem" : "Új fájl feltöltése"}
             </button>
           </div>
