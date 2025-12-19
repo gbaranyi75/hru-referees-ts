@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { Icon } from "@iconify/react";
 import { Modal } from "@/components/common/Modal";
 import Skeleton from "@/components/common/Skeleton";
@@ -37,12 +37,14 @@ const MatchList = () => {
   const [page, setPage] = useState<number>(
     searchParams.get("page") ? +searchParams.get("page")! : 1
   );
+  // Track which matchId from URL has been processed to avoid repeated opens
+  const processedMatchIdRef = useRef<string | null>(null);
 
   const handleSelectedMatch = (match: Match) => {
     setSelectedMatch(match);
     openModal();
     // Add matchId to URL
-    const params = new URLSearchParams(window.location.search);
+    const params = new URLSearchParams(searchParams.toString());
     params.set("matchId", match._id as string);
     router.replace(`${pathName}?${params}` as Route);
   };
@@ -50,14 +52,16 @@ const MatchList = () => {
   const handleCloseModal = () => {
     setSelectedMatch(null);
     closeModal();
+    // Reset processed matchId so the same match can be opened again from URL
+    processedMatchIdRef.current = null;
     // Remove matchId from URL but keep page
-    const params = new URLSearchParams(window.location.search);
+    const params = new URLSearchParams(searchParams.toString());
     params.delete("matchId");
     router.replace(`${pathName}?${params}` as Route);
   };
 
   const handlePageChange = (newPage: number) => {
-    const params = new URLSearchParams(window.location.search);
+    const params = new URLSearchParams(searchParams.toString());
     params.set("page", newPage.toString());
     setPage(newPage);
     router.replace(`${pathName}?${params}` as Route);
@@ -100,11 +104,17 @@ const MatchList = () => {
   // Open modal if matchId is in URL
   useEffect(() => {
     const matchId = searchParams.get("matchId");
-    if (!matchId) return;
+    
+    // Skip if no matchId or already processed this matchId
+    if (!matchId || processedMatchIdRef.current === matchId) return;
+    
+    // Skip if still loading
+    if (loading) return;
 
     // First try to find the match in the current page
     const matchInCurrentPage = matches.find((m) => m._id === matchId);
     if (matchInCurrentPage) {
+      processedMatchIdRef.current = matchId;
       setSelectedMatch(matchInCurrentPage);
       openModal();
       return;
@@ -114,17 +124,14 @@ const MatchList = () => {
     const fetchMatchDirectly = async () => {
       const result = await fetchMatchById(matchId);
       if (result.success && result.data) {
+        processedMatchIdRef.current = matchId;
         setSelectedMatch(result.data);
         openModal();
       }
     };
 
-    // Only fetch if matches are loaded (to avoid race condition)
-    if (!loading) {
-      fetchMatchDirectly();
-    }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [matches, searchParams, loading]);
+    fetchMatchDirectly();
+  }, [searchParams, loading, matches, openModal]);
 
   if (loading)
     return (

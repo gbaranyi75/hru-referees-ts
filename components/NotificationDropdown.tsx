@@ -64,13 +64,17 @@ export default function NotificationDropdown({
     }
   }, [clerkUserId]);
 
+  // Initial load of notifications
   useEffect(() => {
     loadNotifications();
-
-    // Poll for new notifications every 30 seconds
-    const interval = setInterval(loadNotifications, 30000);
-    return () => clearInterval(interval);
   }, [loadNotifications]);
+
+  // Poll for new notifications only when the dropdown is open
+  useEffect(() => {
+    if (!isOpen) return;
+    const interval = setInterval(loadNotifications, 60000);
+    return () => clearInterval(interval);
+  }, [isOpen, loadNotifications]);
 
   const toggleDropdown = () => {
     setIsOpen(!isOpen);
@@ -82,27 +86,37 @@ export default function NotificationDropdown({
 
   const handleNotificationClick = async (notification: Notification) => {
     if (!notification.read) {
-      await markNotificationAsRead(notification._id);
-      setNotifications((prev) =>
-        prev.map((n) =>
-          n._id === notification._id ? { ...n, read: true } : n
-        )
-      );
-      setUnreadCount((prev) => Math.max(0, prev - 1));
+      const result = await markNotificationAsRead(notification._id);
+      if (result.success) {
+        setNotifications((prev) =>
+          prev.map((n) =>
+            n._id === notification._id ? { ...n, read: true } : n
+          )
+        );
+        setUnreadCount((prev) => Math.max(0, prev - 1));
+      } else {
+        console.error("Failed to mark notification as read:", result.error);
+      }
     }
     closeDropdown();
   };
 
   const handleMarkAllAsRead = async () => {
-    await markAllNotificationsAsRead(clerkUserId);
-    setNotifications((prev) => prev.map((n) => ({ ...n, read: true })));
-    setUnreadCount(0);
+    const result = await markAllNotificationsAsRead(clerkUserId);
+    if (result.success) {
+      setNotifications((prev) => prev.map((n) => ({ ...n, read: true })));
+      setUnreadCount(0);
+    } else {
+      console.error("Failed to mark all notifications as read:", result.error);
+    }
   };
   return (
     <div className="relative">
       <button
         className="relative dropdown-toggle flex items-center justify-center text-gray-500 transition-colors bg-white border border-gray-200 rounded-full hover:text-gray-700 h-10 w-10 cursor-pointer"
-        onClick={toggleDropdown}>
+        onClick={toggleDropdown}
+        aria-label="Értesítések"
+        aria-expanded={isOpen}>
         {unreadCount > 0 && (
           <span className="absolute -right-1 -top-1 z-10 flex h-5 w-5 items-center justify-center rounded-full bg-red-500 text-xs text-white font-medium">
             {unreadCount > 9 ? "9+" : unreadCount}
@@ -188,9 +202,10 @@ export default function NotificationDropdown({
                         <Link
                           className="font-normal text-blue-500 text-sm"
                           href={`/merkozesek?matchId=${notification.matchId}`}
-                          onClick={() =>
-                            handleNotificationClick(notification)
-                          }>
+                          onClick={(event) => {
+                            event.stopPropagation();
+                            handleNotificationClick(notification);
+                          }}>
                           Megnézem a mérkőzés adatait
                         </Link>
                       </span>

@@ -144,7 +144,13 @@ export const createMatch = async (data: {
 
     // Create all notifications in batch
     if (notifications.length > 0) {
-      await createNotifications(notifications);
+      const notificationResult = await createNotifications(notifications);
+      if (!notificationResult?.success) {
+        console.warn("Failed to create notifications for new match", {
+          matchId,
+          error: notificationResult?.error,
+        });
+      }
     }
 
     revalidatePath("/dashboard/matches");

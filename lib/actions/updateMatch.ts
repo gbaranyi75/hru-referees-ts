@@ -167,7 +167,13 @@ async function updateMatch(matchId: string | undefined, data: {
 
     // Create all notifications in batch
     if (notifications.length > 0) {
-      await createNotifications(notifications);
+      const notificationResult = await createNotifications(notifications);
+      if (!notificationResult?.success) {
+        console.warn("Failed to create notifications for updated match", {
+          matchId,
+          error: notificationResult?.error,
+        });
+      }
     }
 
     revalidatePath('/dashboard/matches');
