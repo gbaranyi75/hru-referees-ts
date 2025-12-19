@@ -58,7 +58,7 @@ const NavbarProfileLinks = ({ loggedInUser }: { loggedInUser: User | null }) => 
           <Dropdown
             isOpen={isProfileMenuOpen}
             onClose={() => setIsProfileMenuOpen(false)}
-            className="absolute right-0 mt-[9px] top-10 flex w-[260px] flex-col rounded-2xl border border-gray-200 bg-white p-3 shadow-theme-lg"
+            className="absolute right-0 top-12 flex w-[260px] flex-col rounded-2xl border border-gray-200 bg-white p-3"
           >
             <div>
               <span className="block font-bold text-gray-600 text-xs">

@@ -63,3 +63,27 @@ export const fetchMatchesCount = async (): Promise<number> => {
     );
   }
 };
+
+/**
+ * Fetches a single match by its ID
+ *
+ * @param matchId - The MongoDB ObjectId of the match
+ * @returns Result<MatchType | null> - On success returns the match or null if not found
+ *
+ * @example
+ * ```typescript
+ * const result = await fetchMatchById("abc123");
+ * if (result.success && result.data) {
+ *   // Found the match
+ * }
+ * ```
+ */
+export const fetchMatchById = async (
+  matchId: string
+): Promise<Result<MatchType | null>> => {
+  return handleAsyncOperation(async () => {
+    await connectDB();
+    const match = await Match.findById(matchId).lean().exec();
+    return match ? JSON.parse(JSON.stringify(match)) : null;
+  }, "Error fetching match by ID");
+};

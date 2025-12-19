@@ -109,3 +109,25 @@ export type ClerkUser = {
   emailAddresses: { emailAddress: string }[];
   username: string;
 };
+
+export type NotificationType = "match_assignment" | "match_removal";
+
+export type NotificationPosition =
+  | "referee"
+  | "assist1"
+  | "assist2"
+  | "controller"
+  | "referees";
+
+export type Notification = {
+  _id: string;
+  recipientClerkUserId: string;
+  type: NotificationType;
+  position: NotificationPosition;
+  matchId: string;
+  message: string;
+  read: boolean;
+  readAt?: string;
+  createdAt: string;
+  updatedAt: string;
+};

@@ -1,10 +1,11 @@
 "use server";
 import connectDB from "@/config/database";
 import Match from "@/models/Match";
-import { MatchOfficial } from "@/types/types";
+import { MatchOfficial, NotificationPosition } from "@/types/types";
 import { currentUser } from "@clerk/nextjs/server";
 import { revalidatePath } from "next/cache";
 import { Result } from "@/types/types";
+import { createNotifications } from "./notificationActions";
 
 /**
  * Creates a new match in the database
@@ -85,6 +86,67 @@ export const createMatch = async (data: {
       time: data.time,
     });
     await newMatch.save();
+
+    // Send notifications to all assigned officials
+    const matchId = newMatch._id.toString();
+    const matchInfo = `${data.home} vs ${data.away} (${data.date})`;
+    const notifications: {
+      recipientClerkUserId: string;
+      type: "match_assignment";
+      position: NotificationPosition;
+      matchId: string;
+      message: string;
+    }[] = [];
+
+    // Helper function to add notification for an official
+    const addNotification = (
+      official: MatchOfficial,
+      position: NotificationPosition,
+      positionLabel: string
+    ) => {
+      if (official?.clerkUserId) {
+        notifications.push({
+          recipientClerkUserId: official.clerkUserId,
+          type: "match_assignment",
+          position,
+          matchId,
+          message: `Beosztva lettél ${positionLabel} pozícióra: ${matchInfo}`,
+        });
+      }
+    };
+
+    // Single referee (for NB I, Extra Liga)
+    if (data.referee?.clerkUserId) {
+      addNotification(data.referee, "referee", "játékvezető");
+    }
+
+    // Assistants
+    if (data.assist1?.clerkUserId) {
+      addNotification(data.assist1, "assist1", "asszisztens 1");
+    }
+    if (data.assist2?.clerkUserId) {
+      addNotification(data.assist2, "assist2", "asszisztens 2");
+    }
+
+    // Multiple referees (for tournaments)
+    data.referees?.forEach((ref) => {
+      if (ref.clerkUserId) {
+        addNotification(ref, "referees", "játékvezető");
+      }
+    });
+
+    // Controllers
+    data.controllers?.forEach((controller) => {
+      if (controller.clerkUserId) {
+        addNotification(controller, "controller", "ellenőr");
+      }
+    });
+
+    // Create all notifications in batch
+    if (notifications.length > 0) {
+      await createNotifications(notifications);
+    }
+
     revalidatePath("/dashboard/matches");
     return { success: true, data: null };
   } catch (error) {

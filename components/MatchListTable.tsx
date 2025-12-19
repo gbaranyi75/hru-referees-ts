@@ -15,7 +15,11 @@ import { MatchListTableModal } from "./MatchListTableModal";
 import Pagination from "./Pagination";
 import { Match } from "@/types/types";
 import { useModal } from "@/hooks/useModal";
-import { fetchMatches, fetchMatchesCount } from "@/lib/actions/fetchMatches";
+import {
+  fetchMatches,
+  fetchMatchesCount,
+  fetchMatchById,
+} from "@/lib/actions/fetchMatches";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { Route } from "next";
 
@@ -37,6 +41,19 @@ const MatchList = () => {
   const handleSelectedMatch = (match: Match) => {
     setSelectedMatch(match);
     openModal();
+    // Add matchId to URL
+    const params = new URLSearchParams(window.location.search);
+    params.set("matchId", match._id as string);
+    router.replace(`${pathName}?${params}` as Route);
+  };
+
+  const handleCloseModal = () => {
+    setSelectedMatch(null);
+    closeModal();
+    // Remove matchId from URL but keep page
+    const params = new URLSearchParams(window.location.search);
+    params.delete("matchId");
+    router.replace(`${pathName}?${params}` as Route);
   };
 
   const handlePageChange = (newPage: number) => {
@@ -79,6 +96,35 @@ const MatchList = () => {
   useEffect(() => {
     loadCount();
   }, []);
+
+  // Open modal if matchId is in URL
+  useEffect(() => {
+    const matchId = searchParams.get("matchId");
+    if (!matchId) return;
+
+    // First try to find the match in the current page
+    const matchInCurrentPage = matches.find((m) => m._id === matchId);
+    if (matchInCurrentPage) {
+      setSelectedMatch(matchInCurrentPage);
+      openModal();
+      return;
+    }
+
+    // If not found in current page, fetch directly from server
+    const fetchMatchDirectly = async () => {
+      const result = await fetchMatchById(matchId);
+      if (result.success && result.data) {
+        setSelectedMatch(result.data);
+        openModal();
+      }
+    };
+
+    // Only fetch if matches are loaded (to avoid race condition)
+    if (!loading) {
+      fetchMatchDirectly();
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [matches, searchParams, loading]);
 
   if (loading)
     return (
@@ -204,12 +250,12 @@ const MatchList = () => {
       </div>
       <Modal
         isOpen={isOpen}
-        onClose={closeModal}
+        onClose={handleCloseModal}
         showCloseButton={true}
         className="max-w-125 p-5 lg:p-10">
         <MatchListTableModal
           selectedMatch={selectedMatch}
-          closeModal={closeModal}
+          closeModal={handleCloseModal}
         />
       </Modal>
     </>
