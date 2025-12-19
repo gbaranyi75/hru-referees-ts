@@ -115,7 +115,7 @@ async function updateMatch(matchId: string | undefined, data: {
      const matchInfo =
       data.home && data.away
         ? `${data.home} - ${data.away} (${data.date})`
-        : `${data.date}, ${data.type} torna`;
+        : `${data.date}, ${data.type}`;
     const notifications: {
       recipientClerkUserId: string;
       type: "match_assignment";
