@@ -3,6 +3,7 @@ import connectDB from "@/config/database";
 import Match from "@/models/Match";
 import { Result, Match as MatchType } from "@/types/types";
 import { handleAsyncOperation } from "@/lib/utils/errorHandling";
+import { Types } from "mongoose";
 
 interface IFetchMatchesProps {
   limit?: number;
@@ -82,6 +83,10 @@ export const fetchMatchById = async (
   matchId: string
 ): Promise<Result<MatchType | null>> => {
   return handleAsyncOperation(async () => {
+    if (!Types.ObjectId.isValid(matchId)) {
+      throw new Error("Invalid match ID format");
+    }
+
     await connectDB();
     const match = await Match.findById(matchId).lean().exec();
     return match ? JSON.parse(JSON.stringify(match)) : null;

@@ -152,6 +152,7 @@ export default function NotificationDropdown({
             )}
             <button
               onClick={toggleDropdown}
+              aria-label="Close notifications"
               className="text-gray-500 transition dropdown-toggle cursor-pointer">
               <svg
                 className="fill-current"

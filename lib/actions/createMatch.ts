@@ -9,7 +9,7 @@ import { createNotifications } from "./notificationActions";
 
 /**
  * Creates a new match in the database
- * 
+ *
  * @param {Object} data - Match data
  * @param {string} data.home - Home team name
  * @param {string} data.away - Away team name
@@ -26,7 +26,7 @@ import { createNotifications } from "./notificationActions";
  * @param {string} data.time - Match time
  * @returns {Promise<Result<null>>} - On success {success: true, data: null}, on error {success: false, error: string}
  * @throws {Error} - If user is not logged in or database error occurs
- * 
+ *
  * @example
  * const result = await createMatch({
  *   home: "Team A",
@@ -65,11 +65,11 @@ export const createMatch = async (data: {
   try {
     await connectDB();
     const user = await currentUser();
-    
+
     if (!user) {
-      return { success: false, error: 'Not logged in' };
+      return { success: false, error: "Not logged in" };
     }
-    
+
     const newMatch = new Match({
       home: data.home,
       away: data.away,
@@ -89,7 +89,10 @@ export const createMatch = async (data: {
 
     // Send notifications to all assigned officials
     const matchId = newMatch._id.toString();
-    const matchInfo = `${data.home} vs ${data.away} (${data.date})`;
+    const matchInfo =
+      data.home && data.away
+        ? `${data.home} - ${data.away} (${data.date})`
+        : `${data.date}, ${data.type} torna`;
     const notifications: {
       recipientClerkUserId: string;
       type: "match_assignment";
@@ -110,7 +113,7 @@ export const createMatch = async (data: {
           type: "match_assignment",
           position,
           matchId,
-          message: `Beosztva lettél ${positionLabel} pozícióra: ${matchInfo}`,
+          message: `Új küldést kaptál ${positionLabel} poszton a következőre: ${matchInfo}`,
         });
       }
     };
@@ -156,10 +159,10 @@ export const createMatch = async (data: {
     revalidatePath("/dashboard/matches");
     return { success: true, data: null };
   } catch (error) {
-    console.error('Error creating match:', error);
-    return { 
-      success: false, 
-      error: error instanceof Error ? error.message : 'Error creating match' 
+    console.error("Error creating match:", error);
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : "Error creating match",
     };
   }
 };

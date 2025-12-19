@@ -7,6 +7,7 @@ import {
   NotificationPosition,
 } from "@/types/types";
 import { handleAsyncOperation } from "@/lib/utils/errorHandling";
+import { currentUser } from "@clerk/nextjs/server";
 
 interface CreateNotificationParams {
   recipientClerkUserId: string;
@@ -62,6 +63,11 @@ export const fetchNotifications = async (
   unreadOnly: boolean = false
 ): Promise<Result<NotificationType[]>> => {
   return handleAsyncOperation(async () => {
+    const user = await currentUser();
+    if (!user || user.id !== clerkUserId) {
+      throw new Error("Unauthorized");
+    }
+
     await connectDB();
     const query = unreadOnly
       ? { recipientClerkUserId: clerkUserId, read: false }
@@ -87,6 +93,11 @@ export const getUnreadNotificationCount = async (
   clerkUserId: string
 ): Promise<Result<number>> => {
   return handleAsyncOperation(async () => {
+    const user = await currentUser();
+    if (!user || user.id !== clerkUserId) {
+      throw new Error("Unauthorized");
+    }
+
     await connectDB();
     const count = await Notification.countDocuments({
       recipientClerkUserId: clerkUserId,
@@ -107,7 +118,19 @@ export const markNotificationAsRead = async (
   notificationId: string
 ): Promise<Result<boolean>> => {
   return handleAsyncOperation(async () => {
+    const user = await currentUser();
+    if (!user) {
+      throw new Error("Unauthorized");
+    }
+
     await connectDB();
+
+    // Verify the notification belongs to the current user
+    const notification = await Notification.findById(notificationId).exec();
+    if (!notification || notification.recipientClerkUserId !== user.id) {
+      throw new Error("Unauthorized");
+    }
+
     await Notification.findByIdAndUpdate(notificationId, {
       read: true,
       readAt: new Date(),
@@ -127,6 +150,11 @@ export const markAllNotificationsAsRead = async (
   clerkUserId: string
 ): Promise<Result<boolean>> => {
   return handleAsyncOperation(async () => {
+    const user = await currentUser();
+    if (!user || user.id !== clerkUserId) {
+      throw new Error("Unauthorized");
+    }
+
     await connectDB();
     await Notification.updateMany(
       { recipientClerkUserId: clerkUserId, read: false },
