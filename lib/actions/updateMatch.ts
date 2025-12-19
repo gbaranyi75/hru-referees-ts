@@ -112,7 +112,10 @@ async function updateMatch(matchId: string | undefined, data: {
     );
 
     // Send notifications to newly assigned officials only
-    const matchInfo = `${data.home} vs ${data.away} (${data.date})`;
+     const matchInfo =
+      data.home && data.away
+        ? `${data.home} - ${data.away} (${data.date})`
+        : `${data.date}, ${data.type} torna`;
     const notifications: {
       recipientClerkUserId: string;
       type: "match_assignment";
@@ -133,7 +136,7 @@ async function updateMatch(matchId: string | undefined, data: {
           type: "match_assignment",
           position,
           matchId: matchId as string,
-          message: `Beosztva lettél ${positionLabel} pozícióra: ${matchInfo}`,
+           message: `Új küldést kaptál ${positionLabel} poszton a következőre: ${matchInfo}`,
         });
       }
     };
