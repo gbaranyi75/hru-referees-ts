@@ -3,6 +3,7 @@ import connectDB from "@/config/database";
 import Match from "@/models/Match";
 import { Result, Match as MatchType } from "@/types/types";
 import { handleAsyncOperation } from "@/lib/utils/errorHandling";
+import { Types } from "mongoose";
 
 interface IFetchMatchesProps {
   limit?: number;
@@ -62,4 +63,32 @@ export const fetchMatchesCount = async (): Promise<number> => {
       { cause: error }
     );
   }
+};
+
+/**
+ * Fetches a single match by its ID
+ *
+ * @param matchId - The MongoDB ObjectId of the match
+ * @returns Result<MatchType | null> - On success returns the match or null if not found
+ *
+ * @example
+ * ```typescript
+ * const result = await fetchMatchById("abc123");
+ * if (result.success && result.data) {
+ *   // Found the match
+ * }
+ * ```
+ */
+export const fetchMatchById = async (
+  matchId: string
+): Promise<Result<MatchType | null>> => {
+  return handleAsyncOperation(async () => {
+    if (!Types.ObjectId.isValid(matchId)) {
+      throw new Error("Invalid match ID format");
+    }
+
+    await connectDB();
+    const match = await Match.findById(matchId).lean().exec();
+    return match ? JSON.parse(JSON.stringify(match)) : null;
+  }, "Error fetching match by ID");
 };

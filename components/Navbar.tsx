@@ -2,6 +2,7 @@ import { checkUser } from "@/lib/utils/checkUser";
 import NavbarProfileLinks from "./NavbarProfileLinks";
 import NavbarLogo from "./NavbarLogo";
 import NavbarDesktopWelcomeMsg from "./NavbarDesktopWelcomeMsg";
+import NotificationDropdown from "./NotificationDropdown";
 import { fetchProfile } from "@/lib/actions/fetchProfile";
 
 const Navbar = async () => {
@@ -22,7 +23,10 @@ const Navbar = async () => {
               <NavbarDesktopWelcomeMsg loggedInUser={loggedInUser}/>
             </div>
           </div>
-          <div className="flex h-14 w-14 md:w-max items-center justify-center md:pr-12">
+          <div className="flex h-14 w-14 md:w-max items-center justify-center md:pr-12 space-x-5">
+            {loggedInUser?.clerkUserId && (
+              <NotificationDropdown clerkUserId={loggedInUser.clerkUserId} />
+            )}
             <NavbarProfileLinks loggedInUser={loggedInUser} />
           </div>
         </div>

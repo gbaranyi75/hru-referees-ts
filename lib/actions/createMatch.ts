@@ -1,14 +1,15 @@
 "use server";
 import connectDB from "@/config/database";
 import Match from "@/models/Match";
-import { MatchOfficial } from "@/types/types";
+import { MatchOfficial, NotificationPosition } from "@/types/types";
 import { currentUser } from "@clerk/nextjs/server";
 import { revalidatePath } from "next/cache";
 import { Result } from "@/types/types";
+import { createNotifications } from "./notificationActions";
 
 /**
  * Creates a new match in the database
- * 
+ *
  * @param {Object} data - Match data
  * @param {string} data.home - Home team name
  * @param {string} data.away - Away team name
@@ -25,7 +26,7 @@ import { Result } from "@/types/types";
  * @param {string} data.time - Match time
  * @returns {Promise<Result<null>>} - On success {success: true, data: null}, on error {success: false, error: string}
  * @throws {Error} - If user is not logged in or database error occurs
- * 
+ *
  * @example
  * const result = await createMatch({
  *   home: "Team A",
@@ -64,11 +65,11 @@ export const createMatch = async (data: {
   try {
     await connectDB();
     const user = await currentUser();
-    
+
     if (!user) {
-      return { success: false, error: 'Not logged in' };
+      return { success: false, error: "Not logged in" };
     }
-    
+
     const newMatch = new Match({
       home: data.home,
       away: data.away,
@@ -85,13 +86,83 @@ export const createMatch = async (data: {
       time: data.time,
     });
     await newMatch.save();
+
+    // Send notifications to all assigned officials
+    const matchId = newMatch._id.toString();
+    const matchInfo =
+      data.home && data.away
+        ? `${data.home} - ${data.away} (${data.date})`
+        : `${data.date}, ${data.type}`;
+    const notifications: {
+      recipientClerkUserId: string;
+      type: "match_assignment";
+      position: NotificationPosition;
+      matchId: string;
+      message: string;
+    }[] = [];
+
+    // Helper function to add notification for an official
+    const addNotification = (
+      official: MatchOfficial,
+      position: NotificationPosition,
+      positionLabel: string
+    ) => {
+      if (official?.clerkUserId) {
+        notifications.push({
+          recipientClerkUserId: official.clerkUserId,
+          type: "match_assignment",
+          position,
+          matchId,
+          message: `Új küldést kaptál ${positionLabel} poszton a következőre: ${matchInfo}`,
+        });
+      }
+    };
+
+    // Single referee (for NB I, Extra Liga)
+    if (data.referee?.clerkUserId) {
+      addNotification(data.referee, "referee", "játékvezető");
+    }
+
+    // Assistants
+    if (data.assist1?.clerkUserId) {
+      addNotification(data.assist1, "assist1", "asszisztens 1");
+    }
+    if (data.assist2?.clerkUserId) {
+      addNotification(data.assist2, "assist2", "asszisztens 2");
+    }
+
+    // Multiple referees (for tournaments)
+    data.referees?.forEach((ref) => {
+      if (ref.clerkUserId) {
+        addNotification(ref, "referees", "játékvezető");
+      }
+    });
+
+    // Controllers
+    data.controllers?.forEach((controller) => {
+      if (controller.clerkUserId) {
+        addNotification(controller, "controller", "ellenőr");
+      }
+    });
+
+    // Create all notifications in batch
+    if (notifications.length > 0) {
+      const notificationResult = await createNotifications(notifications);
+      if (!notificationResult?.success) {
+        console.warn("Failed to create notifications for new match", {
+          matchId,
+          error: notificationResult?.error,
+        });
+      }
+    }
+
     revalidatePath("/dashboard/matches");
     return { success: true, data: null };
   } catch (error) {
-    console.error('Error creating match:', error);
-    return { 
-      success: false, 
-      error: error instanceof Error ? error.message : 'Error creating match' 
+    console.error("Error creating match:", error);
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : "Error creating match",
     };
   }
 };

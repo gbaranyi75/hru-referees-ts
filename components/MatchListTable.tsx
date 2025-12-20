@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { Icon } from "@iconify/react";
 import { Modal } from "@/components/common/Modal";
 import Skeleton from "@/components/common/Skeleton";
@@ -15,7 +15,11 @@ import { MatchListTableModal } from "./MatchListTableModal";
 import Pagination from "./Pagination";
 import { Match } from "@/types/types";
 import { useModal } from "@/hooks/useModal";
-import { fetchMatches, fetchMatchesCount } from "@/lib/actions/fetchMatches";
+import {
+  fetchMatches,
+  fetchMatchesCount,
+  fetchMatchById,
+} from "@/lib/actions/fetchMatches";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { Route } from "next";
 
@@ -33,14 +37,31 @@ const MatchList = () => {
   const [page, setPage] = useState<number>(
     searchParams.get("page") ? +searchParams.get("page")! : 1
   );
+  // Track which matchId from URL has been processed to avoid repeated opens
+  const processedMatchIdRef = useRef<string | null>(null);
 
   const handleSelectedMatch = (match: Match) => {
     setSelectedMatch(match);
     openModal();
+    // Add matchId to URL
+    const params = new URLSearchParams(searchParams.toString());
+    params.set("matchId", match._id as string);
+    router.replace(`${pathName}?${params}` as Route);
+  };
+
+  const handleCloseModal = () => {
+    setSelectedMatch(null);
+    closeModal();
+    // Reset processed matchId so the same match can be opened again from URL
+    processedMatchIdRef.current = null;
+    // Remove matchId from URL but keep page
+    const params = new URLSearchParams(searchParams.toString());
+    params.delete("matchId");
+    router.replace(`${pathName}?${params}` as Route);
   };
 
   const handlePageChange = (newPage: number) => {
-    const params = new URLSearchParams(window.location.search);
+    const params = new URLSearchParams(searchParams.toString());
     params.set("page", newPage.toString());
     setPage(newPage);
     router.replace(`${pathName}?${params}` as Route);
@@ -79,6 +100,38 @@ const MatchList = () => {
   useEffect(() => {
     loadCount();
   }, []);
+
+  // Open modal if matchId is in URL
+  useEffect(() => {
+    const matchId = searchParams.get("matchId");
+    
+    // Skip if no matchId or already processed this matchId
+    if (!matchId || processedMatchIdRef.current === matchId) return;
+    
+    // Skip if still loading
+    if (loading) return;
+
+    // First try to find the match in the current page
+    const matchInCurrentPage = matches.find((m) => m._id === matchId);
+    if (matchInCurrentPage) {
+      processedMatchIdRef.current = matchId;
+      setSelectedMatch(matchInCurrentPage);
+      openModal();
+      return;
+    }
+
+    // If not found in current page, fetch directly from server
+    const fetchMatchDirectly = async () => {
+      const result = await fetchMatchById(matchId);
+      if (result.success && result.data) {
+        processedMatchIdRef.current = matchId;
+        setSelectedMatch(result.data);
+        openModal();
+      }
+    };
+
+    fetchMatchDirectly();
+  }, [searchParams, loading, matches, openModal]);
 
   if (loading)
     return (
@@ -204,12 +257,12 @@ const MatchList = () => {
       </div>
       <Modal
         isOpen={isOpen}
-        onClose={closeModal}
+        onClose={handleCloseModal}
         showCloseButton={true}
         className="max-w-125 p-5 lg:p-10">
         <MatchListTableModal
           selectedMatch={selectedMatch}
-          closeModal={closeModal}
+          closeModal={handleCloseModal}
         />
       </Modal>
     </>
