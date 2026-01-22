@@ -11,11 +11,11 @@ import {
   Font,
 } from "@react-email/components";
 
-interface Params {
+interface Props {
   username: string;
   messageData: Match;
 }
-export const Email: React.FC<Readonly<Params>> = ({
+export const RefereeNotificationEmail: React.FC<Readonly<Props>> = ({
   username,
   messageData,
 }): React.ReactNode => {
@@ -98,4 +98,4 @@ export const Email: React.FC<Readonly<Params>> = ({
   );
 };
 
-export default Email;
+export default RefereeNotificationEmail;

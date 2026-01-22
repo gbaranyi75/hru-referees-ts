@@ -5,9 +5,13 @@ import { ClerkProvider } from "@clerk/nextjs";
 import { ToastContainer } from "react-toastify";
 import { Analytics } from "@vercel/analytics/next";
 import { Providers } from "./providers";
+
 import Navbar from "@/components/Navbar";
 import NavbarMobileMenuWrapper from "@/components/NavbarMobileMenuWrapper";
 import SideBarWrapper from "@/components/SideBarWrapper";
+import ApprovalPopup from "@/components/ApprovalPopup";
+import ApprovedWelcomePopup from "@/components/ApprovedWelcomePopup";
+import AdminApprovalPopup from "@/components/AdminApprovalPopup";
 import "./globals.css";
 
 const outfit = Outfit({
@@ -41,6 +45,9 @@ export default function RootLayout({
               <div className="flex-1 lg:ml-72.5">
                 <Navbar />
                 <NavbarMobileMenuWrapper />
+                <ApprovalPopup />
+                <ApprovedWelcomePopup />
+                <AdminApprovalPopup />
                 <main className="bg-gray-100 p-4 mx-auto max-w-screen-2xl md:p-6 text-gray-600">
                   {children}
                 </main>

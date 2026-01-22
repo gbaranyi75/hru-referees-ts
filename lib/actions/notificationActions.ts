@@ -11,9 +11,9 @@ import { currentUser } from "@clerk/nextjs/server";
 
 interface CreateNotificationParams {
   recipientClerkUserId: string;
-  type: "match_assignment" | "match_removal";
-  position: NotificationPosition;
-  matchId: string;
+  type: "match_assignment" | "match_removal" | "new_registration";
+  position?: NotificationPosition | "admin";
+  matchId?: string;
   message: string;
 }
 

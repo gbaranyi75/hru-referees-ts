@@ -110,7 +110,7 @@ export type ClerkUser = {
   username: string;
 };
 
-export type NotificationType = "match_assignment" | "match_removal";
+export type NotificationType = "match_assignment" | "match_removal" | "new_registration";
 
 export type NotificationPosition =
   | "referee"
@@ -123,8 +123,8 @@ export type Notification = {
   _id: string;
   recipientClerkUserId: string;
   type: NotificationType;
-  position: NotificationPosition;
-  matchId: string;
+  position?: NotificationPosition;
+  matchId?: string;
   message: string;
   read: boolean;
   readAt?: string;

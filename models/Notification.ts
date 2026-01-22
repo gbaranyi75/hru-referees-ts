@@ -12,23 +12,27 @@ const NotificationSchema = new Schema(
       required: true,
       index: true,
     },
-    /** Type of notification: match_assignment or match_removal */
+    /** Type of notification: match_assignment, match_removal, new_registration */
     type: {
       type: String,
       required: true,
-      enum: ["match_assignment", "match_removal"],
+      enum: ["match_assignment", "match_removal", "new_registration"],
     },
     /** Position the user was assigned to */
     position: {
       type: String,
-      required: true,
       enum: ["referee", "assist1", "assist2", "controller", "referees"],
+      required: function () {
+        return this.type === "match_assignment" || this.type === "match_removal";
+      },
     },
     /** Reference to the match */
     matchId: {
       type: Schema.Types.ObjectId,
       ref: "Match",
-      required: true,
+      required: function () {
+        return this.type === "match_assignment" || this.type === "match_removal";
+      },
     },
     /** Human-readable notification message */
     message: {

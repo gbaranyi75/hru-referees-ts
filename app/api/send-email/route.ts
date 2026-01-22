@@ -1,6 +1,6 @@
 import { Resend } from "resend";
 import { NextRequest, NextResponse } from "next/server";
-import { Email } from "@/components/Email";
+import { RefereeNotificationEmail } from "@/components/emails/RefereeNotificationEmail";
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
@@ -12,7 +12,7 @@ export async function POST(request: NextRequest) {
             from: "MRGSZ Játékvezetői Bizottság <info@hru-referees.hu>",
             to: [email],
             subject: subject,
-            react: Email({ username, messageData }) as React.ReactNode,
+            react: RefereeNotificationEmail({ username, messageData }) as React.ReactNode,
         });
         if (error) {
             return NextResponse.json(

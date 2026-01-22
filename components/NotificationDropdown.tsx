@@ -90,8 +90,8 @@ export default function NotificationDropdown({
       if (result.success) {
         setNotifications((prev) =>
           prev.map((n) =>
-            n._id === notification._id ? { ...n, read: true } : n
-          )
+            n._id === notification._id ? { ...n, read: true } : n,
+          ),
         );
         setUnreadCount((prev) => Math.max(0, prev - 1));
       } else {
@@ -199,17 +199,19 @@ export default function NotificationDropdown({
                         }`}>
                         {notification.message}
                       </span>
-                      <span className="w-full flex mt-2">
-                        <Link
-                          className="font-normal text-blue-500 text-sm"
-                          href={`/merkozesek?matchId=${notification.matchId}`}
-                          onClick={(event) => {
-                            event.stopPropagation();
-                            handleNotificationClick(notification);
-                          }}>
-                          Megnézem a mérkőzés adatait
-                        </Link>
-                      </span>
+                      {notification.type === "match_assignment" && (
+                        <span className="w-full flex mt-2">
+                          <Link
+                            className="font-normal text-blue-500 text-sm"
+                            href={`/merkozesek?matchId=${notification.matchId}`}
+                            onClick={(event) => {
+                              event.stopPropagation();
+                              handleNotificationClick(notification);
+                            }}>
+                            Megnézem a mérkőzés adatait
+                          </Link>
+                        </span>
+                      )}
                     </span>
                     <span className="flex items-center gap-2 text-gray-400 text-xs mt-2">
                       {!notification.read && (

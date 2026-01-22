@@ -14,12 +14,21 @@ import { Dropdown } from "./common/Dropdown";
 import Link from "next/link";
 import { DropdownItem } from "./common/DropdownItem";
 import { User } from "@/types/types";
-const NavbarProfileLinks = ({ loggedInUser }: { loggedInUser: User | null }) => {
+const NavbarProfileLinks = ({
+  loggedInUser,
+}: {
+  loggedInUser: User | null;
+}) => {
   const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false);
   const { isLoaded } = useUser();
 
   if (!isLoaded) {
-    return <LoadingComponent text={""} textColor={"text-gray-200"} />;
+    return (
+      <LoadingComponent
+        text={""}
+        textColor={"text-gray-200"}
+      />
+    );
   }
 
   return (
@@ -27,7 +36,12 @@ const NavbarProfileLinks = ({ loggedInUser }: { loggedInUser: User | null }) => 
       <SignedOut>
         <SignInButton mode="modal">
           <div className="flex text-md mr-6 cursor-pointer items-center text-gray-600">
-            <Icon icon="lucide:log-in" width="20" height="20" color="gray" />
+            <Icon
+              icon="lucide:log-in"
+              width="20"
+              height="20"
+              color="gray"
+            />
             <span className="hidden md:block ml-2">
               Belépés vagy regisztráció
             </span>
@@ -43,8 +57,7 @@ const NavbarProfileLinks = ({ loggedInUser }: { loggedInUser: User | null }) => 
               id="user-menu-button"
               aria-expanded="false"
               aria-haspopup="true"
-              onClick={() => setIsProfileMenuOpen((prev) => !prev)}
-            >
+              onClick={() => setIsProfileMenuOpen((prev) => !prev)}>
               <span className=" -inset-1.5"></span>
               <span className="sr-only">Open user menu</span>
               <NavbarUserIcon
@@ -58,8 +71,7 @@ const NavbarProfileLinks = ({ loggedInUser }: { loggedInUser: User | null }) => 
           <Dropdown
             isOpen={isProfileMenuOpen}
             onClose={() => setIsProfileMenuOpen(false)}
-            className="absolute right-0 top-12 flex w-65 flex-col rounded-2xl border border-gray-200 bg-white p-3 shadow-theme-lg"
-          >
+            className="absolute right-0 top-12 flex w-65 flex-col rounded-2xl border border-gray-200 bg-white p-3 shadow-theme-lg">
             <div>
               <span className="block font-bold text-gray-600 text-xs">
                 {loggedInUser?.username}
@@ -68,42 +80,42 @@ const NavbarProfileLinks = ({ loggedInUser }: { loggedInUser: User | null }) => 
                 {loggedInUser?.email}
               </span>
             </div>
-            <ul className="flex flex-col gap-1 pt-3 pb-3 border-b border-gray-200">
-              <li>
-                <DropdownItem
-                  onItemClick={() => setIsProfileMenuOpen(false)}
-                  tag="a"
-                  href="/profil"
-                  className="flex items-center gap-3 px-3 py-1 font-medium text-gray-600 rounded-lg group text-sm hover:bg-gray-100 hover:text-gray-700"
-                >
-                  <Icon
-                    icon="lucide:user-round"
-                    width="20"
-                    height="20"
-                    color="gray"
-                  />
-                  <span className="text-gray-600">Profil</span>
-                </DropdownItem>
-              </li>
-              <li>
-                <DropdownItem
-                  onItemClick={() => setIsProfileMenuOpen(false)}
-                  tag="a"
-                  href="/jv-elerhetoseg"
-                  className="flex items-center gap-3 px-3 py-1 font-medium text-gray-600 rounded-lg group text-sm hover:bg-gray-100 hover:text-gray-700"
-                >
-                  <Icon
-                    icon="lucide:calendar-days"
-                    width="20"
-                    height="20"
-                    color="gray"
-                  />
-                  <span className="text-gray-600">Elérhetőség megadása</span>
-                </DropdownItem>
-              </li>
-            </ul>
+            {loggedInUser && (
+              <ul className="flex flex-col gap-1 pt-3 pb-3 border-b border-gray-200 mb-3">
+                <li>
+                  <DropdownItem
+                    onItemClick={() => setIsProfileMenuOpen(false)}
+                    tag="a"
+                    href="/profil"
+                    className="flex items-center gap-3 px-3 py-1 font-medium text-gray-600 rounded-lg group text-sm hover:bg-gray-100 hover:text-gray-700">
+                    <Icon
+                      icon="lucide:user-round"
+                      width="20"
+                      height="20"
+                      color="gray"
+                    />
+                    <span className="text-gray-600">Profil</span>
+                  </DropdownItem>
+                </li>
+                <li>
+                  <DropdownItem
+                    onItemClick={() => setIsProfileMenuOpen(false)}
+                    tag="a"
+                    href="/jv-elerhetoseg"
+                    className="flex items-center gap-3 px-3 py-1 font-medium text-gray-600 rounded-lg group text-sm hover:bg-gray-100 hover:text-gray-700">
+                    <Icon
+                      icon="lucide:calendar-days"
+                      width="20"
+                      height="20"
+                      color="gray"
+                    />
+                    <span className="text-gray-600">Elérhetőség megadása</span>
+                  </DropdownItem>
+                </li>
+              </ul>
+            )}
             <SignOutButton redirectUrl="/">
-              <div className="flex flex-col gap-1 pt-3">
+              <div className="flex flex-col gap-1">
                 <div className="flex items-center gap-3 px-4 py-2 font-medium text-gray-600 rounded-lg group text-sm hover:bg-gray-100 hover:text-gray-700">
                   <Icon
                     icon="lucide:log-out"
@@ -115,8 +127,7 @@ const NavbarProfileLinks = ({ loggedInUser }: { loggedInUser: User | null }) => 
                     href="/"
                     onClick={() => {
                       setIsProfileMenuOpen(false);
-                    }}
-                  >
+                    }}>
                     Kijelentkezés
                   </Link>
                 </div>
