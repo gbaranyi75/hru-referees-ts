@@ -19,9 +19,11 @@ const Navbar = async () => {
             <div className="md:hidden">
               <NavbarLogo />
             </div>
-            <div>
-              <NavbarDesktopWelcomeMsg loggedInUser={loggedInUser}/>
-            </div>
+            {loggedInUser && (
+              <div>
+                <NavbarDesktopWelcomeMsg loggedInUser={loggedInUser} />
+              </div>
+            )}
           </div>
           <div className="flex h-14 w-14 md:w-max items-center justify-center md:pr-12 space-x-5">
             {loggedInUser?.clerkUserId && (
