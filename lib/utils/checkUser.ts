@@ -9,8 +9,6 @@ export const checkUser = async () => {
   try {
     const user = await currentUser();
 
-    console.log("Current Clerk user:", user);
-
     if (!user) return null;
 
     // Ez a rész az első bejelentkezéskor lefut, hogy beállítsa a metaadatokat.

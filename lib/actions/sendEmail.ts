@@ -4,16 +4,16 @@ import React from "react";
 import { Resend } from "resend";
 import AdminNewUserEmail from "@/components/emails/AdminNewUserEmail";
 import UserApprovedEmail from "@/components/emails/UserApprovedEmail";
+import UserRejectedEmail from "@/components/emails/UserRejectedEmail";
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
-type EmailType = "admin-new-user" | "user-approved";
+type EmailType = "admin-new-user" | "user-approved" | "user-rejected";
 
 interface SendEmailParams {
   to: string;
   type: EmailType;
   subject?: string;
-  // Ezeket az adatokat átadod a komponensnek:
   username?: string;
   email?: string;
 }
@@ -40,6 +40,11 @@ export async function sendEmail({
           username: username ?? "",
         });
         break;
+      case "user-rejected":
+        reactComponent = React.createElement(UserRejectedEmail, {
+          username: username ?? "",
+        });
+        break;
       default:
         throw new Error("Ismeretlen email típus");
     }
@@ -54,6 +59,9 @@ export async function sendEmail({
     return { success: true };
   } catch (error) {
     console.error("Email küldési hiba:", error);
-    return { success: false, error: error instanceof Error ? error.message : String(error) };
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : String(error),
+    };
   }
 }

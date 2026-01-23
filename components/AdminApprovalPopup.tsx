@@ -6,6 +6,7 @@ import {
   PendingUser,
 } from "@/lib/actions/fetchPendingUsers";
 import { approveUser } from "@/lib/actions/approveUser";
+import { rejectUser } from "@/lib/actions/rejectUser";
 
 export default function AdminApprovalPopup() {
   const { user } = useUser();
@@ -36,9 +37,7 @@ export default function AdminApprovalPopup() {
     setLoading(false);
   };
 
-  const handleUserApproved = async (
-    userId: string
-  ) => {
+  const handleUserApproved = async (userId: string) => {
     setPendingUsers((prev) => prev.filter((us) => us.id !== userId));
     setShow(pendingUsers.length > 0);
     const result = await approveUser(userId);
@@ -46,6 +45,15 @@ export default function AdminApprovalPopup() {
       refreshList();
     }
   };
+
+  const handleUserRejected = async (userId: string) => {
+    setPendingUsers((prev) => prev.filter((us) => us.id !== userId));
+    setShow(pendingUsers.length > 0);
+    const result = await rejectUser(userId);
+    if (result.success) {
+      refreshList();
+    }
+  }
   if (!isAdmin || !show) return null;
 
   return (
@@ -84,14 +92,14 @@ export default function AdminApprovalPopup() {
                   <td className="py-2">{u.createdAt?.slice(0, 10) ?? ""}</td>
                   <td className="py-2">
                     <button
-                      className="bg-green-800 text-white px-3 py-1 rounded hover:bg-green-600 mr-2"
+                      className="bg-green-800 text-white px-3 py-1 rounded hover:bg-green-600 mr-2 cursor-pointer"
                       onClick={() => handleUserApproved(u.id)}>
                       Jóváhagyás
                     </button>
                     <button
-                      className="bg-red-600 text-white px-3 py-1 rounded hover:bg-red-600"
-                      // TODO: implement reject logic
-                      disabled>
+                      className="bg-red-600 text-white px-3 py-1 rounded hover:bg-red-600 cursor-pointer"
+                      onClick={() => handleUserRejected(u.id)}
+                      disabled={false}>
                       Elutasítás
                     </button>
                   </td>
