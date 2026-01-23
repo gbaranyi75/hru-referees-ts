@@ -16,6 +16,7 @@ export async function rejectUser(userId: string): Promise<RejectUserResult> {
       to: user.emailAddresses?.[0]?.emailAddress ?? "",
       type: "user-rejected",
       username: `${user.lastName} ${user.firstName}`,
+      subject: "Regisztráció elutasítva",
     });
     await clerk.users.deleteUser(userId);
     return { success: true };

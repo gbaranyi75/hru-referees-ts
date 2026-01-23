@@ -109,7 +109,7 @@ export default function AdminApprovalPopup() {
           </table>
         )}
         <div className="text-sm text-gray-500">
-          Amíg van jóváhagyásra váró kérés, ez a popup automatikusan megjelenik.
+          Amíg van jóváhagyásra váró kérés, ez a popup automatikusan megjelenik az oldal újratöltésekor.
         </div>
       </div>
     </div>
