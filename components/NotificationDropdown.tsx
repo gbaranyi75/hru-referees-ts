@@ -76,8 +76,11 @@ export default function NotificationDropdown({
     return () => clearInterval(interval);
   }, [isOpen, loadNotifications]);
 
-  const toggleDropdown = () => {
-    setIsOpen(!isOpen);
+ const toggleDropdown = (
+    e: React.MouseEvent<HTMLButtonElement, MouseEvent>,
+  ) => {
+    e.stopPropagation();
+    setIsOpen((prev) => !prev);
   };
 
   const closeDropdown = () => {
@@ -139,7 +142,7 @@ export default function NotificationDropdown({
       <Dropdown
         isOpen={isOpen}
         onClose={closeDropdown}
-        className="absolute right-0 top-12 flex h-120 w-87.5 flex-col rounded-2xl border border-gray-200 bg-white p-3 shadow-theme-lg">
+        className="absolute right-0 top-12 flex h-120 w-[280px] sm:w-[350px] flex-col rounded-2xl border border-gray-200 bg-white p-3 shadow-theme-lg">
         <div className="flex text-gray-600 items-center justify-between pb-3 mb-3 border-b border-gray-100">
           <h5 className="text-lg font-semibold text-gray-600">Értesítések</h5>
           <div className="flex items-center gap-2">
