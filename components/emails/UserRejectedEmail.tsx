@@ -1,4 +1,13 @@
-import { Html, Tailwind, Head, Body, Container, Text, Font } from "@react-email/components";
+import {
+  Html,
+  Tailwind,
+  Head,
+  Body,
+  Container,
+  Text,
+  Font,
+} from "@react-email/components";
+import Link from "next/link";
 
 interface Props {
   username: string;
@@ -29,7 +38,19 @@ const UserRejectedEmail: React.FC<Props> = ({ username }) => (
             Kedves <b>{username}</b>!
           </Text>
           <Text className="text-md mb-8">
-            Sajnálattal közöljük, hogy a regisztrációdat az admin nem hagyta jóvá, mostantól nincs hozzáférésed a rendszerhez.
+            Sajnálattal közöljük, hogy a regisztrációdat az admin nem hagyta
+            jóvá, mostantól csak a publikus oldalainkat tudod elérni.
+          </Text>
+          <Text className="text-md mb-2">
+            Amennyiben kérdésed van, kérjük, vedd fel velünk a kapcsolatot az
+            alábbi elérhetőségeken:
+          </Text>
+          <Text className="text-md mb-8">
+            <Link
+              href="https://www.hru-referees.hu"
+              className="text-blue-500 underline">
+              MRGSZ Játékvezetői Bizottság - Kapcsolat
+            </Link>
           </Text>
         </Container>
       </Body>
