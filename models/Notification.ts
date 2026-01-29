@@ -60,7 +60,6 @@ NotificationSchema.index(
 
 import type { Model, Document } from "mongoose";
 // Explicitly type Notification as a Mongoose Model
-const Notification: Model<Document> =
-  models.Notification || model("Notification", NotificationSchema);
+const Notification = (models.Notification || model("Notification", NotificationSchema)) as unknown as Model<Document>;
 
 export default Notification;

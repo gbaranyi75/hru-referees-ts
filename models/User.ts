@@ -18,7 +18,7 @@ export interface IUser {
   updatedAt?: Date;
 }
 
-const userSchemaDefinition: SchemaDefinition<IUser> = {
+const UserSchema = new Schema({
   email: {
     type: String,
     unique: true,
@@ -69,10 +69,8 @@ const userSchemaDefinition: SchemaDefinition<IUser> = {
     type: String,
     required: false,
   },
-};
+}, { timestamps: true });
 
-const UserSchema = new Schema<IUser>(userSchemaDefinition, { timestamps: true });
-
-const User = (models.User as Model<IUser>) || model<IUser>("User", UserSchema);
+const User = (models.User || model("User", UserSchema)) as unknown as Model<IUser>;
 
 export default User;
