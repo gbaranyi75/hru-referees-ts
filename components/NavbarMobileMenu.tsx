@@ -112,7 +112,7 @@ const useDimensions = (ref: React.RefObject<HTMLDivElement | null>) => {
   return dimensions;
 };
 
-const MenuItem = ({
+/* const MenuItem = ({
   className,
   children,
 }: {
@@ -126,7 +126,7 @@ const MenuItem = ({
       {children}
     </motion.li>
   );
-};
+}; */
 
 const MenuItemVariants = {
   open: {
