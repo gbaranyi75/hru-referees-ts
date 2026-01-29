@@ -1,6 +1,6 @@
 "use server";
 import connectDB from "@/config/database";
-import Notification from "@/models/Notification";
+import Notification, { NotificationDocument } from "@/models/Notification";
 import {
   Result,
   Notification as NotificationType,
@@ -29,7 +29,7 @@ export const createNotification = async (
   return handleAsyncOperation(async () => {
     await connectDB();
     const notification = await Notification.create(params);
-    return JSON.parse(JSON.stringify(notification));
+    return JSON.parse(JSON.stringify(notification)) as NotificationType;
   }, "Error creating notification");
 };
 
@@ -45,7 +45,7 @@ export const createNotifications = async (
   return handleAsyncOperation(async () => {
     await connectDB();
     const createdNotifications = await Notification.insertMany(notifications);
-    return JSON.parse(JSON.stringify(createdNotifications));
+    return JSON.parse(JSON.stringify(createdNotifications)) as NotificationType[];
   }, "Error creating notifications");
 };
 

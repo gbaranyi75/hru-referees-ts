@@ -1,4 +1,15 @@
-import { Schema, model, models } from "mongoose";
+import { Schema, model, models, Document, Model } from "mongoose";
+export interface NotificationDocument extends Document {
+  recipientClerkUserId: string;
+  type: "match_assignment" | "match_removal" | "new_registration";
+  position?: string;
+  matchId?: string;
+  message: string;
+  read: boolean;
+  readAt?: Date | null;
+  createdAt?: Date;
+  updatedAt?: Date;
+}
 
 /**
  * Notification schema for storing user notifications
@@ -60,6 +71,6 @@ NotificationSchema.index(
 
 import type { Model, Document } from "mongoose";
 // Explicitly type Notification as a Mongoose Model
-const Notification = (models.Notification || model("Notification", NotificationSchema)) as unknown as Model<Document>;
+const Notification = (models.Notification as Model<NotificationDocument>) || model<NotificationDocument>("Notification", NotificationSchema);
 
 export default Notification;
