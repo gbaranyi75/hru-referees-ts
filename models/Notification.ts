@@ -22,7 +22,7 @@ const NotificationSchema = new Schema(
     position: {
       type: String,
       enum: ["referee", "assist1", "assist2", "controller", "referees"],
-      required: function () {
+      required: function (this: { type: string }) {
         return this.type === "match_assignment" || this.type === "match_removal";
       },
     },
@@ -30,7 +30,7 @@ const NotificationSchema = new Schema(
     matchId: {
       type: Schema.Types.ObjectId,
       ref: "Match",
-      required: function () {
+      required: function (this: { type: string }) {
         return this.type === "match_assignment" || this.type === "match_removal";
       },
     },
@@ -58,7 +58,9 @@ NotificationSchema.index(
   { recipientClerkUserId: 1, read: 1, createdAt: -1 }
 );
 
-const Notification =
+import type { Model, Document } from "mongoose";
+// Explicitly type Notification as a Mongoose Model
+const Notification: Model<Document> =
   models.Notification || model("Notification", NotificationSchema);
 
 export default Notification;
