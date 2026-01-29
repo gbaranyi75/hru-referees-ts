@@ -126,7 +126,7 @@ export const markNotificationAsRead = async (
     await connectDB();
 
     // Verify the notification belongs to the current user
-    const notification = await Notification.findById(notificationId).exec();
+    const notification = await Notification.findById(notificationId).lean().exec() as { recipientClerkUserId?: string } | null;
     if (!notification || notification.recipientClerkUserId !== user.id) {
       throw new Error("Unauthorized");
     }
