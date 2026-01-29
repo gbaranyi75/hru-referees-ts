@@ -1,6 +1,25 @@
-import { Schema, model, models } from "mongoose";
+import { Schema, model, models, Model } from "mongoose";
 
-const UserSchema = new Schema(
+// Opcionális, de erősen ajánlott: definiáljunk egy interfészt a felhasználóhoz
+export interface IUser {
+  email: string;
+  clerkUserId: string;
+  username: string;
+  image?: string;
+  address?: {
+    city?: string;
+    country?: string;
+  };
+  phoneNumber?: string;
+  hasTitle: string;
+  status: string;
+  facebookUrl?: string;
+  instagramUrl?: string;
+  createdAt?: Date;
+  updatedAt?: Date;
+}
+
+const UserSchema = new Schema<IUser>(
   {
     email: {
       type: String,
@@ -20,17 +39,16 @@ const UserSchema = new Schema(
     image: {
       type: String,
     },
-    address:
-    {
+    address: {
       city: {
         type: String,
         required: false,
-        default: ''
+        default: "",
       },
       country: {
         type: String,
         required: false,
-        default: ''
+        default: "",
       },
     },
     phoneNumber: {
@@ -39,11 +57,11 @@ const UserSchema = new Schema(
     },
     hasTitle: {
       type: String,
-      required: true
+      required: true,
     },
     status: {
       type: String,
-      required: true
+      required: true,
     },
     facebookUrl: {
       type: String,
@@ -56,10 +74,9 @@ const UserSchema = new Schema(
   },
   {
     timestamps: true,
-  }
+  },
 );
 
+const User = (models.User as Model<IUser>) || model<IUser>("User", UserSchema);
 
-
-const User = (models.User as ReturnType<typeof model>) || model("User", UserSchema);
 export default User;
