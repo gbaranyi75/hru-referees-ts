@@ -25,7 +25,9 @@ export const fetchProfileImage = async (): Promise<Result<string>> => {
     if (!loggedInUser) {
       return { success: false, error: 'Profile not found' };
     }
-    
+    if (!loggedInUser.image) {
+      return { success: false, error: 'Profile image not found' };
+    }
     return { success: true, data: loggedInUser.image };
   } catch (error) {
     console.error(error);
