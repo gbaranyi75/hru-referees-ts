@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import {
   Table,
   TableBody,
@@ -15,37 +15,20 @@ import profileImage from "@/public/images/profile-image.png";
 import OutlinedButton from "./common/OutlinedButton";
 import Link from "next/link";
 import Skeleton from "./common/Skeleton";
-import { fetchUsers } from "@/lib/actions/fetchUsers";
 import { Route } from "next";
+import { useUsers } from "@/contexts/UsersContext";
 
 export default function RefereesTable() {
   const { isOpen, openModal, closeModal } = useModal();
   const [selectedReferee, setSelectedReferee] = useState<User | null>(null);
-  const [referees, setReferees] = useState<User[]>([]);
-  const [loading, setLoading] = useState<boolean>(false);
-
-  const loadReferees = async () => {
-    setLoading(true);
-    const result = await fetchUsers();
-    if (result.success) {
-      setReferees(result.data);
-    } else {
-      console.error(result.error);
-      setReferees([]);
-    }
-    setLoading(false);
-  };
+  const { users, loading, error } = useUsers();
 
   const handleSelectedReferee = (referee: User) => {
     setSelectedReferee(referee);
     openModal();
   };
 
-  useEffect(() => {
-    loadReferees();
-  }, []);
-
-  if (loading || !referees)
+  if (loading)
     return (
       <>
         <Skeleton className="w-full h-18 mb-2" />
@@ -53,6 +36,13 @@ export default function RefereesTable() {
         <Skeleton className="w-full h-18 mb-2" />
         <Skeleton className="w-full h-18" />
       </>
+    );
+
+  if (error)
+    return (
+      <div className="p-4 text-sm text-center text-red-600 border border-red-200 rounded-md bg-red-50">
+        Hiba történt a játékvezetők adatainak lekérése során.
+      </div>
     );
 
   return (
@@ -89,7 +79,7 @@ export default function RefereesTable() {
 
             {/* Table Body */}
             <TableBody className="divide-y divide-gray-100">
-              {referees.map((ref) => (
+              {users?.map((ref) => (
                 <TableRow
                   key={ref.clerkUserId}
                   className="text-xs text-center">

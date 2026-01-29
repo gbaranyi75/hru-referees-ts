@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { MdOutlineExpandMore, MdOutlineExpandLess } from "react-icons/md";
 import { toast } from "react-toastify";
 import OutlinedButton from "@/components/common/OutlinedButton";
@@ -242,4 +242,4 @@ const AddMatchDaysItem = ({
     </div>
   );
 };
-export default AddMatchDaysItem;
+export default React.memo(AddMatchDaysItem);

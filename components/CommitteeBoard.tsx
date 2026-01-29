@@ -1,38 +1,38 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import { fetchUsers } from "@/lib/actions/fetchUsers";
 import { User } from "@/types/types";
+import { useUsers } from "@/contexts/UsersContext";
 
 const CommitteeBoard = () => {
-  const [president, setPresident] = useState<User | null>(null);
-  const [secretary, setSecretary] = useState<User | null>(null);
-  const [loading, setLoading] = useState<boolean>(true);
+  const { users, loading, error } = useUsers();
+  const [president, setPresident] = useState<User | null>();
+  const [secretary, setSecretary] = useState<User | null>();
 
   useEffect(() => {
-    const getUsers = async () => {
-      const result = await fetchUsers();
-      if (result.success) {
-        const fetchedUsers = result.data;
-        setPresident(
-          () => fetchedUsers.filter((pres: User) => pres.hasTitle === "Elnök")[0]
-        );
-        setSecretary(
-          () =>
-            fetchedUsers.filter((pres: User) => pres.hasTitle === "Főtitkár")[0]
-        );
-      }
-      setLoading(false);
-    };
-    getUsers();
-  }, []);
+    setPresident(
+      () => users?.filter((pres: User) => pres.hasTitle === "Elnök")[0],
+    );
+    setSecretary(
+      () => users?.filter((pres: User) => pres.hasTitle === "Főtitkár")[0],
+    );
+  }, [users]);
 
   if (loading && !president && !secretary) {
     return (
       <div className="flex flex-col gap-4 lg:h-96 rounded-2xl border border-gray-200 bg-white p-5 md:p-6">
         <div className="w-full h-8 mb-2 bg-gray-200 animate-pulse"></div>
         {Array.from({ length: 7 }).map((_, i) => (
-          <div key={i} className="w-full h-4 bg-gray-200 animate-pulse"></div>
+          <div
+            key={i}
+            className="w-full h-4 bg-gray-200 animate-pulse"></div>
         ))}
+      </div>
+    );
+  }
+  if (error) {
+    return (
+      <div className="flex flex-col lg:h-96 rounded-2xl border border-gray-200 bg-white p-5 md:p-6">
+        <div className="text-red-500">Hiba történt az adatok betöltésekor.</div>
       </div>
     );
   }
@@ -51,8 +51,7 @@ const CommitteeBoard = () => {
             {president?.email ? (
               <a
                 className="text-xs text-blue-500 underline"
-                href={`mailto:${president.email}`}
-              >
+                href={`mailto:${president.email}`}>
                 {president.email}
               </a>
             ) : (
@@ -64,8 +63,7 @@ const CommitteeBoard = () => {
             {president?.phoneNumber ? (
               <a
                 className="text-xs text-blue-500 underline"
-                href={`tel:${president.phoneNumber}`}
-              >
+                href={`tel:${president.phoneNumber}`}>
                 {president.phoneNumber}
               </a>
             ) : (
@@ -84,8 +82,7 @@ const CommitteeBoard = () => {
               {secretary?.email ? (
                 <a
                   className="text-xs text-blue-500 underline"
-                  href={`mailto:${secretary.email}`}
-                >
+                  href={`mailto:${secretary.email}`}>
                   {secretary.email}
                 </a>
               ) : (
@@ -97,8 +94,7 @@ const CommitteeBoard = () => {
               {secretary?.phoneNumber ? (
                 <a
                   className="text-xs text-blue-500 underline"
-                  href={`tel:${secretary.phoneNumber}`}
-                >
+                  href={`tel:${secretary.phoneNumber}`}>
                   {secretary.phoneNumber}
                 </a>
               ) : (

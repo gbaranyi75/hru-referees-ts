@@ -11,42 +11,39 @@ import {
 } from "@/components/common/DefaultTable";
 import Skeleton from "@/components/common/Skeleton";
 import Input from "@/components/common/InputField";
-import { GuestUser, User } from "@/types/types";
-import { fetchUsers } from "@/lib/actions/fetchUsers";
-import { fetchClerkUserList } from "@/lib/actions/fetchClerkUserList";
+import { GuestUser, User, ClerkUser } from "@/types/types";
 import { updateProfileStatusAndTitle } from "@/lib/actions/updateProfileStatusAndTitle";
-import { fetchGuestUsers } from "@/lib/actions/fetchGuestUser";
-import { User as ClerkUser } from "@clerk/nextjs/server";
+import { useUsers } from "@/contexts/UsersContext";
+import { useClerkUsers } from "@/contexts/ClerkUsersContext";
+import { useGuestUsers } from "@/contexts/GuestUsersContext";
 
 export default function RefereesTable() {
+  const { users, loading, error, refreshUsers } = useUsers();
+  const {
+    guestUsers,
+    loading: guestLoading,
+    error: guestError,
+    refreshGuestUsers,
+  } = useGuestUsers();
+  const {
+    clerkUsers,
+    loading: clerkLoading,
+    error: clerkError,
+    refreshClerkUsers,
+  } = useClerkUsers();
+
   const [selectedReferee, setSelectedReferee] = useState<
     User | GuestUser | null
   >(null);
-  const [referees, setReferees] = useState<User[]>([]);
-  const [guestReferees, setGuestReferees] = useState<GuestUser[]>([]);
-  const [authUsers, setAuthUsers] = useState<ClerkUser[]>([]);
-  const [loading, setLoading] = useState<boolean>(false);
+  const [referees, setReferees] = useState<User[]>(users || []);
+  const [guestReferees, setGuestReferees] = useState<GuestUser[]>(
+    guestUsers || [],
+  );
+  const [authUsers, setAuthUsers] = useState<ClerkUser[]>(clerkUsers || []);
   const [isEditMode, setIsEditMode] = useState<boolean>(false);
   const [status, setStatus] = useState<string>("");
   const [title, setTitle] = useState<string>("");
   const [role, setRole] = useState<string>("");
-
-  const loadReferees = async () => {
-    setLoading(true);
-    const guestUsersResult = await fetchGuestUsers();
-    const usersData = await fetchUsers();
-    const clerkUsers = await fetchClerkUserList();
-    if (usersData.success) {
-      setReferees(usersData.data);
-    }
-    if (clerkUsers.success) {
-      setAuthUsers(clerkUsers.data);
-    }
-    if (guestUsersResult.success) {
-      setGuestReferees(guestUsersResult.data);
-    }
-    setLoading(false);
-  };
 
   const handleSetToEdit = (ref: User | GuestUser) => {
     const user =
@@ -56,7 +53,14 @@ export default function RefereesTable() {
     setSelectedReferee(ref);
     setStatus(ref.status);
     setTitle("hasTitle" in ref ? ref.hasTitle : "");
-    setRole(user && user.publicMetadata && typeof user.publicMetadata === 'object' && 'role' in user.publicMetadata ? String(user.publicMetadata.role) : "");
+    setRole(
+      user &&
+        user.publicMetadata &&
+        typeof user.publicMetadata === "object" &&
+        "role" in user.publicMetadata
+        ? String(user.publicMetadata.role)
+        : "",
+    );
     setIsEditMode(!isEditMode);
   };
 
@@ -79,7 +83,7 @@ export default function RefereesTable() {
       if (!title) setTitle("");
       if (title !== "Elnök" && title !== "Főtitkár" && title !== "") {
         toast.error(
-          "A titulus csak Elnök és Főtitkár lehet, vagy üresen kell hagyni!"
+          "A titulus csak Elnök és Főtitkár lehet, vagy üresen kell hagyni!",
         );
         return;
       }
@@ -90,29 +94,50 @@ export default function RefereesTable() {
         clerkUserId,
         status,
         title,
-        role
+        role,
       );
       const success = response instanceof Error ? false : response.success;
       if (success) {
-        await loadReferees();
+        await refreshUsers();
+        await refreshGuestUsers();
+        await refreshClerkUsers();
         handleCancel();
       }
     } catch (error) {
       console.error(error);
     }
-  }, [status, title, role, handleCancel, selectedReferee]);
+  }, [
+    status,
+    title,
+    role,
+    handleCancel,
+    selectedReferee,
+    refreshUsers,
+    refreshGuestUsers,
+    refreshClerkUsers,
+  ]);
 
   useEffect(() => {
-    loadReferees();
-  }, []);
+    setReferees(users || []);
+    setGuestReferees(guestUsers || []);
+    setAuthUsers(clerkUsers || []);
+  }, [users, guestUsers, clerkUsers]);
 
-  if (loading || !referees || !authUsers)
+  if (loading || !referees || !authUsers || clerkLoading || guestLoading)
     return (
       <>
-         {Array.from({ length: 10 }).map((_, i) => (
-            <Skeleton key={i} className="w-full h-18 mb-2" />
-          ))}
+        {Array.from({ length: 10 }).map((_, i) => (
+          <Skeleton
+            key={i}
+            className="w-full h-18 mb-2"
+          />
+        ))}
       </>
+    );
+
+  if (error || guestError || clerkError)
+    return (
+      <div className="text-red-500">Hiba történt az adatok betöltésekor.</div>
     );
 
   return (
@@ -124,32 +149,27 @@ export default function RefereesTable() {
             <TableRow className="text-sm text-center">
               <TableCell
                 isHeader
-                className="px-2 py-4 font-bold text-gray-600 w-41.5"
-              >
+                className="px-2 py-4 font-bold text-gray-600 w-41.5">
                 Név
               </TableCell>
               <TableCell
                 isHeader
-                className="px-2 py-4 font-bold text-gray-600 w-41.5"
-              >
+                className="px-2 py-4 font-bold text-gray-600 w-41.5">
                 Státusz
               </TableCell>
               <TableCell
                 isHeader
-                className="px-5 py-4 font-bold text-gray-500 w-41.5"
-              >
+                className="px-5 py-4 font-bold text-gray-500 w-41.5">
                 Titulus
               </TableCell>
               <TableCell
                 isHeader
-                className="px-5 py-4 font-bold text-gray-500 w-41.5"
-              >
+                className="px-5 py-4 font-bold text-gray-500 w-41.5">
                 Szerepkör
               </TableCell>
               <TableCell
                 isHeader
-                className="px-5 py-4 font-bold text-gray-600 w-41.5"
-              >
+                className="px-5 py-4 font-bold text-gray-600 w-41.5">
                 Szerkesztés
               </TableCell>
             </TableRow>
@@ -160,8 +180,7 @@ export default function RefereesTable() {
             {referees.map((ref) => (
               <TableRow
                 key={ref.clerkUserId}
-                className="text-xs text-center h-16"
-              >
+                className="text-xs text-center h-16">
                 <TableCell className="px-2 text-sm font-normal text-gray-600">
                   {ref.username}
                 </TableCell>
@@ -199,10 +218,12 @@ export default function RefereesTable() {
                               key={ref.clerkUserId}
                               type="text"
                               name="role"
-                              defaultValue={String(user.publicMetadata?.role ?? "")}
+                              defaultValue={String(
+                                user.publicMetadata?.role ?? "",
+                              )}
                               onChange={(e) => setRole(e.target.value)}
                             />
-                          )
+                          ),
                       )}
                     </>
                   ) : (
@@ -210,7 +231,7 @@ export default function RefereesTable() {
                       {authUsers.map((user) =>
                         user.id === ref.clerkUserId
                           ? String(user.publicMetadata?.role ?? "")
-                          : ""
+                          : "",
                       )}
                     </span>
                   )}
@@ -220,15 +241,21 @@ export default function RefereesTable() {
                     <div className="flex gap-5 justify-center">
                       <button
                         onClick={handleCancel}
-                        className="text-sm cursor-pointer font-medium text-center text-blue-600 hover:underline py-1 sm:py-1"
-                      >
-                        <Icon icon="lucide:circle-x" width="20" height="20" />
+                        className="text-sm cursor-pointer font-medium text-center text-blue-600 hover:underline py-1 sm:py-1">
+                        <Icon
+                          icon="lucide:circle-x"
+                          width="20"
+                          height="20"
+                        />
                       </button>
                       <button
                         onClick={handleSave}
-                        className="text-sm cursor-pointer font-medium text-center text-blue-600 hover:underline py-1 sm:py-1"
-                      >
-                        <Icon icon="lucide:save" width="20" height="20" />
+                        className="text-sm cursor-pointer font-medium text-center text-blue-600 hover:underline py-1 sm:py-1">
+                        <Icon
+                          icon="lucide:save"
+                          width="20"
+                          height="20"
+                        />
                       </button>
                     </div>
                   ) : (
@@ -236,16 +263,22 @@ export default function RefereesTable() {
                       {isEditMode ? (
                         <button
                           disabled
-                          className="text-sm font-medium text-center text-gray-400 mx-auto hover:underline py-1 sm:py-1"
-                        >
-                          <Icon icon="lucide:edit" width="20" height="20" />
+                          className="text-sm font-medium text-center text-gray-400 mx-auto hover:underline py-1 sm:py-1">
+                          <Icon
+                            icon="lucide:edit"
+                            width="20"
+                            height="20"
+                          />
                         </button>
                       ) : (
                         <button
                           onClick={() => handleSetToEdit(ref)}
-                          className="text-sm cursor-pointer font-medium text-center text-blue-600 mx-auto hover:underline py-1 sm:py-1"
-                        >
-                          <Icon icon="lucide:edit" width="20" height="20" />
+                          className="text-sm cursor-pointer font-medium text-center text-blue-600 mx-auto hover:underline py-1 sm:py-1">
+                          <Icon
+                            icon="lucide:edit"
+                            width="20"
+                            height="20"
+                          />
                         </button>
                       )}
                     </>
@@ -254,7 +287,9 @@ export default function RefereesTable() {
               </TableRow>
             ))}
             {guestReferees.map((ref) => (
-              <TableRow key={ref._id} className="text-xs text-center h-16">
+              <TableRow
+                key={ref._id}
+                className="text-xs text-center h-16">
                 <TableCell className="px-2 text-sm font-normal text-gray-600">
                   {ref.username}
                 </TableCell>
@@ -281,15 +316,21 @@ export default function RefereesTable() {
                     <div className="flex gap-5 justify-center">
                       <button
                         onClick={handleCancel}
-                        className="text-sm cursor-pointer font-medium text-center text-blue-600 hover:underline py-1 sm:py-1"
-                      >
-                        <Icon icon="lucide:circle-x" width="20" height="20" />
+                        className="text-sm cursor-pointer font-medium text-center text-blue-600 hover:underline py-1 sm:py-1">
+                        <Icon
+                          icon="lucide:circle-x"
+                          width="20"
+                          height="20"
+                        />
                       </button>
                       <button
                         onClick={handleSave}
-                        className="text-sm cursor-pointer font-medium text-center text-blue-600 hover:underline py-1 sm:py-1"
-                      >
-                        <Icon icon="lucide:save" width="20" height="20" />
+                        className="text-sm cursor-pointer font-medium text-center text-blue-600 hover:underline py-1 sm:py-1">
+                        <Icon
+                          icon="lucide:save"
+                          width="20"
+                          height="20"
+                        />
                       </button>
                     </div>
                   ) : (
@@ -297,16 +338,22 @@ export default function RefereesTable() {
                       {isEditMode ? (
                         <button
                           disabled
-                          className="text-sm font-medium text-center text-gray-400 mx-auto hover:underline py-1 sm:py-1"
-                        >
-                          <Icon icon="lucide:edit" width="20" height="20" />
+                          className="text-sm font-medium text-center text-gray-400 mx-auto hover:underline py-1 sm:py-1">
+                          <Icon
+                            icon="lucide:edit"
+                            width="20"
+                            height="20"
+                          />
                         </button>
                       ) : (
                         <button
                           onClick={() => handleSetToEdit(ref)}
-                          className="text-sm cursor-pointer font-medium text-center text-blue-600 mx-auto hover:underline py-1 sm:py-1"
-                        >
-                          <Icon icon="lucide:edit" width="20" height="20" />
+                          className="text-sm cursor-pointer font-medium text-center text-blue-600 mx-auto hover:underline py-1 sm:py-1">
+                          <Icon
+                            icon="lucide:edit"
+                            width="20"
+                            height="20"
+                          />
                         </button>
                       )}
                     </>

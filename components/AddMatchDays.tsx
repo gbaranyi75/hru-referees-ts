@@ -2,22 +2,22 @@
 import { useEffect, useState } from "react";
 import AddMatchDaysItem from "./AddMatchDaysItem";
 import Skeleton from "./common/Skeleton";
-import { Calendar, User, UserSelection } from "@/types/types";
-import { fetchCalendars } from "@/lib/actions/fetchCalendars";
+import { User, UserSelection } from "@/types/types";
 import { fetchProfile } from "@/lib/actions/fetchProfile";
 import { fetchUserSelections } from "@/lib/actions/fetchUserSelections";
+import { useCalendars } from "@/hooks/useCalendars";
 
 /**
  * A component that displays a list of calendars and allows the user to add match days to them.
  * @returns A JSX component that displays a list of calendars and allows the user to add match days to them.
  */
 const AddMatchDays = () => {
+  const { data: calendars = [] } = useCalendars();
   const [isOpen, setIsOpen] = useState<number | null>(null);
   const [loading, setLoading] = useState(false);
-  const [calendars, setCalendars] = useState<Calendar[]>([]);
   const [profile, setProfile] = useState<User>({} as User);
   const [selections, setSelections] = useState<Map<string, UserSelection>>(
-    new Map()
+    new Map(),
   );
 
   const toggleOpen = (id: number) => () =>
@@ -27,41 +27,22 @@ const AddMatchDays = () => {
     const fetchData = async () => {
       setLoading(true);
       try {
-        // Parallel fetch - calendars and profile at once
-        const [calendarsResult, profileResult] = await Promise.all([
-          fetchCalendars(),
-          fetchProfile(),
-        ]);
-
-        let sortedCalendars: Calendar[] = [];
-
-        if (calendarsResult.success) {
-          sortedCalendars = calendarsResult.data.sort(
-            (a: Calendar, b: Calendar) => {
-              return (
-                new Date(b.days[0]).getTime() - new Date(a.days[0]).getTime()
-              );
-            }
-          );
-          setCalendars(sortedCalendars);
-        }
-
+        const profileResult = await fetchProfile();
         if (profileResult.success) {
           setProfile(profileResult.data);
         }
-
         // Batch fetch: all selections at once (only if calendars and profile exist)
         if (
-          sortedCalendars.length > 0 &&
+          calendars.length > 0 &&
           profileResult.success &&
           profileResult.data.clerkUserId
         ) {
-          const calendarIds = sortedCalendars
+          const calendarIds = calendars
             .map((c) => c._id)
             .filter((id): id is string => id !== undefined);
           const selectionsResult = await fetchUserSelections(
             calendarIds,
-            profileResult.data.clerkUserId
+            profileResult.data.clerkUserId,
           );
 
           if (selectionsResult.success) {
@@ -79,9 +60,8 @@ const AddMatchDays = () => {
         setLoading(false);
       }
     };
-
     fetchData();
-  }, []);
+  }, [calendars]);
 
   if (loading)
     return (
