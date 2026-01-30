@@ -25,10 +25,6 @@ export const metadata: Metadata = {
   title: "HRU Referees",
   description: "MRGSZ Játékvezetői Bizottság",
   keywords: "referee, hru, játékvezető, rugby, rögbi",
-  icons: {
-    icon: '/favicon.ico',
-    apple: '/apple-touch-icon.png',
-  },
 };
 
 export default function RootLayout({
