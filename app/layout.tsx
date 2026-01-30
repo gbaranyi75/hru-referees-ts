@@ -35,7 +35,7 @@ export default function RootLayout({
   return (
     <ClerkProvider localization={huHU}>
       <html
-        lang="en"
+        lang="hu"
         suppressHydrationWarning>
         <body className={`${outfit.variable} font-outfit`}>
           <Providers>
