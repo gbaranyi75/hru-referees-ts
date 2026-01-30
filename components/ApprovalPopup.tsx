@@ -1,10 +1,7 @@
 'use client'
-
-
 import { useUser } from '@clerk/nextjs';
 import { useEffect, useState } from 'react';
 import { usePathname } from 'next/navigation';
-
 
 export default function ApprovalPopup() {
   const { user } = useUser();
