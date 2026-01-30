@@ -5,9 +5,12 @@ import { sendEmail } from "@/lib/actions/sendEmail";
 import { createNotification } from "@/lib/actions/notificationActions";
 
 export const checkUser = async () => {
-  await connectDB();
   try {
-    const user = await currentUser();
+    await connectDB();
+    const user = await currentUser().catch((err) => {
+        console.error("Clerk belső hiba (lehet Safari süti):", err);
+        return null;
+    });
 
     if (!user) return null;
 
