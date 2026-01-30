@@ -5,7 +5,6 @@ import { ClerkProvider } from "@clerk/nextjs";
 import { ToastContainer } from "react-toastify";
 import { Analytics } from "@vercel/analytics/next";
 import { Providers } from "./providers";
-
 import Navbar from "@/components/Navbar";
 import NavbarMobileMenuWrapper from "@/components/NavbarMobileMenuWrapper";
 import SideBarWrapper from "@/components/SideBarWrapper";

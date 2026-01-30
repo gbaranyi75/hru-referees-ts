@@ -108,6 +108,7 @@ export type ClerkUser = {
   id: string;
   emailAddresses: { emailAddress: string }[];
   username: string;
+  publicMetadata: Record<string, string | boolean | number>;
 };
 
 export type NotificationType = "match_assignment" | "match_removal" | "new_registration";

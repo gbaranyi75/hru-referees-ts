@@ -1,4 +1,15 @@
-import { Schema, model, models } from "mongoose";
+import { Schema, model, models, Model } from "mongoose";
+export interface NotificationDocument extends Document {
+  recipientClerkUserId: string;
+  type: "match_assignment" | "match_removal" | "new_registration";
+  position?: string;
+  matchId?: string;
+  message: string;
+  read: boolean;
+  readAt?: Date | null;
+  createdAt?: Date;
+  updatedAt?: Date;
+}
 
 /**
  * Notification schema for storing user notifications
@@ -22,7 +33,7 @@ const NotificationSchema = new Schema(
     position: {
       type: String,
       enum: ["referee", "assist1", "assist2", "controller", "referees"],
-      required: function () {
+      required: function (this: { type: string }) {
         return this.type === "match_assignment" || this.type === "match_removal";
       },
     },
@@ -30,7 +41,7 @@ const NotificationSchema = new Schema(
     matchId: {
       type: Schema.Types.ObjectId,
       ref: "Match",
-      required: function () {
+      required: function (this: { type: string }) {
         return this.type === "match_assignment" || this.type === "match_removal";
       },
     },
@@ -58,7 +69,7 @@ NotificationSchema.index(
   { recipientClerkUserId: 1, read: 1, createdAt: -1 }
 );
 
-const Notification =
-  models.Notification || model("Notification", NotificationSchema);
+
+const Notification = (models.Notification as Model<NotificationDocument>) || model<NotificationDocument>("Notification", NotificationSchema);
 
 export default Notification;

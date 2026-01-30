@@ -21,7 +21,7 @@ export const updateUserSelection = async (selectionId: string | undefined, selec
   await connectDB();
 
   try {
-    const res = await UserSelection.findOneAndUpdate(
+    await UserSelection.findOneAndUpdate(
       { _id: selectionId },
       { selectedDays: selectedDays }
     );

@@ -1,15 +1,13 @@
 "use client";
 import { useState, useEffect, useCallback } from "react";
-import Select, { SelectOption } from "./common/Select";
-import { Icon } from "@iconify/react";
 import { toast } from "react-toastify";
-import { DayPicker, getDefaultClassNames } from "react-day-picker";
+import { Icon } from "@iconify/react";
 import "react-day-picker/dist/style.css";
+import { DayPicker, getDefaultClassNames } from "react-day-picker";
 import { hu } from "react-day-picker/locale";
-
-import { fetchUsers } from "@/lib/actions/fetchUsers";
-import { fetchGuestUsers } from "@/lib/actions/fetchGuestUser";
 import { useCreateMatch } from "@/hooks/useMatches";
+import { useUsers } from "@/contexts/UsersContext";
+import { useGuestUsers } from "@/contexts/GuestUsersContext";
 import { GuestUser, Match, MatchOfficial, User } from "@/types/types";
 import { hours } from "@/constants/matchUtils";
 import teams from "@/constants/matchData/teams.json";
@@ -17,14 +15,15 @@ import types from "@/constants/matchData/matchTypes.json";
 import genderOptions from "@/constants/matchData/genderOptions.json";
 import ages from "@/constants/matchData/ages.json";
 import venues from "@/constants/matchData/venues.json";
+import Select, { SelectOption } from "./common/Select";
 import OutlinedButton from "./common/OutlinedButton";
 import PrimaryButton from "./common/PrimaryButton";
 import Label from "./common/Label";
+import DisabledButton from "./common/DisabledButton";
 import {
   validateSingleMatch,
   validateNonSingleMatch,
 } from "@/lib/utils/matchValidation";
-import DisabledButton from "./common/DisabledButton";
 
 const defaultFormFields = {
   type: "" as string,
@@ -43,42 +42,44 @@ const defaultFormFields = {
 };
 
 const MatchesNew = () => {
+  const { users, error } = useUsers();
+  const { guestUsers, error: guestError } = useGuestUsers();
   const [formFields, setFormFields] = useState<Match>(defaultFormFields);
   const [typeValue, setTypeValue] = useState<SelectOption | undefined>(
-    {} as SelectOption
+    {} as SelectOption,
   );
   const [homeValue, setHomeValue] = useState<SelectOption | undefined>(
-    {} as SelectOption
+    {} as SelectOption,
   );
   const [awayValue, setAwayValue] = useState<SelectOption | undefined>(
-    {} as SelectOption
+    {} as SelectOption,
   );
   const [genderValue, setGenderValue] = useState<SelectOption | undefined>(
-    {} as SelectOption
+    {} as SelectOption,
   );
   const [ageValue, setAgeValue] = useState<SelectOption | undefined>(
-    {} as SelectOption
+    {} as SelectOption,
   );
   const [venueValue, setVenueValue] = useState<SelectOption | undefined>(
-    {} as SelectOption
+    {} as SelectOption,
   );
   const [refereeValue, setRefereeValue] = useState<SelectOption | undefined>(
-    {} as SelectOption
+    {} as SelectOption,
   );
   const [assist1Value, setAssist1Value] = useState<SelectOption | undefined>(
-    {} as SelectOption
+    {} as SelectOption,
   );
   const [assist2Value, setAssist2Value] = useState<SelectOption | undefined>(
-    {} as SelectOption
+    {} as SelectOption,
   );
   const [controllersValue, setControllersValue] = useState<SelectOption[]>(
-    [] as SelectOption[]
+    [] as SelectOption[],
   );
   const [refereesValue, setRefereesValue] = useState<SelectOption[]>(
-    [] as SelectOption[]
+    [] as SelectOption[],
   );
   const [timeValue, setTimeValue] = useState<SelectOption | undefined>(
-    {} as SelectOption
+    {} as SelectOption,
   );
   const [dateValue, setDateValue] = useState<string | undefined>("" as string);
   const [selected, setSelected] = useState<Date | undefined>(undefined);
@@ -192,21 +193,21 @@ const MatchesNew = () => {
           throw new Error(`${l.email}`);
         }
         return l.email;
-      })
+      }),
     );
 
     // Collect failed emails for user feedback
     const failedEmails = results
       .filter(
         (result): result is PromiseRejectedResult =>
-          result.status === "rejected"
+          result.status === "rejected",
       )
       .map((result) => result.reason?.message || "Ismeretlen email");
 
     if (failedEmails.length > 0) {
       console.error(
         "Email küldés sikertelen a következő címekre:",
-        failedEmails
+        failedEmails,
       );
       toast.error(`Email küldés sikertelen: ${failedEmails.join(", ")}`);
     } else if (list.length > 0) {
@@ -278,27 +279,21 @@ const MatchesNew = () => {
     setIsSingleMatch(true);
   };
 
-  const getUsers = async () => {
-    try {
-      const guestUsersResult = await fetchGuestUsers();
-      const usersResult = await fetchUsers();
-      const guestUsersData = guestUsersResult.success
-        ? guestUsersResult.data
-        : [];
-      const usersData = usersResult.success ? usersResult.data : [];
-      setReferees([...usersData, ...guestUsersData]);
-    } catch (error) {
-      console.error(error);
-    }
-  };
-
   const toggleCreateNew = () => {
     setCreateNewOpen(!createNewOpen);
   };
 
   useEffect(() => {
-    getUsers();
-  }, []);
+    setReferees([...(users ?? []), ...(guestUsers ?? [])]);
+  }, [users, guestUsers]);
+
+  if (error || guestError) {
+    return (
+      <div className="text-red-500">
+        Hiba történt a játékvezető adatok betöltésekor.
+      </div>
+    );
+  }
 
   return (
     <>

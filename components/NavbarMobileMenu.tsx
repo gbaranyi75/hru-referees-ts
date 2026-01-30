@@ -1,6 +1,6 @@
 "use client";
 
-import React, { ReactNode, useRef, useEffect, useState } from "react";
+import React, { useRef, useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Variants, motion, useCycle, SVGMotionProps } from "framer-motion";
@@ -112,7 +112,7 @@ const useDimensions = (ref: React.RefObject<HTMLDivElement | null>) => {
   return dimensions;
 };
 
-const MenuItem = ({
+/* const MenuItem = ({
   className,
   children,
 }: {
@@ -126,7 +126,7 @@ const MenuItem = ({
       {children}
     </motion.li>
   );
-};
+}; */
 
 const MenuItemVariants = {
   open: {
