@@ -3,11 +3,12 @@ import User from "@/models/User";
 import { currentUser, clerkClient } from "@clerk/nextjs/server";
 import { sendEmail } from "@/lib/actions/sendEmail";
 import { createNotification } from "@/lib/actions/notificationActions";
+import type { User as ClerkUser } from "@clerk/nextjs/server";
 
 export const checkUser = async () => {
   try {
     await connectDB();
-    const user = await currentUser().catch((err) => {
+    const user = await currentUser().catch((err: unknown) => {
       console.error("Clerk belső hiba (lehet Safari süti):", err);
       return null;
     });
@@ -31,7 +32,7 @@ export const checkUser = async () => {
           ...user.publicMetadata,
           approvedWelcomeShown: true,
         },
-      }).catch((err) => {
+      }).catch((err: unknown) => {
         console.error("Hiba a welcome popup frissítésekor:", err);
       });
     }
@@ -49,14 +50,14 @@ export const checkUser = async () => {
 
     // Nem approved user -> nincs DB bejegyzés
     return null;
-  } catch (error) {
+  } catch (error: unknown) {
     console.error("Hiba a checkUser funkcióban:", error);
     return null;
   }
 };
 
 // === HELPER: Új user inicializálás ===
-async function initializeNewUser(user: any) {
+async function initializeNewUser(user: ClerkUser) {
   try {
     const clerk = await clerkClient();
 
@@ -77,7 +78,7 @@ async function initializeNewUser(user: any) {
 
     const adminEmails = adminUsers
       .map((u) => u.emailAddresses?.[0]?.emailAddress)
-      .filter(Boolean) as string[];
+      .filter((email): email is string => Boolean(email));
 
     const fullName =
       `${user.lastName} ${user.firstName}`.trim() ||
@@ -103,7 +104,7 @@ async function initializeNewUser(user: any) {
         })
       ),
     ]);
-  } catch (error) {
+  } catch (error: unknown) {
     console.error("Hiba az új user inicializálásakor:", error);
     // Ne dobjunk hibát, hogy a checkUser ne bukjon el
   }
