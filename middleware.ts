@@ -36,7 +36,6 @@ export default clerkMiddleware(async (auth, req) => {
   if (userId) {
     const approved = claims?.metadata?.approved === true;
 
-    // Csak a védett útvonalakat blokkoljuk a függőben lévő felhasználóknak
     if (!approved && isProtectedRoute(req)) {
       const url = new URL("/", req.url);
       return NextResponse.redirect(url);
@@ -46,9 +45,7 @@ export default clerkMiddleware(async (auth, req) => {
 
 export const config = {
   matcher: [
-    // Skip Next.js internals and all static files, unless found in search params
-    "/((?!_next|[^?]*\\.(?:html?|css|js(?!on)|jpe?g|webp|ttf|woff2?|ico|csv|docx?|xlsx?|zip|webmanifest)).*)",
-    // Always run for API routes
+    "/((?!_next|[^?]*\\.(?:html?|css|js(?!on)|jpe?g|webp|png|svg|ttf|woff2?|ico|csv|docx?|xlsx?|zip|webmanifest)).*)",
     "/(api|trpc)(.*)",
   ],
 };
