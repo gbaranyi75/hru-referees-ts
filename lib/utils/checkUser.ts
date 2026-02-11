@@ -27,14 +27,16 @@ export const checkUser = async () => {
       user.publicMetadata.approvedWelcomeShown !== true
     ) {
       const clerk = await clerkClient();
-      await clerk.users.updateUserMetadata(user.id, {
-        publicMetadata: {
-          ...user.publicMetadata,
-          approvedWelcomeShown: true,
-        },
-      }).catch((err: unknown) => {
-        console.error("Hiba a welcome popup frissítésekor:", err);
-      });
+      await clerk.users
+        .updateUserMetadata(user.id, {
+          publicMetadata: {
+            ...user.publicMetadata,
+            approvedWelcomeShown: true,
+          },
+        })
+        .catch((err: unknown) => {
+          console.error("Hiba a welcome popup frissítésekor:", err);
+        });
     }
 
     // === 3. DB USER FETCH (csak approved usereknek) ===
@@ -73,17 +75,17 @@ async function initializeNewUser(user: ClerkUser) {
     // Admin értesítések
     const { data: allUsers } = await clerk.users.getUserList();
     const adminUsers = allUsers.filter(
-      (u) => u.publicMetadata?.role === "admin"
+      (u) => u.publicMetadata?.role === "admin",
     );
 
     const adminEmails = adminUsers
       .map((u) => u.emailAddresses?.[0]?.emailAddress)
       .filter((email): email is string => Boolean(email));
 
-    const fullName =
-      `${user.lastName} ${user.firstName}`.trim() ||
-      user.username ||
-      "Ismeretlen felhasználó";
+    const nameParts = [user.lastName, user.firstName].filter(
+      (part) => typeof part === "string" && part.trim(),
+    ) as string[];
+    const fullName = nameParts.join(" ") || "Ismeretlen felhasználó";
 
     // Email + notification párhuzamosan
     await Promise.allSettled([
@@ -94,14 +96,14 @@ async function initializeNewUser(user: ClerkUser) {
           username: fullName,
           email: user.emailAddresses?.[0]?.emailAddress || "",
           subject: "Új regisztráció",
-        })
+        }),
       ),
       ...adminUsers.map((admin) =>
         createNotification({
           recipientClerkUserId: admin.id,
           type: "new_registration",
           message: `Új regisztrációs kérelem érkezett: ${fullName}`,
-        })
+        }),
       ),
     ]);
   } catch (error: unknown) {

@@ -36,7 +36,6 @@ export default clerkMiddleware(async (auth, req) => {
   if (userId) {
     const approved = claims?.metadata?.approved === true;
 
-    // Csak a védett útvonalakat blokkoljuk a függőben lévő felhasználóknak
     if (!approved && isProtectedRoute(req)) {
       const url = new URL("/", req.url);
       return NextResponse.redirect(url);
@@ -46,7 +45,6 @@ export default clerkMiddleware(async (auth, req) => {
 
 export const config = {
   matcher: [
-    // Hozzáadtam a png-t és az svg-t a kizáráshoz
     "/((?!_next|[^?]*\\.(?:html?|css|js(?!on)|jpe?g|webp|png|svg|ttf|woff2?|ico|csv|docx?|xlsx?|zip|webmanifest)).*)",
     "/(api|trpc)(.*)",
   ],
