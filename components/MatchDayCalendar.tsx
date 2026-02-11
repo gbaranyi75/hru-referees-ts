@@ -101,9 +101,9 @@ const MatchDayCalendar: React.FC<Props> = ({
               )}
             >
               <span className="flex text-left text-sm">{format(day, "d")}</span>
-              {todaysEvents.map((event) => {
+              {todaysEvents.map((event, eventIndex) => {
                 return (
-                  <div className="flex my-auto" key={new Date(event).getDate()}>
+                  <div className="flex my-auto" key={`${dateKey}-${eventIndex}`}>
                     <span className="text-[10px] w-full">
                       <button
                         type="button"

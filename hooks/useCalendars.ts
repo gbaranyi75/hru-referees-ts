@@ -16,9 +16,11 @@ export function useCalendars() {
       if (!result.success) {
         throw new Error(result.error);
       }
-      // Sort by first day descending
+      // Sort by first day descending (Safari-safe date parsing)
       return result.data.sort((a: Calendar, b: Calendar) => {
-        return new Date(b.days[0]).getTime() - new Date(a.days[0]).getTime();
+        const dateA = a.days?.[0] ? new Date(a.days[0]).getTime() : 0;
+        const dateB = b.days?.[0] ? new Date(b.days[0]).getTime() : 0;
+        return dateB - dateA;
       });
     },
   });
