@@ -110,6 +110,7 @@ const AddMatchDaysItem = ({
     return (
       <>
         <Skeleton className="w-full h-20 mb-3" />
+        <Skeleton className="w-full h-120" />
       </>
     );
 
