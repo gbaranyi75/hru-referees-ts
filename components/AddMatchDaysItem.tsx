@@ -38,7 +38,6 @@ const AddMatchDaysItem = ({
 
    // Update if initialSelection changes
   useEffect(() => {
-    console.log("initialSelection loaded:", initialSelection);
     if (initialSelection) {
       setSelectionId(initialSelection._id);
       setMyCurrentDates(initialSelection.selectedDays);
@@ -76,7 +75,6 @@ const AddMatchDaysItem = ({
   const handleSubmit = async () => {
     setLoading(true);
     try {
-      console.log("selectionId:", selectionId, "selectedDates:", selectedDates);
       if (selectionId) {
         const res = await updateUserSelection(selectionId, selectedDates);
         const success = res instanceof Error ? false : res.success;
@@ -112,6 +110,7 @@ const AddMatchDaysItem = ({
     return (
       <>
         <Skeleton className="w-full h-20 mb-3" />
+        <Skeleton className="w-full h-120" />
       </>
     );
 

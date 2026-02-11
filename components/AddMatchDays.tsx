@@ -28,18 +28,28 @@ const AddMatchDays = () => {
       setLoading(true);
       try {
         const profileResult = await fetchProfile();
-        if (profileResult.success) {
-          setProfile(profileResult.data);
+        if (!profileResult.success) {
+          console.error("Failed to fetch profile:", profileResult.error);
+          setLoading(false);
+          return;
         }
+        
+        setProfile(profileResult.data);
+        
         // Batch fetch: all selections at once (only if calendars and profile exist)
         if (
           calendars.length > 0 &&
-          profileResult.success &&
-          profileResult.data.clerkUserId
+          profileResult.data?.clerkUserId
         ) {
           const calendarIds = calendars
             .map((c) => c._id)
-            .filter((id): id is string => id !== undefined);
+            .filter((id): id is string => id !== undefined && id !== "");
+          
+          if (calendarIds.length === 0) {
+            setLoading(false);
+            return;
+          }
+          
           const selectionsResult = await fetchUserSelections(
             calendarIds,
             profileResult.data.clerkUserId,
@@ -49,9 +59,13 @@ const AddMatchDays = () => {
             // Create Map for fast lookup
             const selectionsMap = new Map<string, UserSelection>();
             selectionsResult.data.forEach((selection: UserSelection) => {
-              selectionsMap.set(selection.calendarId, selection);
+              if (selection.calendarId) {
+                selectionsMap.set(selection.calendarId, selection);
+              }
             });
             setSelections(selectionsMap);
+          } else {
+            console.error("Failed to fetch selections:", selectionsResult.error);
           }
         }
       } catch (error) {
