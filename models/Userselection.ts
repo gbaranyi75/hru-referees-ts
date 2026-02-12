@@ -26,8 +26,10 @@ const UserSelectionSchema = new Schema(
   },
   {
     timestamps: true,
-  }
+  },
 );
+
+UserSelectionSchema.index({ clerkUserId: 1, calendarId: 1 }, { unique: true });
 
 const UserSelection =
   models.UserSelection || model("UserSelection", UserSelectionSchema);
