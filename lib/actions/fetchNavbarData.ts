@@ -20,8 +20,7 @@ type NavbarData = {
  * - one place for Clerk auth resolution
  * - one place for first-login initialization / metadata sync
  * - one DB lookup for the navbar user payload
- *
- * Note: currently not used by any component yet.
+ * - optimized for the common case of logged-in users (DB lookup only for them, not for every visitor)
  */
 export const fetchNavbarData = async (): Promise<Result<NavbarData>> => {
   try {
