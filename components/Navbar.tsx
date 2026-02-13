@@ -2,13 +2,12 @@ import NavbarProfileLinks from "./NavbarProfileLinks";
 import NavbarLogo from "./NavbarLogo";
 import NavbarDesktopWelcomeMsg from "./NavbarDesktopWelcomeMsg";
 import NotificationDropdown from "./NotificationDropdown";
-import { checkUser } from "@/lib/utils/checkUser";
-import { fetchProfile } from "@/lib/actions/fetchProfile";
+import { fetchNavbarData } from "@/lib/actions/fetchNavbarData";
 
 const Navbar = async () => {
-  await checkUser();
-  const result = await fetchProfile();
+  const result = await fetchNavbarData();
   const loggedInUser = result.success ? result.data : null;
+  const safeUser = loggedInUser?.user ?? null;
 
   return (
     <nav className="sticky inset-x-0 top-0 z-30 w-full transition-all border-b border-gray-300 bg-white">
@@ -21,7 +20,7 @@ const Navbar = async () => {
             </div>
             {loggedInUser && (
               <div>
-                <NavbarDesktopWelcomeMsg loggedInUser={loggedInUser} />
+                <NavbarDesktopWelcomeMsg loggedInUser={safeUser} />
               </div>
             )}
           </div>
@@ -29,7 +28,7 @@ const Navbar = async () => {
             {loggedInUser?.clerkUserId && (
               <NotificationDropdown clerkUserId={loggedInUser.clerkUserId} />
             )}
-            <NavbarProfileLinks loggedInUser={loggedInUser} />
+            <NavbarProfileLinks loggedInUser={safeUser} />
           </div>
         </div>
       </div>
