@@ -6,8 +6,8 @@ import { fetchNavbarData } from "@/lib/actions/fetchNavbarData";
 
 const Navbar = async () => {
   const result = await fetchNavbarData();
-  const loggedInUser = result.success ? result.data : null;
-  const safeUser = loggedInUser?.user ?? null;
+  const navbarData = result.success ? result.data : null;
+  const safeUser = navbarData?.user ?? null;
 
   return (
     <nav className="sticky inset-x-0 top-0 z-30 w-full transition-all border-b border-gray-300 bg-white">
@@ -18,15 +18,15 @@ const Navbar = async () => {
             <div className="md:hidden">
               <NavbarLogo />
             </div>
-            {loggedInUser && (
+            {safeUser && (
               <div>
                 <NavbarDesktopWelcomeMsg loggedInUser={safeUser} />
               </div>
             )}
           </div>
           <div className="flex h-14 w-14 w-max items-center justify-center md:pr-12 space-x-5">
-            {loggedInUser?.clerkUserId && (
-              <NotificationDropdown clerkUserId={loggedInUser.clerkUserId} />
+            {navbarData?.clerkUserId && (
+              <NotificationDropdown clerkUserId={navbarData.clerkUserId} />
             )}
             <NavbarProfileLinks loggedInUser={safeUser} />
           </div>
@@ -35,4 +35,5 @@ const Navbar = async () => {
     </nav>
   );
 };
+
 export default Navbar;
