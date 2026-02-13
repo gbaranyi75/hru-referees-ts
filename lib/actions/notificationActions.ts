@@ -1,6 +1,6 @@
 "use server";
 import connectDB from "@/config/database";
-import Notification, { NotificationDocument } from "@/models/Notification";
+import Notification from "@/models/Notification";
 import {
   Result,
   Notification as NotificationType,
