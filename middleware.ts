@@ -22,13 +22,21 @@ export default clerkMiddleware(async (auth, req) => {
     [key: string]: unknown;
   };
 
-  if (isProtectedRoute(req)) await auth.protect();
+  const protectedRoute = isProtectedRoute(req);
+  const adminRoute = isAdminRoute(req);
+
+  // Skip auth claim resolution entirely for public routes.
+  if (!protectedRoute && !adminRoute) {
+    return;
+  }
+
+  if (protectedRoute) await auth.protect();
 
   const { userId, sessionClaims } = await auth();
   const claims = sessionClaims as ClerkSessionClaims;
 
   // Admin guard for dashboard routes
-  if (isAdminRoute(req) && claims?.metadata?.role !== "admin") {
+  if (adminRoute && claims?.metadata?.role !== "admin") {
     const url = new URL("/", req.url);
     return NextResponse.redirect(url);
   }
@@ -36,7 +44,7 @@ export default clerkMiddleware(async (auth, req) => {
   if (userId) {
     const approved = claims?.metadata?.approved === true;
 
-    if (!approved && isProtectedRoute(req)) {
+    if (!approved && protectedRoute) {
       const url = new URL("/", req.url);
       return NextResponse.redirect(url);
     }
