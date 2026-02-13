@@ -52,5 +52,5 @@ next-env.d.ts
 /.clerk/
 
 .github*
-.userStories
+.user-stories
 .qodo
