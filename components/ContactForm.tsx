@@ -1,11 +1,12 @@
 "use client";
 import React, { useState } from "react";
+import { toast } from "react-toastify";
+import { Icon } from "@iconify/react/dist/iconify.js";
 import InputField from "./common/InputField";
+import DisabledButton from "./common/DisabledButton";
 import PrimaryButton from "./common/PrimaryButton";
 import TextArea from "./common/TextArea";
 import Label from "./common/Label";
-import { Icon } from "@iconify/react/dist/iconify.js";
-import { toast } from "react-toastify";
 
 const CONTACTS = {
   phone: "+36304146068",
@@ -45,7 +46,7 @@ const ContactForm = () => {
         setMessage("");
         toast.success("Sikeres email küldés");
       } else {
-        toast.error(data.message || "Hiba történt az üzenet küldésekor.");
+        toast.error(data.error || "Hiba történt az üzenet küldésekor.");
       }
     } catch (err) {
       toast.error("Hiba történt az üzenet küldésekor.");
@@ -121,16 +122,19 @@ const ContactForm = () => {
             <div className="col-span-2 lg:col-span-1">
               <Label>Üzenet</Label>
               <TextArea
-                placeholder="Ide írhatod a üzeneted..."
+                placeholder="Ide írhatod az üzeneted..."
                 value={message}
                 onChange={(e) => setMessage(e.target.value)}
                 className="p-2 border border-gray-300 rounded"
               />
             </div>
-            <PrimaryButton
-              type="submit"
-              text={sending ? "Küldés..." : "Elküldöm"}
-            />
+            {sending && <DisabledButton text="Küldés..." />}
+            {!sending && (
+              <PrimaryButton
+                type="submit"
+                text="Elküldöm"
+              />
+            )}
           </form>
         </div>
       </div>
