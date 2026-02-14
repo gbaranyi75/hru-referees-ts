@@ -76,7 +76,7 @@ const MatchDayCalendar: React.FC<Props> = ({
     <div className="max-w-full border-t border-l border-gray-300 m-4 shadow-sm">
       <div className="grid grid-cols-7 text-center">
         {weeks.map((week) => (
-          <Cell key={week} className="text-xs bg-purple-100 font-bold py-2 border-r border-b border-gray-300 uppercase">
+          <Cell key={week} className="text-xs justify-center bg-purple-100 font-bold py-2 border-r border-b border-gray-300 uppercase">
             {week}
           </Cell>
         ))}
