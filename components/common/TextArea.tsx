@@ -8,6 +8,7 @@ interface TextareaProps {
   onChange?: (e: React.ChangeEvent<HTMLTextAreaElement>) => void; // Change handler
   className?: string; // Additional CSS classes
   disabled?: boolean; // Disabled state
+  required?: boolean; // Required field
   error?: boolean; // Error state
   hint?: string; // Hint text to display
 }
@@ -20,6 +21,7 @@ const TextArea: React.FC<TextareaProps> = ({
   onChange, // Callback for changes
   className = "", // Additional custom styles
   disabled = false, // Disabled state
+  required = false, // Required field
   error = false, // Error state
   hint = "", // Default hint text
 }) => {
@@ -41,6 +43,7 @@ const TextArea: React.FC<TextareaProps> = ({
         {...(value !== undefined ? { value } : { defaultValue })}
         onChange={onChange}
         disabled={disabled}
+        required={required}
         className={textareaClasses}
       />
       {hint && (

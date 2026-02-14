@@ -13,14 +13,28 @@ const RATE_LIMIT = {
 };
 
 // In-memory rate limiter store
+// Megjegyzés: Ez az in-memory megoldás nem osztott környezetre/serverless
+// architektúrára lett tervezve. Ilyen esetben használj tartós tárolót (pl. Redis).
 const rateLimitStore: Map<
   string,
   { count: number; resetTime: number }
 > = new Map();
 
+// Törli a lejárt rate limit bejegyzéseket, hogy elkerüljük a memória növekedését
+function cleanupRateLimitStore(now: number) {
+  for (const [ip, record] of rateLimitStore.entries()) {
+    if (now > record.resetTime) {
+      rateLimitStore.delete(ip);
+    }
+  }
+}
+
 // Rate limit ellenőrző függvény
 function checkRateLimit(ip: string): { allowed: boolean; message?: string } {
   const now = Date.now();
+  // Lejárt bejegyzések eltávolítása
+  cleanupRateLimitStore(now);
+
   const record = rateLimitStore.get(ip);
 
   // Ha nincs rekord vagy lejárt az időablak
@@ -41,7 +55,6 @@ function checkRateLimit(ip: string): { allowed: boolean; message?: string } {
     };
   }
 
-  // Erhöhe die Anzahl der Anfragen
   record.count += 1;
   return { allowed: true };
 }
