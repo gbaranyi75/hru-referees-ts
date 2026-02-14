@@ -9,7 +9,7 @@ import { toast } from "react-toastify";
 
 const CONTACTS = {
   phone: "+36304146068",
-  email: "rugbyreferre.hungary@gmail.com",
+  email: "rugbyreferee.hungary@gmail.com",
 };
 
 const ContactForm = () => {

@@ -13,7 +13,7 @@ export async function POST(request: NextRequest) {
       const { name, email, message } = body.contactForm;
       const { error } = await resend.emails.send({
         from: `Kapcsolatfelvétel <info@hru-referees.hu>`,
-        to: [process.env.CONTACT_EMAIL || "rugbyreferre.hungary@gmail.com"],
+        to: [process.env.CONTACT_EMAIL || "rugbyreferee.hungary@gmail.com"],
         subject: "Új kapcsolatfelvételi üzenet",
         react: ContactMessageEmail({ name, email, message }) as React.ReactNode,
       });
