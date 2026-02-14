@@ -64,7 +64,7 @@ const ContactForm = () => {
 
           <p className="mb-4 text-gray-600">
             Ha kérdésed van, vagy szeretnél többet megtudni a játékvezetésssel
-            kapcsolatban, ne habozz kapcsolatba lépni velünk!
+            kapcsolatban, hívj minket vagy küldj egy emailt!
           </p>
           <p className="mb-2 text-gray-600">Telefon:</p>
           <div className="flex items-center gap-3">
@@ -96,6 +96,7 @@ const ContactForm = () => {
           </div>
         </div>
         <div>
+          <div className="text-lg font-semibold mb-2">Kapcsolati űrlap</div>
           <form
             onSubmit={handleSubmit}
             className="flex flex-col space-y-4">
