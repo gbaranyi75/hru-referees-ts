@@ -17,9 +17,6 @@
     "isolatedModules": true,
     "jsx": "preserve",
     "plugins": [
-      /* {
-        "name": "next"
-      } */
       {
         "name": "next"
       }
@@ -29,7 +26,7 @@
         "./*"
       ]
     },
-    "incremental": false,
+    "incremental": true,
     "noEmit": true
   },
   "include": [
@@ -39,8 +36,7 @@
     "components/**/*.tsx",
     "lib/**/*.ts",
     "lib/**/*.tsx",
-    "next-env.d.ts",
-    ".next/types/**/*.ts"
+    "next-env.d.ts"
   ],
   "exclude": [
     "node_modules",
@@ -50,6 +46,6 @@
     "build",
     "out",
     ".vercel",
-    ".next/types/**/*.ts"
+    "output"
   ]
 }

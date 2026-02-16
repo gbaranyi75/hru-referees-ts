@@ -46,5 +46,17 @@
   {
     "id": 11,
     "name": "Bécs"
+  },
+  {
+    "id": 12,
+    "name": "Nádasdladány"
+  },
+  {
+    "id": 13,
+    "name": "Dánszentmiklós"
+  },
+  {
+    "id": 14,
+    "name": "Téglás"
   }
 ]
