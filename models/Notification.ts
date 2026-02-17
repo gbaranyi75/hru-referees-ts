@@ -1,4 +1,4 @@
-import { Schema, model, models, Model } from "mongoose";
+import { Schema, model, models } from "mongoose";
 export interface NotificationDocument extends Document {
   recipientClerkUserId: string;
   type: "match_assignment" | "match_removal" | "new_registration";
@@ -69,7 +69,6 @@ NotificationSchema.index(
   { recipientClerkUserId: 1, read: 1, createdAt: -1 }
 );
 
-
-const Notification = (models.Notification as Model<NotificationDocument>) || model<NotificationDocument>("Notification", NotificationSchema);
+const Notification = (models.Notification || model("Notification", NotificationSchema));
 
 export default Notification;
