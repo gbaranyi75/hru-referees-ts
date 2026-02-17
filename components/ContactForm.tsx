@@ -63,11 +63,11 @@ const ContactForm = () => {
   const [message, setMessage] = useState("");
   const [sending, setSending] = useState<boolean>(false);
 
-  const [status, setStatus] = useState<string | null>(null);
+ // const [status, setStatus] = useState<string | null>(null);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setStatus(null);
+    //setStatus(null);
 
     // Client-side validáció
     const validationError = validateForm(name, email, message);
@@ -78,17 +78,15 @@ const ContactForm = () => {
 
     try {
       setSending(true);
-      const res = await fetch("/api/send-email", {
+      const res = await fetch("/api/contact", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          contactForm: {
-            name,
-            email,
-            message,
-          },
+          name,
+          email,
+          message,
         }),
       });
       const data = await res.json();
@@ -101,6 +99,7 @@ const ContactForm = () => {
         toast.error(data.error || "Hiba történt az üzenet küldésekor.");
       }
     } catch (err) {
+      console.error(err);
       toast.error("Hiba történt az üzenet küldésekor.");
     } finally {
       setSending(false);

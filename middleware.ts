@@ -25,6 +25,12 @@ export default clerkMiddleware(async (auth, req) => {
   const protectedRoute = isProtectedRoute(req);
   const adminRoute = isAdminRoute(req);
 
+  // Kivétel: /api/contact route legyen publikus (contact form)
+  const pathname = new URL(req.url).pathname;
+  if (pathname === "/api/contact") {
+    return;
+  }
+
   // Skip auth claim resolution entirely for public routes.
   if (!protectedRoute && !adminRoute) {
     return;
