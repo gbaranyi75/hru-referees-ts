@@ -1,4 +1,4 @@
-import { Schema, model, models, Model } from "mongoose";
+import { Schema, model, models } from "mongoose";
 export interface NotificationDocument extends Document {
   recipientClerkUserId: string;
   type: "match_assignment" | "match_removal" | "new_registration";
