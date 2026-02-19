@@ -11,7 +11,7 @@ import { Result, ClerkUser as ClerkUserType } from "@/types/types";
 export const fetchClerkUserList = async (): Promise<Result<ClerkUserType[]>> => {
     try {
         const clerk = await clerkClient();
-        const { data: users } = await clerk.users.getUserList();
+        const { data: users } = await clerk.users.getUserList({ limit: 300 });
         return { success: true, data: convertToJSON(users) as ClerkUserType[] };
     } catch (error) {
         console.error('Error fetching users:', error);
