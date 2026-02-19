@@ -139,7 +139,7 @@ export default function RefereesTable() {
     return (
       <div className="text-red-500">Hiba történt az adatok betöltésekor.</div>
     );
-
+console.log("Referees:", referees, "Guest Referees:", guestReferees, "Auth Users:", authUsers);
   return (
     <div className="overflow-hidden rounded-xl border border-gray-200 bg-white">
       <div className="overflow-x-auto">
