@@ -94,6 +94,8 @@ const NextMatchInfoBox = () => {
                           "bg-orange-200 text-orange-700": m.type === "7s",
                           "bg-purple-200 text-purple-700":
                             m.type === "UP torna",
+                          "bg-purple-200 text-red-700":
+                            m.type === "Válogatott",
                         }
                       )}>
                       <h3 className="pr-1 text-sm">{m.age}</h3>

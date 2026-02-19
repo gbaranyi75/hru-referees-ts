@@ -1,4 +1,4 @@
-import { Schema, model, models, Model, SchemaDefinition } from "mongoose";
+import { Schema, model, models } from "mongoose";
 
 export interface IUser {
   email: string;

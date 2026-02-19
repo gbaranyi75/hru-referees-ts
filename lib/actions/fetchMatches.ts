@@ -3,11 +3,13 @@ import connectDB from "@/config/database";
 import Match from "@/models/Match";
 import { Result, Match as MatchType } from "@/types/types";
 import { handleAsyncOperation } from "@/lib/utils/errorHandling";
-import { Types } from "mongoose";
+import { Types, PipelineStage } from "mongoose";
 
 interface IFetchMatchesProps {
   limit?: number;
   skip?: number;
+  sortOrder?: 'asc' | 'desc';
+  dateFilter?: 'upcoming' | 'past';
 }
 
 /**
@@ -37,25 +39,112 @@ interface IFetchMatchesProps {
 export const fetchMatches = async ({
   limit = 0,
   skip = 0,
+  sortOrder = 'desc',
+  dateFilter,
 }: IFetchMatchesProps = {}): Promise<Result<MatchType[]>> => {
   return handleAsyncOperation(async () => {
     await connectDB();
-    const matches = await Match.find()
-      .sort({ date: -1 })
-      .limit(limit)
-      .skip(skip)
-      .lean()
-      .exec();
+    const pipeline: PipelineStage[] = [
+      {
+        $addFields: {
+          dateParsed: {
+            $ifNull: [
+              {
+                $dateFromString: {
+                  dateString: "$date",
+                  format: "%Y. %m. %d.",
+                  onError: null,
+                  onNull: null,
+                },
+              },
+              {
+                $dateFromString: {
+                  dateString: "$date",
+                  format: "%Y.%m.%d.",
+                  onError: null,
+                  onNull: null,
+                },
+              },
+            ],
+          },
+        },
+      },
+    ];
+
+    if (dateFilter) {
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      pipeline.push({
+        $match: {
+          dateParsed: dateFilter === 'upcoming' ? { $gte: today } : { $lt: today },
+        },
+      } as PipelineStage);
+    }
+
+    pipeline.push({
+      $sort: { dateParsed: sortOrder === 'asc' ? 1 : -1 },
+    } as PipelineStage);
+
+    if (skip > 0) {
+      pipeline.push({ $skip: skip } as PipelineStage);
+    }
+
+    if (limit > 0) {
+      pipeline.push({ $limit: limit } as PipelineStage);
+    }
+
+    const matches = await Match.aggregate(pipeline).exec();
 
     return JSON.parse(JSON.stringify(matches));
   }, 'Error fetching matches');
 };
 
-export const fetchMatchesCount = async (): Promise<number> => {
+export const fetchMatchesCount = async (
+  dateFilter?: 'upcoming' | 'past'
+): Promise<number> => {
   await connectDB();
   try {
-    const matchesCount = await Match.countDocuments({}).exec();
-    return matchesCount;
+    const pipeline: PipelineStage[] = [
+      {
+        $addFields: {
+          dateParsed: {
+            $ifNull: [
+              {
+                $dateFromString: {
+                  dateString: "$date",
+                  format: "%Y. %m. %d.",
+                  onError: null,
+                  onNull: null,
+                },
+              },
+              {
+                $dateFromString: {
+                  dateString: "$date",
+                  format: "%Y.%m.%d.",
+                  onError: null,
+                  onNull: null,
+                },
+              },
+            ],
+          },
+        },
+      },
+    ];
+
+    if (dateFilter) {
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      pipeline.push({
+        $match: {
+          dateParsed: dateFilter === 'upcoming' ? { $gte: today } : { $lt: today },
+        },
+      } as PipelineStage);
+    }
+
+    pipeline.push({ $count: "count" } as PipelineStage);
+
+    const result = await Match.aggregate(pipeline).exec();
+    return result?.[0]?.count ?? 0;
   } catch (error) {
     console.error(error);
     throw new Error(
