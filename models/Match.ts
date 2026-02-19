@@ -9,7 +9,7 @@ const MatchSchema = new Schema(
     type: { type: String, required: true },
     gender: { type: String, required: true },
     age: { type: String, required: true },
-    venue: { type: String, required: true },
+    venue: { type: String },
     referee: {
       username: {
         type: String,

@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState, useRef } from "react";
 import { Icon } from "@iconify/react";
+import clsx from "clsx";
 import { Modal } from "@/components/common/Modal";
 import Skeleton from "@/components/common/Skeleton";
 import {
@@ -12,33 +13,70 @@ import {
   TableBody,
 } from "@/components/common/DefaultTable";
 import { MatchListTableModal } from "./MatchListTableModal";
-import Pagination from "./Pagination";
+import { smoothScrollTo } from "@/lib/utils/scrollUtils";
 import { Match } from "@/types/types";
 import { useModal } from "@/hooks/useModal";
 import {
-  fetchMatches,
   fetchMatchesCount,
   fetchMatchById,
 } from "@/lib/actions/fetchMatches";
+import { useMatches } from "@/hooks/useMatches";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { Route } from "next";
 
-const ITEMS_PER_PAGE = 12;
+
+const LOAD_COUNT = 12;
 
 const MatchList = () => {
+  const [activeTab, setActiveTab] = useState<'upcoming' | 'past'>('upcoming');
   const searchParams = useSearchParams();
   const router = useRouter();
   const pathName = usePathname();
   const { isOpen, openModal, closeModal } = useModal();
   const [selectedMatch, setSelectedMatch] = useState<Match | null>(null);
-  const [matches, setMatches] = useState<Match[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
   const [count, setCount] = useState<number>(0);
-  const [page, setPage] = useState<number>(
-    searchParams.get("page") ? +searchParams.get("page")! : 1
-  );
+  const [isCountLoading, setIsCountLoading] = useState<boolean>(false);
+  const [allMatches, setAllMatches] = useState<Match[]>([]);
+  const [skip, setSkip] = useState(0);
+  // Dátum filter a tab alapján
   // Track which matchId from URL has been processed to avoid repeated opens
   const processedMatchIdRef = useRef<string | null>(null);
+  const loadMoreRef = useRef<HTMLDivElement>(null);
+  const shouldScrollRef = useRef(false);
+  // Smooth scroll a lista aljára load more után
+  const handleLoadMore = () => {
+    shouldScrollRef.current = true;
+    setSkip((prev) => prev + LOAD_COUNT);
+  };
+
+  // useMatches hook: skip/limit alapú lapozás
+  const { data: matches = [], isLoading: loading, isFetching } = useMatches({
+    limit: LOAD_COUNT,
+    skip,
+    sortOrder: 'asc',
+    dateFilter: activeTab, // 'upcoming' vagy 'past'
+  });
+  // Tab váltáskor reseteljük a skip-et és az allMatches-t
+  useEffect(() => {
+    setSkip(0);
+    setAllMatches([]);
+  }, [activeTab]);
+  // Új adag betöltésekor hozzáfűzzük az allMatches-hez
+  useEffect(() => {
+    if (matches.length > 0) {
+      setAllMatches((prev) => skip === 0 ? matches : [...prev, ...matches]);
+    }
+  }, [matches, skip]);
+
+  useEffect(() => {
+    if (!shouldScrollRef.current) return;
+    shouldScrollRef.current = false;
+    requestAnimationFrame(() => {
+      if (loadMoreRef.current) {
+        smoothScrollTo(loadMoreRef.current, 1200);
+      }
+    });
+  }, [allMatches]);
 
   const handleSelectedMatch = (match: Match) => {
     setSelectedMatch(match);
@@ -60,54 +98,42 @@ const MatchList = () => {
     router.replace(`${pathName}?${params}` as Route);
   };
 
-  const handlePageChange = (newPage: number) => {
-    const params = new URLSearchParams(searchParams.toString());
-    params.set("page", newPage.toString());
-    setPage(newPage);
-    router.replace(`${pathName}?${params}` as Route);
-  };
+  // Megnézi, hogy a kapott dátum a mai nap és a következő 7 nap között van-e (beleértve a mai napot is)
+  const isWithinNext7Days = (dateString: string): boolean => {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
 
-  const loadCount = async () => {
-    const countData = await fetchMatchesCount();
-    if (typeof countData === "number") {
-      setCount(countData);
-    }
-  };
+    const target = new Date(dateString);
+    target.setHours(0, 0, 0, 0);
 
+    const diff = target.getTime() - today.getTime();
+    return diff >= 0 && diff <= 7 * 24 * 60 * 60 * 1000;
+  }
+
+  // Lekérjük a meccsek számát tabonként
   useEffect(() => {
-    const loadMatches = async () => {
-      const totalPages = Math.ceil(count / ITEMS_PER_PAGE);
-      if (count > 0 && (page <= 0 || page > totalPages)) {
-        setPage(1);
-        const params = new URLSearchParams(window.location.search);
-        params.set("page", "1");
-        router.replace(`${pathName}?${params}` as Route);
+    const loadCount = async () => {
+      setIsCountLoading(true);
+      setCount(0);
+      try {
+        const countData = await fetchMatchesCount(activeTab);
+        if (typeof countData === "number") {
+          setCount(countData);
+        }
+      } finally {
+        setIsCountLoading(false);
       }
-      const result = await fetchMatches({
-        limit: ITEMS_PER_PAGE,
-        skip: page <= 0 || page > totalPages ? 0 : (page - 1) * ITEMS_PER_PAGE,
-      });
-      if (result.success) {
-        setMatches(result.data);
-      }
-      setLoading(false);
     };
-
-    loadMatches();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [page, count, pathName]);
-
-  useEffect(() => {
     loadCount();
-  }, []);
+  }, [activeTab]);
 
   // Open modal if matchId is in URL
   useEffect(() => {
     const matchId = searchParams.get("matchId");
-    
+
     // Skip if no matchId or already processed this matchId
     if (!matchId || processedMatchIdRef.current === matchId) return;
-    
+
     // Skip if still loading
     if (loading) return;
 
@@ -133,7 +159,7 @@ const MatchList = () => {
     fetchMatchDirectly();
   }, [searchParams, loading, matches, openModal]);
 
-  if (loading)
+  if (loading && allMatches.length === 0)
     return (
       <>
         {Array.from({ length: 10 }).map((_, i) => (
@@ -147,6 +173,21 @@ const MatchList = () => {
 
   return (
     <>
+      {/* Tabok */}
+      <div className="flex gap-2 mb-2">
+        <button
+          className={`px-4 py-2 rounded-md cursor-pointer bg-white border-b-2 ${activeTab === 'upcoming' ? 'border-blue-400 font-bold text-blue-400' : 'border-gray-200 text-gray-600'}`}
+          onClick={() => setActiveTab('upcoming')}
+        >
+          Következő mérkőzések
+        </button>
+        <button
+          className={`px-4 py-2 rounded-md cursor-pointer bg-white border-b-2 ${activeTab === 'past' ? 'border-blue-400 font-bold text-blue-400' : 'border-gray-200 text-gray-600'}`}
+          onClick={() => setActiveTab('past')}
+        >
+          Múltbeli mérkőzések
+        </button>
+      </div>
       <div className="overflow-hidden rounded-xl mt-1 border border-gray-200 bg-white">
         <div className="overflow-x-auto">
           <Table className="w-full table-auto">
@@ -204,11 +245,34 @@ const MatchList = () => {
 
             {/* Table Body */}
             <TableBody className="divide-y divide-gray-100">
-              {matches.map((m) => (
+              {allMatches.map((m) => (
                 <TableRow
                   key={m._id}
-                  className="text-center text-sm">
-                  <TableCell className="px-2 font-bold text-gray-600">
+                  className={clsx(
+                    "text-center text-sm",
+                    {
+                      // Kiemelés a következő 7 napban lévő meccsekre
+                      "bg-yellow-50 border-l-6 border-yellow-500 shadow-md":
+                        isWithinNext7Days(m.date),
+                    }
+                  )}
+                >
+                  <TableCell
+                    className={clsx("px-2 font-bold", {
+                      "text-blue-700": m.type === "NB I",
+                      "text-green-700": m.type === "Extra Liga",
+                      "text-orange-700": m.type === "7s",
+                      "text-purple-700": m.type === "UP torna",
+                      "text-red-700": m.type === "Válogatott",
+                      "text-gray-600": ![
+                        "NB I",
+                        "Extra Liga",
+                        "7s",
+                        "UP torna",
+                        "Válogatott",
+                      ].includes(m.type),
+                    })}
+                  >
                     {m.type}
                   </TableCell>
                   <TableCell className="px-2 font-normal text-gray-600">
@@ -220,10 +284,10 @@ const MatchList = () => {
                   <TableCell className="px-2 font-normal text-gray-600">
                     {m.venue}
                   </TableCell>
-                  <TableCell className="px-2 text-sm font-semibold text-red-600">
+                  <TableCell className="px-2 text-sm font-semibold text-red-400">
                     {m.home}
                   </TableCell>
-                  <TableCell className="px-2 text-sm font-semibold text-green-600">
+                  <TableCell className="px-2 text-sm font-semibold text-green-400">
                     {m.away}
                   </TableCell>
                   <TableCell className="px-2 font-normal text-gray-600">
@@ -248,12 +312,26 @@ const MatchList = () => {
             </TableBody>
           </Table>
         </div>
-        <Pagination
-          itemsCount={count}
-          itemsPerPage={ITEMS_PER_PAGE}
-          currentPage={page}
-          changePage={handlePageChange}
-        />
+        {/* Load More gomb, ha van még több meccs ÉS legalább egy teljes oldalnyi van betöltve */}
+        <div ref={loadMoreRef} className="flex justify-center py-4">
+          {isCountLoading ? (
+            <Skeleton className="w-40 h-10" />
+          ) : allMatches.length >= LOAD_COUNT && allMatches.length < count ? (
+            <button
+              className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+              onClick={handleLoadMore}
+              disabled={isFetching}
+            >
+              {isFetching
+                ? "Betöltés..."
+                : `További ${Math.min(LOAD_COUNT, count - allMatches.length)} mérkőzés betöltése`}
+            </button>
+          ) : (
+            <p className="text-gray-500 text-sm">
+              Összesen {count} mérkőzés
+            </p>
+          )}
+        </div>
       </div>
       <Modal
         isOpen={isOpen}

@@ -102,13 +102,12 @@ export const validateOfficialsDuplication = (
 export const validateRequiredFieldsSingleMatch = (
   match: Match
 ): ValidationResult => {
-  const { home, away, date, time, venue } = match;
+  const { home, away, date, time } = match;
   if (
     !home ||
     !away ||
     !date ||
-    !time ||
-    !venue
+    !time
   ) {
     return {
       isValid: false,
@@ -124,8 +123,8 @@ export const validateRequiredFieldsSingleMatch = (
 export const validateRequiredFieldsNonSingleMatch = (
   match: Match
 ): ValidationResult => {
-  const { date, time, venue } = match;
-  if (!date || !time || !venue) {
+  const { date, time } = match;
+  if (!date || !time) {
     return {
       isValid: false,
       error: ERROR_MESSAGES.REQUIRED_FIELDS,

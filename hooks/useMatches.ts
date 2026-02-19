@@ -5,11 +5,16 @@ import { fetchMatches } from "@/lib/actions/fetchMatches";
 /**
  * Hook for fetching matches using server action
  */
-export function useMatches() {
+export function useMatches(params?: {
+  limit?: number;
+  skip?: number;
+  sortOrder?: 'asc' | 'desc';
+  dateFilter?: 'upcoming' | 'past';
+}) {
   return useQuery({
-    queryKey: ["matches"],
+    queryKey: ["matches", params],
     queryFn: async () => {
-      const result = await fetchMatches();
+      const result = await fetchMatches(params);
       if (!result.success) {
         throw new Error(result.error);
       }
