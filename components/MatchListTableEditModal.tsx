@@ -9,7 +9,6 @@ import teams from "@/constants/matchData/teams.json";
 import types from "@/constants/matchData/matchTypes.json";
 import genderOptions from "@/constants/matchData/genderOptions.json";
 import ages from "@/constants/matchData/ages.json";
-import venues from "@/constants/matchData/venues.json";
 import OutlinedButton from "./common/OutlinedButton";
 import PrimaryButton from "./common/PrimaryButton";
 import Label from "./common/Label";

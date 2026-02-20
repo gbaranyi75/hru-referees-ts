@@ -73,7 +73,7 @@ export default function MediaEdit() {
     } catch (error) {
       console.error(error);
     }
-  }, [mediaName, videoUrl, toggleCreateNew]);
+  }, [mediaName, videoUrl, toggleCreateNew, resetToDefault]);
 
   const getMedia = async () => {
     try {

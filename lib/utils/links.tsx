@@ -130,9 +130,10 @@ export const ADMIN_LINKS: NavItem[] = [
       />
     ),
     subItems: [
-      { label: "Táblázat", path: "/dashboard/calendar" },
+      { label: "Táblázatok", path: "/dashboard/calendar" },
       { label: "Mérkőzések", path: "/dashboard/matches" },
       { label: "Játékvezetők", path: "/dashboard/referees" },
+      { label: "Csapatok", path: "/dashboard/teams" },
       { label: "Videók", path: "/dashboard/media" },
     ],
   },
