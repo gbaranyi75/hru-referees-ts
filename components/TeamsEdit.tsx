@@ -75,6 +75,7 @@ const TeamsEdit = () => {
 		setCity("");
 		setTeamLeader("");
 		setPhone("");
+		setEmail("");
 	};
 
 	const handleSave = useCallback(async () => {

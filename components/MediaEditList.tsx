@@ -36,6 +36,8 @@ export default function MediaEditList({
   const handleCancel = () => {
     setSelectedMedia(null);
     setIsEditMode(!isEditMode);
+    setName("");
+    setMediaUrl("");
   };
 
   const handleSave = useCallback(async () => {

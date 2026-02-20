@@ -3,7 +3,7 @@ import PageTitle from "@/components/common/PageTitle";
 import TeamsEdit from "@/components/TeamsEdit";
 export const dynamic = "force-dynamic";
 
-const MediaPage = async () => {
+const TeamsPage = async () => {
   return (
     <PageLayout>
       <PageTitle title="Csapatok szerkesztése" />
@@ -12,4 +12,4 @@ const MediaPage = async () => {
   );
 };
 
-export default MediaPage;
+export default TeamsPage;

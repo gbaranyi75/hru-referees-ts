@@ -39,6 +39,11 @@ export default function TeamsEditList({
   const handleCancel = () => {
     setSelectedTeam(null);
     setIsEditMode(!isEditMode);
+    setTeamName("");
+    setCity("");
+    setTeamLeader("");
+    setPhone("");
+    setEmail("");
   };
 
   const handleSave = useCallback(async () => {

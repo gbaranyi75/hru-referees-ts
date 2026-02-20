@@ -34,14 +34,42 @@ export const createTeam = async (teamData: TeamType): Promise<Result<TeamType>> 
 
 /**
  * Updates an existing team in the database
- * @param {string} teamId - The ID of the team to update
- * @param {TeamType} teamData - The data to update the team with
+ * @param {string|undefined} teamId - The ID of the team to update
+ * @param {string} name - The name of the team
+ * @param {string} [city] - The city of the team (optional)
+ * @param {string} [teamLeader] - The team leader's name (optional)
+ * @param {string} [phone] - The phone number (optional)
+ * @param {string} [email] - The email address (optional)
  * @returns {Promise<Result<TeamType>>} A promise that resolves to a result object containing the updated team or an error message
  */
-export const updateTeam = async (teamId: string | undefined, name: string, city: string, teamLeader?: string, phone?: string, email?: string): Promise<Result<TeamType>> => {
+export const updateTeam = async (teamId: string | undefined, name: string, city?: string, teamLeader?: string, phone?: string, email?: string): Promise<Result<TeamType>> => {
   return handleAsyncOperation(async () => {
+    if (!teamId) {
+      throw new Error("A csapat azonosító megadása kötelező");
+    }
     await connectDB();
-    const updatedTeam = await Team.findByIdAndUpdate(teamId, { name, city, teamLeader, phone, email }, { new: true }).lean();
+    
+    const updateData: Partial<Pick<TeamType, "name" | "city" | "teamLeader" | "phone" | "email">> = {};
+    if (name !== undefined) {
+      updateData.name = name;
+    }
+    if (city !== undefined) {
+      updateData.city = city;
+    }
+    if (teamLeader !== undefined) {
+      updateData.teamLeader = teamLeader;
+    }
+    if (phone !== undefined) {
+      updateData.phone = phone;
+    }
+    if (email !== undefined) {
+      updateData.email = email;
+    }
+    
+    const updatedTeam = await Team.findByIdAndUpdate(teamId, updateData, { new: true }).lean();
+    if (!updatedTeam) {
+      throw new Error("A csapat nem található");
+    }
     return JSON.parse(JSON.stringify(updatedTeam));
   });
 };
@@ -53,8 +81,14 @@ export const updateTeam = async (teamId: string | undefined, name: string, city:
  */
 export const deleteTeam = async (teamId: string): Promise<Result<TeamType>> => {
   return handleAsyncOperation(async () => {
+    if (!teamId) {
+      throw new Error("A csapat azonosító megadása kötelező");
+    }
     await connectDB();
     const deletedTeam = await Team.findByIdAndDelete(teamId).lean();
+    if (!deletedTeam) {
+      throw new Error("A csapat nem található vagy már törölve lett");
+    }
     return JSON.parse(JSON.stringify(deletedTeam));
   });
 };
