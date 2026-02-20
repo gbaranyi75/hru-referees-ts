@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useCallback, useEffect, useState } from "react";
+import { useCallback, useState } from "react";
 import Skeleton from "./common/Skeleton";
 import {
   Table,
@@ -43,7 +43,7 @@ export default function TeamsEditList({
 
   const handleSave = useCallback(async () => {
     try {
-      if (!teamName && !city && !teamLeader && !phone) return;
+      if (!teamName && !city && !teamLeader && !phone && !email) return;
       setLoading(true);
       const id = selectedTeam?._id;
       const name = teamName ? teamName : (selectedTeam?.name as string);
