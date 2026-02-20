@@ -13,6 +13,7 @@ import venues from "@/constants/matchData/venues.json";
 import OutlinedButton from "./common/OutlinedButton";
 import PrimaryButton from "./common/PrimaryButton";
 import Label from "./common/Label";
+import VenueAutocomplete from "./VenueAutocomplete";
 import { DayPicker, getDefaultClassNames } from "react-day-picker";
 import { hu } from "react-day-picker/locale";
 import "react-day-picker/dist/style.css";
@@ -69,10 +70,9 @@ const MatchItemEditModal = ({
     value: selectedMatch?.age,
     label: selectedMatch?.age,
   } as SelectOption);
-  const [venueValue, setVenueValue] = useState<SelectOption | undefined>({
-    value: selectedMatch?.venue,
-    label: selectedMatch?.venue,
-  } as SelectOption);
+  const [venueValue, setVenueValue] = useState<string>(
+    selectedMatch?.venue as string
+  );
   const [refereeValue, setRefereeValue] = useState<SelectOption | undefined>({
     value: selectedMatch?.referee?.username,
     label: selectedMatch?.referee?.username,
@@ -350,21 +350,18 @@ const MatchItemEditModal = ({
           </div>
           <div className="col-span-2 lg:col-span-1">
             <Label>Helyszín:</Label>
-            <Select
-              options={venues.map((n) => ({
-                label: n.name,
-                value: n.name,
-                name: "venue",
-              }))}
-              placeholder="--Válassz helyszínt--"
-              onChange={(o) => {
-                setVenueValue(o);
+            <VenueAutocomplete
+              value={venueValue || ""}
+              onChange={(venue) => {
+                setVenueValue(venue);
                 setFormFields({
                   ...formFields,
-                  venue: String(o === undefined ? "" : o?.value),
+                  venue: String(venue === undefined ? "" : venue),
                 });
               }}
-              value={venueValue}
+              placeholder="--Válassz helyszínt--"
+              name="venue"
+              id="venue-input"
             />
           </div>
           {isSingleMatch && (
