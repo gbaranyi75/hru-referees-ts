@@ -18,6 +18,7 @@ import venues from "@/constants/matchData/venues.json";
 import Select, { SelectOption } from "./common/Select";
 import OutlinedButton from "./common/OutlinedButton";
 import PrimaryButton from "./common/PrimaryButton";
+import VenueAutocomplete from "./VenueAutocomplete";
 import Label from "./common/Label";
 import DisabledButton from "./common/DisabledButton";
 import {
@@ -60,9 +61,7 @@ const MatchesNew = () => {
   const [ageValue, setAgeValue] = useState<SelectOption | undefined>(
     {} as SelectOption,
   );
-  const [venueValue, setVenueValue] = useState<SelectOption | undefined>(
-    {} as SelectOption,
-  );
+  const [venueValue, setVenueValue] = useState<string>("");
   const [refereeValue, setRefereeValue] = useState<SelectOption | undefined>(
     {} as SelectOption,
   );
@@ -269,7 +268,7 @@ const MatchesNew = () => {
     setAwayValue(undefined);
     setGenderValue(undefined);
     setAgeValue(undefined);
-    setVenueValue(undefined);
+    setVenueValue("");
     setRefereeValue(undefined);
     setAssist1Value(undefined);
     setAssist2Value(undefined);
@@ -384,21 +383,18 @@ const MatchesNew = () => {
                 </div>
                 <div className="col-span-2 lg:col-span-1">
                   <Label>Helyszín:</Label>
-                  <Select
-                    options={venues.map((n) => ({
-                      label: n.name,
-                      value: n.name,
-                      name: "venue",
-                    }))}
-                    placeholder="--Válassz helyszínt--"
-                    onChange={(o) => {
-                      setVenueValue(o);
+                  <VenueAutocomplete
+                    value={venueValue || ""}
+                    onChange={(venue) => {
+                      setVenueValue(venue);
                       setFormFields((prev) => ({
                         ...prev,
-                        venue: String(o === undefined ? "" : o?.value),
+                        venue: String(venue === undefined ? "" : venue),
                       }));
                     }}
-                    value={venueValue}
+                    placeholder="--Válassz helyszínt--"
+                    name="venue"
+                    id="venue-input"
                   />
                 </div>
                 {isSingleMatch && (
