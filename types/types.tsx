@@ -132,3 +132,12 @@ export type Notification = {
   createdAt: string;
   updatedAt: string;
 };
+
+export type Team = {
+  _id?: string;
+  name: string;
+  city?: string;
+  teamLeader?: string;
+  phone?: string;
+  email?: string;
+};

@@ -1,10 +1,7 @@
 "use client";
+
 import { useCallback, useState } from "react";
-import { toast } from "react-toastify";
-import { Icon } from "@iconify/react";
-import { Media } from "@/types/types";
-import Skeleton from "@/components/common/Skeleton";
-import Input from "@/components/common/InputField";
+import Skeleton from "./common/Skeleton";
 import {
   Table,
   TableHeader,
@@ -12,66 +9,98 @@ import {
   TableCell,
   TableBody,
 } from "@/components/common/DefaultTable";
-import { updateMedia } from "@/lib/actions/updateMedia";
-import { formatDate } from "@/lib/utils/formatUtils";
+import { Team } from "@/types/types";
+import { Icon } from "@iconify/react/dist/iconify.js";
+import Input from "./common/InputField";
+import { updateTeam } from "../lib/actions/teamActions";
+import { toast } from "react-toastify";
 
-export default function MediaEditList({
-  mediaList,
-  loadMediaAction,
+export default function TeamsEditList({
+  teamList,
+  loadTeamsAction,
 }: {
-  mediaList: Media[];
-  loadMediaAction: () => void;
+  teamList: Team[];
+  loadTeamsAction: () => void;
 }) {
   const [isEditMode, setIsEditMode] = useState<boolean>(false);
-  const [selectedMedia, setSelectedMedia] = useState<Media | null>(null);
-  const [name, setName] = useState<string>("");
-  const [mediaUrl, setMediaUrl] = useState<string>("");
+  const [selectedTeam, setSelectedTeam] = useState<Team | null>(null);
+  const [teamName, setTeamName] = useState<string>("");
+  const [city, setCity] = useState<string>("");
+  const [teamLeader, setTeamLeader] = useState<string>("");
+  const [phone, setPhone] = useState<string>("");
+  const [email, setEmail] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(false);
 
-  const handleSetToEdit = (media: Media) => {
-    setSelectedMedia(media);
+  const handleSetToEdit = (team: Team) => {
+    setSelectedTeam(team);
     setIsEditMode(!isEditMode);
   };
 
   const handleCancel = () => {
-    setSelectedMedia(null);
+    setSelectedTeam(null);
     setIsEditMode(!isEditMode);
-    setName("");
-    setMediaUrl("");
+    setTeamName("");
+    setCity("");
+    setTeamLeader("");
+    setPhone("");
+    setEmail("");
   };
 
   const handleSave = useCallback(async () => {
     try {
-      if (!name && !mediaUrl) return;
+      if (!teamName && !city && !teamLeader && !phone && !email) return;
       setLoading(true);
-      const mediaName = name ? name : (selectedMedia?.name as string);
-      const url = mediaUrl ? mediaUrl : (selectedMedia?.mediaUrl as string);
-      const id = selectedMedia?._id;
-      const response = await updateMedia(id, mediaName, url);
-
+      const id = selectedTeam?._id;
+      const name = teamName ? teamName : (selectedTeam?.name as string);
+      const cityValue = city ? city : (selectedTeam?.city as string);
+      const teamLeaderValue = teamLeader
+        ? teamLeader
+        : (selectedTeam?.teamLeader as string);
+      const phoneValue = phone ? phone : (selectedTeam?.phone as string);
+      const emailValue = email ? email : (selectedTeam?.email as string);
+      const response = await updateTeam(
+        id,
+        name,
+        cityValue,
+        teamLeaderValue,
+        phoneValue,
+        emailValue
+      );
+      console.log("response", response);
       const success = response instanceof Error ? false : response.success;
       if (success) {
         toast.success("Sikeres mentés");
-        loadMediaAction();
+        loadTeamsAction();
         setIsEditMode(false);
-        setSelectedMedia(null);
-        setName("");
-        setMediaUrl("");
+        setSelectedTeam(null);
+        setTeamName("");
+        setCity("");
+        setTeamLeader("");
+        setPhone("");
+        setEmail("");
       }
     } catch (error) {
       console.error(error);
     } finally {
       setLoading(false);
     }
-  }, [name, mediaUrl, loadMediaAction, selectedMedia?.name, selectedMedia?.mediaUrl, selectedMedia?._id]);
+  }, [
+    teamName,
+    city,
+    teamLeader,
+    phone,
+    email,
+    selectedTeam,
+    loadTeamsAction,
+  ]);
 
-  if (loading || !mediaList)
+  if (loading)
     return (
       <>
         {Array.from({ length: 10 }).map((_, i) => (
           <Skeleton
             key={i}
-            className="w-full h-18 mb-2"
+            className="w-full h-12 mb-2"
           />
         ))}
       </>
@@ -87,17 +116,27 @@ export default function MediaEditList({
               <TableCell
                 isHeader
                 className="px-2 py-4 font-bold text-gray-600 w-41.5">
-                Név
+                Csapat név
               </TableCell>
               <TableCell
                 isHeader
                 className="px-2 py-4 font-bold text-gray-600 w-41.5">
-                URL
+                Mérkőzések helyszíne
               </TableCell>
               <TableCell
                 isHeader
                 className="px-2 py-4 font-bold text-gray-600 w-41.5">
-                Létrehozva
+                Csapatvezető
+              </TableCell>
+              <TableCell
+                isHeader
+                className="px-2 py-4 font-bold text-gray-600 w-41.5">
+                Telefonszám
+              </TableCell>
+              <TableCell
+                isHeader
+                className="px-2 py-4 font-bold text-gray-600 w-41.5">
+                Email
               </TableCell>
               <TableCell
                 isHeader
@@ -109,39 +148,72 @@ export default function MediaEditList({
 
           {/* Table Body */}
           <TableBody className="divide-y divide-gray-100">
-            {mediaList.map((media) => (
+            {teamList.map((team) => (
               <TableRow
-                key={media._id}
+                key={team._id}
                 className="text-xs text-center h-16">
                 <TableCell className="px-2 text-sm font-normal text-gray-600">
-                  {isEditMode && selectedMedia?._id === media._id ? (
+                  {isEditMode && selectedTeam?._id === team._id ? (
                     <Input
                       type="text"
                       name="name"
-                      defaultValue={media.name}
-                      onChange={(e) => setName(e.target.value)}
+                      defaultValue={team.name}
+                      onChange={(e) => setTeamName(e.target.value)}
                     />
                   ) : (
-                    <span>{media.name}</span>
+                    <span>{team.name}</span>
                   )}
                 </TableCell>
                 <TableCell className="px-2 text-sm font-normal text-gray-600">
-                  {isEditMode && selectedMedia?._id === media._id ? (
+                  {isEditMode && selectedTeam?._id === team._id ? (
                     <Input
                       type="text"
-                      name="mediaUrl"
-                      defaultValue={media.mediaUrl}
-                      onChange={(e) => setMediaUrl(e.target.value)}
+                      name="city"
+                      defaultValue={team.city}
+                      onChange={(e) => setCity(e.target.value)}
                     />
                   ) : (
-                    <span>{media.mediaUrl}</span>
+                    <span>{team.city}</span>
                   )}
                 </TableCell>
                 <TableCell className="px-2 text-sm font-normal text-gray-600">
-                  <span>{formatDate(media.createdAt)}</span>
+                  {isEditMode && selectedTeam?._id === team._id ? (
+                    <Input
+                      type="text"
+                      name="teamLeader"
+                      defaultValue={team.teamLeader}
+                      onChange={(e) => setTeamLeader(e.target.value)}
+                    />
+                  ) : (
+                    <span>{team.teamLeader}</span>
+                  )}
+                </TableCell>
+                <TableCell className="px-2 text-sm font-normal text-gray-600">
+                  {isEditMode && selectedTeam?._id === team._id ? (
+                    <Input
+                      type="text"
+                      name="phone"
+                      defaultValue={team.phone}
+                      onChange={(e) => setPhone(e.target.value)}
+                    />
+                  ) : (
+                    <span>{team.phone}</span>
+                  )}
+                </TableCell>
+                <TableCell className="px-2 text-sm font-normal text-gray-600">
+                  {isEditMode && selectedTeam?._id === team._id ? (
+                    <Input
+                      type="text"
+                      name="email"
+                      defaultValue={team.email}
+                      onChange={(e) => setEmail(e.target.value)}
+                    />
+                  ) : (
+                    <span>{team.email}</span>
+                  )}
                 </TableCell>
                 <TableCell className="px-2 py-3 text-gray-500 text-theme-sm text-center">
-                  {isEditMode && selectedMedia?._id === media._id ? (
+                  {isEditMode && selectedTeam?._id === team._id ? (
                     <div className="flex gap-5 justify-center">
                       <button
                         onClick={handleCancel}
@@ -176,7 +248,7 @@ export default function MediaEditList({
                         </button>
                       ) : (
                         <button
-                          onClick={() => handleSetToEdit(media)}
+                          onClick={() => handleSetToEdit(team)}
                           className="text-sm cursor-pointer font-medium text-center text-blue-600 mx-auto hover:underline py-1 sm:py-1">
                           <Icon
                             icon="lucide:edit"
