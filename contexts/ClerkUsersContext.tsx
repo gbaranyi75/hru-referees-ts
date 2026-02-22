@@ -1,6 +1,9 @@
 "use client";
-import React, { createContext, useContext, useEffect, useState } from "react";
+
+import React, { createContext, useContext } from "react";
+
 import { fetchClerkUserList } from "@/lib/actions/fetchClerkUserList";
+import { useRefreshableResource } from "@/hooks/useRefreshableResource";
 import { ClerkUser } from "@/types/types";
 
 type ClerkUsersContextType = {
@@ -20,33 +23,21 @@ const ClerkUsersContext = createContext<ClerkUsersContextType>({
 export const ClerkUsersProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
-  const [clerkUsers, setClerkUsers] = useState<ClerkUser[] | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-
-  const refreshClerkUsers = async () => {
-    setLoading(true);
-    try {
-      const result = await fetchClerkUserList();
-      if (result.success) {
-        setClerkUsers(result.data);
-        setError(null);
-      } else {
-        setError("Nem sikerült lekérni a felhasználókat.");
-      }
-    } catch {
-      setError("Hiba történt a lekérés során.");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    refreshClerkUsers();
-  }, []);
+  const {
+    data: clerkUsers,
+    loading,
+    error,
+    refresh: refreshClerkUsers,
+  } = useRefreshableResource<ClerkUser[]>({
+    fetcher: fetchClerkUserList,
+    fetchErrorMessage: "Nem sikerült lekérni a felhasználókat.",
+    requestErrorMessage: "Hiba történt a lekérés során.",
+  });
 
   return (
-    <ClerkUsersContext.Provider value={{ clerkUsers, loading, error, refreshClerkUsers }}>
+    <ClerkUsersContext.Provider
+      value={{ clerkUsers, loading, error, refreshClerkUsers }}
+    >
       {children}
     </ClerkUsersContext.Provider>
   );
