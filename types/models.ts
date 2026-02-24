@@ -1,14 +1,3 @@
-import { JSX } from "react";
-
-export type NavItem = {
-  path?: string;
-  label: string;
-  type: string;
-  icon?: JSX.Element;
-  submenu?: boolean;
-  subItems?: { label: string; path?: string; href?: string }[];
-};
-
 export type UserSelection = {
   _id: string;
   calendarId: string;
@@ -65,13 +54,6 @@ export type Match = {
   time: string;
 };
 
-export type SendEmail = {
-  email: string;
-  username: string;
-  clerkUserId: string;
-  messageData?: Match;
-};
-
 export type Media = {
   _id?: string;
   name: string;
@@ -87,30 +69,6 @@ export type GuestUser = {
   isGuest: boolean;
 };
 
-export type ButtonInfo = {
-  text: string;
-  link: string;
-  backgroundColor: string;
-};
-
-export type CloudinaryUploadResult = {
-  info: {
-    secure_url: string;
-    public_id: string;
-  };
-};
-
-export type Result<T> =
-  | { success: true; data: T }
-  | { success: false; error: string };
-
-/**
- * Server Action response type
- * Unified type for all server actions to ensure consistency
- * @template T - The type of data returned on success
- */
-export type ActionResult<T> = Result<T>;
-
 export type ClerkUser = {
   id: string;
   emailAddresses: { emailAddress: string }[];
@@ -118,7 +76,10 @@ export type ClerkUser = {
   publicMetadata: Record<string, string | boolean | number>;
 };
 
-export type NotificationType = "match_assignment" | "match_removal" | "new_registration";
+export type NotificationType =
+  | "match_assignment"
+  | "match_removal"
+  | "new_registration";
 
 export type NotificationPosition =
   | "referee"

@@ -3,7 +3,7 @@ import { useState, useEffect, useCallback } from "react";
 import Select, { SelectOption } from "../common/Select";
 import { toast } from "react-toastify";
 import { Icon } from "@iconify/react";
-import { GuestUser, Match, MatchOfficial, User } from "@/types/types";
+import { GuestUser, Match, MatchOfficial, User } from "@/types/models";
 import { hours } from "@/constants/matchUtils";
 import teams from "@/constants/matchData/teams.json";
 import types from "@/constants/matchData/matchTypes.json";

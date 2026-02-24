@@ -12,7 +12,7 @@
  * Usage:
  * ```typescript
  * import { handleAsyncOperation } from "@/lib/utils/errorHandling";
- * import { ActionResult } from "@/types/types";
+ * import { ActionResult } from "@/types/models";
  * 
  * export const fetchUsers = async (): Promise<ActionResult<User[]>> => {
  *   return handleAsyncOperation(async () => {
@@ -24,7 +24,7 @@
  * ```
  */
 
-import { Result, ActionResult } from "@/types/types";
+import { ActionResult, Simplify } from "@/types/result";
 
 /**
  * Handles async operations with ActionResult type
@@ -54,7 +54,7 @@ export async function handleAsyncOperation<T>(
 ): Promise<ActionResult<T>> {
   try {
     const data = await operation();
-    return { success: true, data };
+    return { success: true, data: data as Simplify<T> };
   } catch (error) {
     console.error('Async operation error:', error);
     const message = errorMessage || 
@@ -79,7 +79,7 @@ export function handleSyncOperation<T>(
 ): ActionResult<T> {
   try {
     const data = operation();
-    return { success: true, data };
+    return { success: true, data: data as Simplify<T> };
   } catch (error) {
     console.error('Sync operation error:', error);
     const message = errorMessage || 
@@ -113,7 +113,7 @@ export function formatErrorMessage(error: unknown, defaultMessage: string): stri
  * @returns Successful ActionResult object
  */
 export function createSuccessResult<T>(data: T): ActionResult<T> {
-  return { success: true, data };
+  return { success: true, data: data as Simplify<T> };
 }
 
 /**

@@ -3,7 +3,7 @@ import connectDB from "@/config/database";
 import { currentUser } from "@clerk/nextjs/server";
 import Calendar from "@/models/Calendar";
 import { revalidatePath } from "next/cache";
-import { Result } from "@/types/types";
+import { Result } from "@/types/result";
 
 /**
  * Creates a new calendar in the database

@@ -1,6 +1,6 @@
 "use server";
 import { clerkClient } from "@clerk/nextjs/server";
-import { ActionResult } from "@/types/types";
+import { ActionResult } from "@/types/result";
 import { handleAsyncOperation } from "@/lib/utils/errorHandling";
 import { ErrorMessages, EmailSubjects } from "@/constants/messages";
 import { sendEmail } from "./sendEmail";

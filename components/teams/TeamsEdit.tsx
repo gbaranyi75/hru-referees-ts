@@ -9,7 +9,7 @@ import DisabledButton from "../common/DisabledButton";
 import OutlinedButton from "../common/OutlinedButton";
 import PrimaryButton from "../common/PrimaryButton";
 import Skeleton from "../common/Skeleton";
-import { Team } from "@/types/types";
+import { Team } from "@/types/models";
 import { createTeam, fetchTeams } from "../../lib/actions/teamActions";
 import TeamsEditList from "./TeamsEditList";
 

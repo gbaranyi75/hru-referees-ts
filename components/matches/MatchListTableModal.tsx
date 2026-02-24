@@ -1,4 +1,4 @@
-import { Match } from "@/types/types";
+import { Match } from "@/types/models";
 import OutlinedButton from "../common/OutlinedButton";
 import { MdAccessTime } from "react-icons/md";
 

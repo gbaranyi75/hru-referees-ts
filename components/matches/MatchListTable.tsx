@@ -14,7 +14,7 @@ import {
 } from "@/components/common/DefaultTable";
 import MatchListTableModal from "./MatchListTableModal";
 import { smoothScrollTo } from "@/lib/utils/scrollUtils";
-import { Match } from "@/types/types";
+import { Match } from "@/types/models";
 import { useModal } from "@/hooks/useModal";
 import {
   fetchMatchesCount,

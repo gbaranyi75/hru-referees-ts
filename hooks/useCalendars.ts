@@ -3,7 +3,7 @@ import { fetchCalendars } from "@/lib/actions/fetchCalendars";
 import { createNewCalendar } from "@/lib/actions/createCalendar";
 import { updateCalendar } from "@/lib/actions/updateCalendar";
 import { deleteCalendar } from "@/lib/actions/deleteCalendar";
-import { Calendar } from "@/types/types";
+import { Calendar } from "@/types/models";
 
 /**
  * Hook for fetching calendars using server action

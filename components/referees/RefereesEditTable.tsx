@@ -8,10 +8,10 @@ import {
   TableCell,
   TableHeader,
   TableRow,
-} from "@/components/common/DefaultTable";
+} from "../common/DefaultTable";
 import Skeleton from "../common/Skeleton";
 import Input from "../common/InputField";
-import { GuestUser, User, ClerkUser } from "@/types/types";
+import { GuestUser, User, ClerkUser } from "@/types/models";
 import { updateProfileStatusAndTitle } from "@/lib/actions/updateProfileStatusAndTitle";
 import { useUsers } from "@/contexts/UsersContext";
 import { useClerkUsers } from "@/contexts/ClerkUsersContext";

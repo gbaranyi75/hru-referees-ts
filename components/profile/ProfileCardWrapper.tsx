@@ -1,10 +1,10 @@
 "use client";
 
 import React, { useCallback, useEffect, useState } from "react";
-import ProfileInfoCard from "@/components/profile/ProfileInfoCard";
-import ProfileMetaCard from "@/components/profile/ProfileMetaCard";
+import ProfileInfoCard from "./ProfileInfoCard";
+import ProfileMetaCard from "./ProfileMetaCard";
 import { fetchProfile } from "@/lib/actions/fetchProfile";
-import { User } from "@/types/types";
+import { User } from "@/types/models";
 import Skeleton from "../common/Skeleton";
 import { toast } from "react-toastify";
 

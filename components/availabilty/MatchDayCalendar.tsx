@@ -12,7 +12,7 @@ import {
 } from "date-fns";
 import clsx from "clsx";
 import Cell from "../common/Cell";
-import { Calendar } from "@/types/types";
+import { Calendar } from "@/types/models";
 
 const weeks = ["Hétfő", "Kedd", "Szerda", "Csütörtök", "Péntek", "Szombat", "Vasárnap"];
 

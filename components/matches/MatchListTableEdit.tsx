@@ -12,7 +12,7 @@ import {
   TableBody,
 } from "@/components/common/DefaultTable";
 import OutlinedButton from "../common/OutlinedButton";
-import { GuestUser, Match, User } from "@/types/types";
+import { GuestUser, Match, User } from "@/types/models";
 import { useModal } from "@/hooks/useModal";
 import { useMatches } from "@/hooks/useMatches";
 import { useUsers } from "@/contexts/UsersContext";

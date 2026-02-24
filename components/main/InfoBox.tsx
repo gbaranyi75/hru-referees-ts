@@ -1,7 +1,12 @@
 import { Route } from "next";
 import Link from "next/link";
 import { ReactNode } from "react";
-import { ButtonInfo } from "@/types/types";
+
+interface ButtonInfo {
+  text: string;
+  link: string;
+  backgroundColor: string;
+};
 
 const InfoBox = ({
   heading,

@@ -2,7 +2,7 @@
 import connectDB from "@/config/database";
 import User from "@/models/User";
 import { clerkClient } from "@clerk/nextjs/server";
-import { ActionResult } from "@/types/types";
+import { ActionResult } from "@/types/result";
 import { handleAsyncOperation } from "@/lib/utils/errorHandling";
 import { ErrorMessages, SuccessMessages } from "@/constants/messages";
 import { sendEmail } from "./sendEmail";

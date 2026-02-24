@@ -11,7 +11,7 @@ import DeleteButton from "../common/DeleteButton";
 import Input from "@/components/common/InputField";
 import Label from "@/components/common/Label";
 import { useUpdateCalendar, useDeleteCalendar } from "@/hooks/useCalendars";
-import { Calendar } from "@/types/types";
+import { Calendar } from "@/types/models";
 
 const DATE_FORMAT_OPTIONS: Intl.DateTimeFormatOptions = {
   year: "numeric",

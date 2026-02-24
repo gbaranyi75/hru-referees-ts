@@ -15,7 +15,7 @@ import {
 import { MdOutlineExpandMore, MdOutlineExpandLess } from "react-icons/md";
 import checkedImage from "@/public/images/checked.png";
 import unCheckedImage from "@/public/images/unchecked.png";
-import { UserSelection, Calendar } from "@/types/types";
+import { UserSelection, Calendar } from "@/types/models";
 import OutlinedButton from "../common/OutlinedButton";
 
 const SpreadSheetItem = ({

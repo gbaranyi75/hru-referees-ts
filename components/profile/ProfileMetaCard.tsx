@@ -13,7 +13,7 @@ import OutlinedButton from "../common/OutlinedButton";
 import PrimaryButton from "../common/PrimaryButton";
 import { updateProfileData } from "@/lib/actions/updateProfileData";
 import { updateProfileImage } from "@/lib/actions/updateProfileImage";
-import { User } from "@/types/types";
+import { User } from "@/types/models";
 import type { CloudinaryUploadWidgetResults } from "next-cloudinary";
 import profileImage from "@/public/images/profile-image.png";
 

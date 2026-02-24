@@ -6,7 +6,7 @@ import Input from "../common/InputField";
 import Label from "../common/Label";
 import PrimaryButton from "../common/PrimaryButton";
 import OutlinedButton from "../common/OutlinedButton";
-import { Address, User } from "@/types/types";
+import { Address, User } from "@/types/models";
 import { updateProfileContactData } from "@/lib/actions/updateProfileContactData";
 import { toast } from "react-toastify";
 

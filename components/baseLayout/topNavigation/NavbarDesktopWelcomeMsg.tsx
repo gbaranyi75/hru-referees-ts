@@ -1,5 +1,5 @@
 import { SignedIn } from "@clerk/nextjs";
-import { User } from "@/types/types";
+import { User } from "@/types/models";
 
 const NavbarDesktopWelcomeMsg = ({loggedInUser}:{loggedInUser: User | null}) => {
   

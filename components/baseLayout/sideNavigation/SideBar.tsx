@@ -11,8 +11,8 @@ import {
   PROFILE_LINKS,
   SOCIAL_LINKS,
 } from "@/lib/utils/links";
-import { NavItem } from "@/types/types";
-import { NavbarLogo } from "../topNavigation";
+import { NavItem } from "@/types/ui";
+import NavbarLogo from "../topNavigation/NavbarLogo";
 import { Footer } from "../footer";
 
 const SideBar = ({ isAdmin }: { isAdmin: boolean }) => {

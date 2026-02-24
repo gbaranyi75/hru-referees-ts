@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import { useCalendars } from "@/hooks/useCalendars";
 import { useUsers } from "@/contexts/UsersContext";
 import { fetchAllUserSelections } from "@/lib/actions/fetchAllUserSelections";
-import { Calendar, User, UserSelection } from "@/types/types";
+import { Calendar, User, UserSelection } from "@/types/models";
 import SpreadSheetItem from "./SpreadSheetItem";
 import Skeleton from "../common/Skeleton";
 

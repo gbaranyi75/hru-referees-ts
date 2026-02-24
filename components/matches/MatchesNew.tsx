@@ -8,7 +8,7 @@ import { hu } from "react-day-picker/locale";
 import { useCreateMatch } from "@/hooks/useMatches";
 import { useUsers } from "@/contexts/UsersContext";
 import { useGuestUsers } from "@/contexts/GuestUsersContext";
-import { GuestUser, Match, MatchOfficial, User } from "@/types/types";
+import { GuestUser, Match, MatchOfficial, User } from "@/types/models";
 import { hours } from "@/constants/matchUtils";
 import teams from "@/constants/matchData/teams.json";
 import types from "@/constants/matchData/matchTypes.json";

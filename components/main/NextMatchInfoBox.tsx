@@ -5,7 +5,7 @@ import Link from "next/link";
 import { Route } from "next";
 import clsx from "clsx";
 import Skeleton from "../common/Skeleton";
-import { Match } from "@/types/types";
+import { Match } from "@/types/models";
 import { fetchMatches } from "@/lib/actions/fetchMatches";
 
 const NextMatchInfoBox = () => {

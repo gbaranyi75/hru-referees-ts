@@ -1,10 +1,10 @@
 "use server";
 import connectDB from "@/config/database";
 import Match from "@/models/Match";
-import { MatchOfficial, NotificationPosition, Match as MatchType } from "@/types/types";
+import { MatchOfficial, NotificationPosition, Match as MatchType } from "@/types/models";
 import { currentUser } from "@clerk/nextjs/server";
 import { revalidatePath } from "next/cache";
-import { Result } from "@/types/types";
+import { Result } from "@/types/result";
 import { createNotifications } from "./notificationActions";
 
 /**

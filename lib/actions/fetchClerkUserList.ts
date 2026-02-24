@@ -1,7 +1,8 @@
 'use server'
 import {  clerkClient } from "@clerk/nextjs/server";
 import { convertToJSON } from "../utils/convertToJSON";
-import { Result, ClerkUser as ClerkUserType } from "@/types/types";
+import { ClerkUser as ClerkUserType } from "@/types/models";
+import { Result } from "@/types/result";
 
 /**
  * Fetches list of Clerk users

@@ -2,7 +2,7 @@
 
 import React from "react";
 import { Resend } from "resend";
-import { ActionResult } from "@/types/types";
+import { ActionResult } from "@/types/result";
 import { handleAsyncOperation } from "@/lib/utils/errorHandling";
 import { ErrorMessages } from "@/constants/messages";
 import AdminNewUserEmail from "@/components/emails/AdminNewUserEmail";

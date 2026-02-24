@@ -1,6 +1,6 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import { User } from "@/types/types";
+import { User } from "@/types/models";
 import { useUsers } from "@/contexts/UsersContext";
 
 const CommitteeBoard = () => {

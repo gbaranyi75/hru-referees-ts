@@ -10,7 +10,7 @@ import {
   TableBody,
 } from "../common/DefaultTable";
 import Input from "../common/InputField";
-import { Team } from "@/types/types";
+import { Team } from "@/types/models";
 import { Icon } from "@iconify/react/dist/iconify.js";
 import { updateTeam } from "../../lib/actions/teamActions";
 import { toast } from "react-toastify";

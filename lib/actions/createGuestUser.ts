@@ -2,7 +2,8 @@
 
 import connectDB from "@/config/database";
 import GuestUser from "@/models/GuestUser";
-import { Address, Result } from "@/types/types";
+import { Address } from "@/types/models";
+import { Result } from "@/types/result";
 import { revalidatePath } from "next/cache";
 
 /**

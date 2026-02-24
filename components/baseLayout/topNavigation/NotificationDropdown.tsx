@@ -3,7 +3,7 @@ import Link from "next/link";
 import React, { useEffect, useState, useCallback } from "react";
 import { Dropdown } from "../../common/Dropdown";
 import { DropdownItem } from "../../common/DropdownItem";
-import { Notification } from "@/types/types";
+import { Notification } from "@/types/models";
 import {
   fetchNotifications,
   getUnreadNotificationCount,

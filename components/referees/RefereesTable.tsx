@@ -10,7 +10,7 @@ import {
 import { useModal } from "../../hooks/useModal";
 import { Modal } from "../common/Modal";
 import Image from "next/image";
-import { User } from "@/types/types";
+import { User } from "@/types/models";
 import profileImage from "@/public/images/profile-image.png";
 import OutlinedButton from "../common/OutlinedButton";
 import Link from "next/link";

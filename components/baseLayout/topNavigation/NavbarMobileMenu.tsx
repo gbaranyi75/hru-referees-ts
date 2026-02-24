@@ -10,7 +10,7 @@ import {
   PROFILE_LINKS,
   SOCIAL_LINKS,
 } from "@/lib/utils/links";
-import { NavItem } from "@/types/types";
+import { NavItem } from "@/types/ui";
 import { Icon } from "@iconify/react";
 import { useUser } from "@clerk/nextjs";
 import { Route } from "next";

@@ -7,7 +7,7 @@ import { Analytics } from "@vercel/analytics/next";
 import { Providers } from "./providers";
 import NavbarMobileMenuWrapper from "@/components/baseLayout/topNavigation/NavbarMobileMenuWrapper";
 import Navbar from "@/components/baseLayout/topNavigation/Navbar";
-import { SideBarWrapper } from "@/components/baseLayout/sideNavigation";
+import SideBarWrapper from "@/components/baseLayout/sideNavigation/SideBarWrapper";
 import ApprovalPopup from "@/components/ApprovalPopup";
 import ApprovedWelcomePopup from "@/components/ApprovedWelcomePopup";
 import AdminApprovalPopup from "@/components/AdminApprovalPopup";

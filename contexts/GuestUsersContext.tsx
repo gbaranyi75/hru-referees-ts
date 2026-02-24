@@ -1,7 +1,7 @@
 'use client';
 import React, { createContext, useContext, useEffect, useState } from "react";
 import { fetchGuestUsers } from "@/lib/actions/fetchGuestUser";
-import { GuestUser } from "@/types/types";
+import { GuestUser } from "@/types/models";
 
 type GuestUsersContextType = {
   guestUsers: GuestUser[] | null;

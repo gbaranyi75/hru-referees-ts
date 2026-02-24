@@ -1,6 +1,6 @@
 "use server";
 
-import { Result } from "@/types/types";
+import { Result } from "@/types/result";
 
 interface GeoNamesResult {
   geonameId: number;

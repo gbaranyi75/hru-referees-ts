@@ -1,7 +1,7 @@
 "use client";
 import React, { createContext, useContext, useEffect, useState } from "react";
 import { fetchClerkUserList } from "@/lib/actions/fetchClerkUserList";
-import { ClerkUser } from "@/types/types";
+import { ClerkUser } from "@/types/models";
 
 type ClerkUsersContextType = {
   clerkUsers: ClerkUser[] | null;

@@ -11,7 +11,7 @@ import Skeleton from "../common/Skeleton";
 import PrimaryButton from "../common/PrimaryButton";
 import { createNewMediaLink } from "@/lib/actions/createNewMediaLink";
 import { fetchMedia } from "@/lib/actions/fetchMedia";
-import { Media } from "@/types/types";
+import { Media } from "@/types/models";
 
 export default function MediaEdit() {
   const [loading, setLoading] = useState<boolean>(true);

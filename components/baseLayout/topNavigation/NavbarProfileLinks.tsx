@@ -14,7 +14,7 @@ import { Dropdown } from "../../common/Dropdown";
 import Link from "next/link";
 import { DropdownItem } from "../../common/DropdownItem";
 import profileImage from "@/public/images/profile-image.png";
-import { User } from "@/types/types";
+import { User } from "@/types/models";
 
 const NavbarProfileLinks = ({
   loggedInUser,
@@ -70,7 +70,7 @@ const NavbarProfileLinks = ({
         <div className="relative">
           <button
             onClick={toggleDropdown}
-            className="flex items-center text-gray-700 dropdown-toggle items-center">
+            className="flex text-gray-700 dropdown-toggle items-center">
             <span className="mr-3 overflow-hidden rounded-full h-10 w-10 items-center">
               <Image
                 src={loggedInUser?.image || profileImage}

@@ -2,7 +2,8 @@
 
 import connectDB from "@/config/database";
 import Team from "@/models/Team";
-import { Result, Team as TeamType } from "@/types/types";
+import { Team as TeamType } from "@/types/models";
+import { Result } from "@/types/result";
 import { handleAsyncOperation } from "@/lib/utils/errorHandling";
 import { ErrorMessages } from "@/constants/messages";
 

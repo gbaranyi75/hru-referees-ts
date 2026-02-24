@@ -1,8 +1,8 @@
 'use server'
 import connectDB from "@/config/database";
 import User from "@/models/User";
-import { Result } from "@/types/types";
-import { User as UserType } from "@/types/types";
+import { Result } from "@/types/result";
+import { User as UserType } from "@/types/models";
 import { handleAsyncOperation } from "@/lib/utils/errorHandling";
 
 /**

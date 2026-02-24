@@ -10,7 +10,7 @@ import {
   TableCell,
   TableBody,
 } from "@/components/common/DefaultTable";
-import { Media } from "@/types/types";
+import { Media } from "@/types/models";
 import { useModal } from "@/hooks/useModal";
 import { Icon } from "@iconify/react";
 import { fetchMedia } from "@/lib/actions/fetchMedia";
@@ -22,7 +22,6 @@ import EmbeddedMedia from "./EmbeddedMedia";
 const YOUTUBE_BASE_URL = "https://www.youtube.com/embed/";
 
 const VideoList = () => {
-  //const [selectedMedia, setSelectedMedia] = useState<Media | null>(null);
   const { isOpen, openModal, closeModal } = useModal();
   const [loading, setLoading] = useState<boolean>(true);
   const [mediaList, setMediaList] = useState<Media[]>([]);

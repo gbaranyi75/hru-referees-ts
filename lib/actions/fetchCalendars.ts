@@ -2,7 +2,8 @@
 
 import connectDB from "@/config/database";
 import Calendar from "@/models/Calendar";
-import { Result, Calendar as CalendarType } from "@/types/types";
+import { Calendar as CalendarType } from "@/types/models";
+import { Result } from "@/types/result";
 import { handleAsyncOperation } from "@/lib/utils/errorHandling";
 
 /**

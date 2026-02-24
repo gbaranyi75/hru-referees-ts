@@ -11,7 +11,7 @@ import Checkbox from "../common/Checkbox";
 import RefereesEditTable from "./RefereesEditTable";
 import { createGuestUser } from "@/lib/actions/createGuestUser";
 import { fetchGuestUsers } from "@/lib/actions/fetchGuestUser";
-import { Address } from "@/types/types";
+import { Address } from "@/types/models";
 
 const RefereesEdit = () => {
   const [editModeOpen, setEditModeOpen] = useState<boolean>(false);

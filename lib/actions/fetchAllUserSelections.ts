@@ -2,7 +2,8 @@
 
 import connectDB from "@/config/database";
 import UserSelection from "@/models/Userselection";
-import { Result, UserSelection as UserSelectionType } from "@/types/types";
+import { UserSelection as UserSelectionType } from "@/types/models";
+import { Result } from "@/types/result";
 
 /**
  * Fetches all user selections for the given calendar IDs.
