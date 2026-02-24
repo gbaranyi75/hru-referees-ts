@@ -17,14 +17,14 @@
  * ```
  */
 
-import { Result } from "@/types/types";
+import { Result, Simplify } from "@/types/result";
 
 /**
  * Checks if Result type is successful
  * @param result - The Result object to check
  * @returns true if successful (success: true), otherwise false
  */
-export function isSuccess<T>(result: Result<T>): result is { success: true; data: T } {
+export function isSuccess<T>(result: Result<T>): result is { success: true; data: Simplify<T> } {
   return result.success === true;
 }
 

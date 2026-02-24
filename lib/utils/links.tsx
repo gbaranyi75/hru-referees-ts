@@ -1,7 +1,7 @@
 "use client";
 
 import { Icon } from "@iconify/react";
-import { NavItem } from "@/types/types";
+import { NavItem } from "@/types/ui";
 
 export const NAV_LINKS: NavItem[] = [
   {

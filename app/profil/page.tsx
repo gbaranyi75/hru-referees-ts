@@ -1,4 +1,4 @@
-import ProfileCardWrapper from "@/components/ProfileCardWrapper";
+import { ProfileCardWrapper } from "@/components/profile";
 import PageLayout from "@/components/common/PageLayout";
 import PageTitle from "@/components/common/PageTitle";
 

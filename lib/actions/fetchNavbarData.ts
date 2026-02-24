@@ -6,7 +6,8 @@ import { currentUser, clerkClient } from "@clerk/nextjs/server";
 import type { User as ClerkUser } from "@clerk/nextjs/server";
 import { sendEmail } from "@/lib/actions/sendEmail";
 import { createNotification } from "@/lib/actions/notificationActions";
-import { Result, User as UserType } from "@/types/types";
+import { User as UserType } from "@/types/models";
+import { Result } from "@/types/result";
 
 type NavbarData = {
   user: UserType | null;

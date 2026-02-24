@@ -1,7 +1,8 @@
 'use server'
 import connectDB from "@/config/database";
 import Media from "@/models/Media";
-import { Result, Media as MediaType } from "@/types/types";
+import { Media as MediaType } from "@/types/models";
+import { Result } from "@/types/result";
 import { handleAsyncOperation } from "@/lib/utils/errorHandling";
 
 /**

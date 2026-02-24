@@ -1,4 +1,4 @@
-import AddMatchDays from "@/components/AddMatchDays";
+import { AddMatchDays } from "@/components/availabilty";
 import PageLayout from "@/components/common/PageLayout";
 import PageTitle from "@/components/common/PageTitle";
 export const dynamic = "force-dynamic";

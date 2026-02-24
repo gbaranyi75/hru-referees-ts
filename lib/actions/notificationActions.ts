@@ -2,10 +2,10 @@
 import connectDB from "@/config/database";
 import Notification from "@/models/Notification";
 import {
-  Result,
   Notification as NotificationType,
   NotificationPosition,
-} from "@/types/types";
+} from "@/types/models";
+import { Result } from "@/types/result";
 import { handleAsyncOperation } from "@/lib/utils/errorHandling";
 import { currentUser } from "@clerk/nextjs/server";
 
@@ -24,7 +24,7 @@ interface CreateNotificationParams {
  * @returns Result with the created notification or error
  */
 export const createNotification = async (
-  params: CreateNotificationParams
+  params: CreateNotificationParams,
 ): Promise<Result<NotificationType>> => {
   return handleAsyncOperation(async () => {
     await connectDB();
@@ -40,12 +40,14 @@ export const createNotification = async (
  * @returns Result with the created notifications or error
  */
 export const createNotifications = async (
-  notifications: CreateNotificationParams[]
+  notifications: CreateNotificationParams[],
 ): Promise<Result<NotificationType[]>> => {
   return handleAsyncOperation(async () => {
     await connectDB();
     const createdNotifications = await Notification.insertMany(notifications);
-    return JSON.parse(JSON.stringify(createdNotifications)) as NotificationType[];
+    return JSON.parse(
+      JSON.stringify(createdNotifications),
+    ) as NotificationType[];
   }, "Error creating notifications");
 };
 
@@ -60,7 +62,7 @@ export const createNotifications = async (
 export const fetchNotifications = async (
   clerkUserId: string,
   limit: number = 20,
-  unreadOnly: boolean = false
+  unreadOnly: boolean = false,
 ): Promise<Result<NotificationType[]>> => {
   return handleAsyncOperation(async () => {
     const user = await currentUser();
@@ -90,7 +92,7 @@ export const fetchNotifications = async (
  * @returns Result with the count or error
  */
 export const getUnreadNotificationCount = async (
-  clerkUserId: string
+  clerkUserId: string,
 ): Promise<Result<number>> => {
   return handleAsyncOperation(async () => {
     const user = await currentUser();
@@ -115,7 +117,7 @@ export const getUnreadNotificationCount = async (
  * @returns Result with success status or error
  */
 export const markNotificationAsRead = async (
-  notificationId: string
+  notificationId: string,
 ): Promise<Result<boolean>> => {
   return handleAsyncOperation(async () => {
     const user = await currentUser();
@@ -126,7 +128,9 @@ export const markNotificationAsRead = async (
     await connectDB();
 
     // Verify the notification belongs to the current user
-    const notification = await Notification.findById(notificationId).lean().exec() as { recipientClerkUserId?: string } | null;
+    const notification = (await Notification.findById(notificationId)
+      .lean()
+      .exec()) as { recipientClerkUserId?: string } | null;
     if (!notification || notification.recipientClerkUserId !== user.id) {
       throw new Error("Unauthorized");
     }
@@ -147,7 +151,7 @@ export const markNotificationAsRead = async (
  * @returns Result with success status or error
  */
 export const markAllNotificationsAsRead = async (
-  clerkUserId: string
+  clerkUserId: string,
 ): Promise<Result<boolean>> => {
   return handleAsyncOperation(async () => {
     const user = await currentUser();
@@ -158,7 +162,7 @@ export const markAllNotificationsAsRead = async (
     await connectDB();
     await Notification.updateMany(
       { recipientClerkUserId: clerkUserId, read: false },
-      { read: true, readAt: new Date() }
+      { read: true, readAt: new Date() },
     ).exec();
 
     return true;
@@ -173,7 +177,7 @@ export const markAllNotificationsAsRead = async (
  * @returns Result with the number of deleted notifications or error
  */
 export const deleteOldNotifications = async (
-  daysOld: number = 90
+  daysOld: number = 90,
 ): Promise<Result<number>> => {
   return handleAsyncOperation(async () => {
     await connectDB();

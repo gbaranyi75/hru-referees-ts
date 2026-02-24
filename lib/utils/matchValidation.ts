@@ -1,4 +1,4 @@
-import { Match, MatchOfficial } from "@/types/types";
+import { Match, MatchOfficial } from "@/types/models";
 
 /**
  * Validation result type

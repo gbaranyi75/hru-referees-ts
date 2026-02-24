@@ -1,26 +1,31 @@
 "use server";
 import { clerkClient } from "@clerk/nextjs/server";
+import { ActionResult } from "@/types/result";
+import { handleAsyncOperation } from "@/lib/utils/errorHandling";
+import { ErrorMessages, EmailSubjects } from "@/constants/messages";
 import { sendEmail } from "./sendEmail";
 
-export type RejectUserResult = {
-  success: boolean;
-  error?: string;
-};
-
-export async function rejectUser(userId: string): Promise<RejectUserResult> {
-  try {
-    console.log(userId)
+/**
+ * Rejects a user registration
+ * 
+ * Sends rejection email and deletes user from Clerk.
+ * 
+ * @param userId - The Clerk user ID to reject
+ * @returns ActionResult<null> - Success or error result
+ */
+export async function rejectUser(userId: string): Promise<ActionResult<null>> {
+  return handleAsyncOperation(async () => {
     const clerk = await clerkClient();
     const user = await clerk.users.getUser(userId);
+    
     await sendEmail({
       to: user.emailAddresses?.[0]?.emailAddress ?? "",
       type: "user-rejected",
       username: `${user.lastName} ${user.firstName}`,
-      subject: "Regisztráció elutasítva",
+      subject: EmailSubjects.REGISTRATION_REJECTED,
     });
+    
     await clerk.users.deleteUser(userId);
-    return { success: true };
-  } catch (error) {
-    return { success: false, error: (error as Error).message };
-  }
+    return null;
+  }, ErrorMessages.USER.REJECTION_FAILED);
 }

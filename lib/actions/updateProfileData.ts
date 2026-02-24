@@ -4,7 +4,7 @@ import connectDB from "@/config/database";
 import User from "@/models/User";
 import { revalidatePath } from "next/cache";
 import { currentUser } from "@clerk/nextjs/server";
-import { Result } from "@/types/types";
+import { Result } from "@/types/result";
 import { profileUpdateSchema } from "../profileSchema";
 
 export const updateProfileData = async (

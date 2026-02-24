@@ -3,7 +3,7 @@
 import connectDB from "@/config/database";
 import User from "@/models/User";
 import { currentUser } from "@clerk/nextjs/server";
-import { Result } from "@/types/types";
+import { Result } from "@/types/result";
 
 /**
  * Fetches user profile image

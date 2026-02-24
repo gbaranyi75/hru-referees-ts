@@ -4,7 +4,8 @@ import connectDB from "@/config/database";
 import User from "@/models/User";
 import { revalidatePath } from "next/cache";
 import { currentUser } from "@clerk/nextjs/server";
-import { Address, Result } from "@/types/types";
+import { Result } from "@/types/result";
+import { Address } from "@/types/models";
 
 /**
  * Updates user profile contact data

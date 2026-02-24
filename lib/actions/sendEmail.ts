@@ -2,6 +2,9 @@
 
 import React from "react";
 import { Resend } from "resend";
+import { ActionResult } from "@/types/result";
+import { handleAsyncOperation } from "@/lib/utils/errorHandling";
+import { ErrorMessages } from "@/constants/messages";
 import AdminNewUserEmail from "@/components/emails/AdminNewUserEmail";
 import UserApprovedEmail from "@/components/emails/UserApprovedEmail";
 import UserRejectedEmail from "@/components/emails/UserRejectedEmail";
@@ -18,14 +21,22 @@ interface SendEmailParams {
   email?: string;
 }
 
-export async function sendEmail({
-  to,
-  type,
-  subject,
-  username,
-  email,
-}: SendEmailParams): Promise<{ success: boolean; error?: string }> {
-  try {
+/**
+ * Sends an email using the Resend service
+ * 
+ * @param params - Email parameters
+ * @param params.to - Recipient email address
+ * @param params.type - Email template type
+ * @param params.subject - Email subject (optional)
+ * @param params.username - Username for email content (optional)
+ * @param params.email - Email for content (optional)
+ * @returns ActionResult<null> - Success or error result
+ */
+export async function sendEmail(
+  params: SendEmailParams
+): Promise<ActionResult<null>> {
+  return handleAsyncOperation(async () => {
+    const { to, type, subject, username, email } = params;
     let reactComponent: React.ReactElement;
 
     switch (type) {
@@ -46,7 +57,7 @@ export async function sendEmail({
         });
         break;
       default:
-        throw new Error("Ismeretlen email típus");
+        throw new Error(ErrorMessages.EMAIL.UNKNOWN_TYPE);
     }
 
     await resend.emails.send({
@@ -56,12 +67,6 @@ export async function sendEmail({
       react: reactComponent,
     });
 
-    return { success: true };
-  } catch (error) {
-    console.error("Email küldési hiba:", error);
-    return {
-      success: false,
-      error: error instanceof Error ? error.message : String(error),
-    };
-  }
+    return null;
+  }, ErrorMessages.EMAIL.SEND_FAILED);
 }

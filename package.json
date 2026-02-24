@@ -16,7 +16,7 @@
     "@aws-sdk/s3-presigned-post": "^3.892.0",
     "@aws-sdk/s3-request-presigner": "^3.891.0",
     "@clerk/localizations": "^3.21.2",
-    "@clerk/nextjs": "^6.36.2",
+    "@clerk/nextjs": "^6.38.2",
     "@google-cloud/storage": "^7.17.1",
     "@iconify/react": "^5.0.2",
     "@react-email/components": "^1.0.7",

@@ -1,4 +1,4 @@
-import SpreadSheet from "@/components/SpreadSheet";
+import { SpreadSheet } from "@/components/spreadsheet";
 import PageLayout from "@/components/common/PageLayout";
 import PageTitle from "@/components/common/PageTitle";
 

@@ -1,5 +1,5 @@
 import { Suspense } from "react";
-import MatchListTable from "@/components/MatchListTable";
+import { MatchListTable } from "@/components/matches";
 import PageLayout from "@/components/common/PageLayout";
 import PageTitle from "@/components/common/PageTitle";
 

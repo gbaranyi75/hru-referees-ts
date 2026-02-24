@@ -1,7 +1,8 @@
 "use server";
 import connectDB from "@/config/database";
 import Match from "@/models/Match";
-import { Result, Match as MatchType } from "@/types/types";
+import { Match as MatchType } from "@/types/models";
+import { Result } from "@/types/result";
 import { handleAsyncOperation } from "@/lib/utils/errorHandling";
 import { Types, PipelineStage } from "mongoose";
 

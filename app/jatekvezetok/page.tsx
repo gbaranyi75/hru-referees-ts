@@ -1,4 +1,4 @@
-import Referees from "@/components/Referees";
+import { Referees } from "@/components/referees";
 import PageLayout from "@/components/common/PageLayout";
 import PageTitle from "@/components/common/PageTitle";
 export const dynamic = "force-dynamic";

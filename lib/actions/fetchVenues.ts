@@ -1,10 +1,6 @@
 "use server";
 
-interface Result<T> {
-  success: boolean;
-  data?: T;
-  error?: string;
-}
+import { Result } from "@/types/result";
 
 interface GeoNamesResult {
   geonameId: number;
