@@ -1,6 +1,6 @@
 import PageLayout from "@/components/common/PageLayout";
 import PageTitle from "@/components/common/PageTitle";
-import MediaEdit from "@/components/MediaEdit";
+import MediaEdit from "@/components/media/MediaEdit";
 export const dynamic = "force-dynamic";
 
 const MediaPage = async () => {

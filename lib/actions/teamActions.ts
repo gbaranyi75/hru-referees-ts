@@ -4,6 +4,7 @@ import connectDB from "@/config/database";
 import Team from "@/models/Team";
 import { Result, Team as TeamType } from "@/types/types";
 import { handleAsyncOperation } from "@/lib/utils/errorHandling";
+import { ErrorMessages } from "@/constants/messages";
 
 /**
  * Fetches teams from the database
@@ -45,7 +46,7 @@ export const createTeam = async (teamData: TeamType): Promise<Result<TeamType>> 
 export const updateTeam = async (teamId: string | undefined, name: string, city?: string, teamLeader?: string, phone?: string, email?: string): Promise<Result<TeamType>> => {
   return handleAsyncOperation(async () => {
     if (!teamId) {
-      throw new Error("A csapat azonosító megadása kötelező");
+      throw new Error(ErrorMessages.TEAM.ID_REQUIRED);
     }
     await connectDB();
     
@@ -68,7 +69,7 @@ export const updateTeam = async (teamId: string | undefined, name: string, city?
     
     const updatedTeam = await Team.findByIdAndUpdate(teamId, updateData, { new: true }).lean();
     if (!updatedTeam) {
-      throw new Error("A csapat nem található");
+      throw new Error(ErrorMessages.TEAM.NOT_FOUND);
     }
     return JSON.parse(JSON.stringify(updatedTeam));
   });
@@ -82,12 +83,12 @@ export const updateTeam = async (teamId: string | undefined, name: string, city?
 export const deleteTeam = async (teamId: string): Promise<Result<TeamType>> => {
   return handleAsyncOperation(async () => {
     if (!teamId) {
-      throw new Error("A csapat azonosító megadása kötelező");
+      throw new Error(ErrorMessages.TEAM.ID_REQUIRED);
     }
     await connectDB();
     const deletedTeam = await Team.findByIdAndDelete(teamId).lean();
     if (!deletedTeam) {
-      throw new Error("A csapat nem található vagy már törölve lett");
+      throw new Error(ErrorMessages.TEAM.NOT_FOUND_OR_DELETED);
     }
     return JSON.parse(JSON.stringify(deletedTeam));
   });

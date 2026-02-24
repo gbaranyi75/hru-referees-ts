@@ -1,12 +1,20 @@
 /**
  * Central error handling utility
  * 
- * Provides unified error handling for the application. All fetch operations
- * can use these functions to return Result type.
+ * Provides unified error handling for the application. All server actions
+ * should use these functions to return ActionResult (Result) type.
+ * 
+ * This ensures:
+ * - Consistent error handling across the application
+ * - Type-safe error responses
+ * - Clear distinction between success and failure states
  * 
  * Usage:
  * ```typescript
- * export const fetchUsers = async (): Promise<Result<User[]>> => {
+ * import { handleAsyncOperation } from "@/lib/utils/errorHandling";
+ * import { ActionResult } from "@/types/types";
+ * 
+ * export const fetchUsers = async (): Promise<ActionResult<User[]>> => {
  *   return handleAsyncOperation(async () => {
  *     await connectDB();
  *     const users = await User.find().lean();
@@ -16,19 +24,34 @@
  * ```
  */
 
-import { Result } from "@/types/types";
+import { Result, ActionResult } from "@/types/types";
 
 /**
- * Handles async operations with Result type
+ * Handles async operations with ActionResult type
  * 
+ * Wraps async operations to catch errors and return a consistent Result format.
+ * Automatically serializes Mongoose documents to plain objects.
+ * 
+ * @template T - The type of data returned on success
  * @param operation - The async operation that returns data of type T
- * @param errorMessage - Custom error message (optional)
- * @returns Result<T> object with success or error
+ * @param errorMessage - Custom error message (optional). If not provided, uses error.message
+ * @returns ActionResult<T> - { success: true, data: T } or { success: false, error: string }
+ * 
+ * @example
+ * ```typescript
+ * export const fetchTeams = async (): Promise<ActionResult<Team[]>> => {
+ *   return handleAsyncOperation(async () => {
+ *     await connectDB();
+ *     const teams = await Team.find().lean();
+ *     return JSON.parse(JSON.stringify(teams));
+ *   });
+ * };
+ * ```
  */
 export async function handleAsyncOperation<T>(
   operation: () => Promise<T>,
   errorMessage?: string
-): Promise<Result<T>> {
+): Promise<ActionResult<T>> {
   try {
     const data = await operation();
     return { success: true, data };
@@ -41,16 +64,19 @@ export async function handleAsyncOperation<T>(
 }
 
 /**
- * Handles sync operations with Result type
+ * Handles sync operations with ActionResult type
  * 
+ * Wraps sync operations to catch errors and return a consistent Result format.
+ * 
+ * @template T - The type of data returned on success
  * @param operation - The sync operation that returns data of type T
  * @param errorMessage - Custom error message (optional)
- * @returns Result<T> object with success or error
+ * @returns ActionResult<T> - { success: true, data: T } or { success: false, error: string }
  */
 export function handleSyncOperation<T>(
   operation: () => T,
   errorMessage?: string
-): Result<T> {
+): ActionResult<T> {
   try {
     const data = operation();
     return { success: true, data };
@@ -80,23 +106,25 @@ export function formatErrorMessage(error: unknown, defaultMessage: string): stri
 }
 
 /**
- * Creates Result object from success
+ * Creates ActionResult object from success
  * 
+ * @template T - The type of data
  * @param data - The data to return
- * @returns Successful Result object
+ * @returns Successful ActionResult object
  */
-export function createSuccessResult<T>(data: T): Result<T> {
+export function createSuccessResult<T>(data: T): ActionResult<T> {
   return { success: true, data };
 }
 
 /**
- * Creates Result object from error
+ * Creates ActionResult object from error
  * 
+ * @template T - The type of data (unused in error case)
  * @param error - The error message or object
  * @param defaultMessage - Default error message
- * @returns Failed Result object
+ * @returns Failed ActionResult object
  */
-export function createErrorResult<T>(error: unknown, defaultMessage?: string): Result<T> {
+export function createErrorResult<T>(error: unknown, defaultMessage?: string): ActionResult<T> {
   const message = formatErrorMessage(
     error, 
     defaultMessage || 'Error occurred during operation'

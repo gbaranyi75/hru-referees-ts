@@ -1,6 +1,6 @@
 import PageLayout from "@/components/common/PageLayout";
 import PageTitle from "@/components/common/PageTitle";
-import TeamsEdit from "@/components/TeamsEdit";
+import { TeamsEdit } from "@/components/teams";
 export const dynamic = "force-dynamic";
 
 const TeamsPage = async () => {

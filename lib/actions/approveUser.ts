@@ -2,18 +2,24 @@
 import connectDB from "@/config/database";
 import User from "@/models/User";
 import { clerkClient } from "@clerk/nextjs/server";
+import { ActionResult } from "@/types/types";
+import { handleAsyncOperation } from "@/lib/utils/errorHandling";
+import { ErrorMessages, SuccessMessages } from "@/constants/messages";
 import { sendEmail } from "./sendEmail";
 
-export type ApproveUserResult = {
-  success: boolean;
-  error?: string;
-};
+/**
+ * Approves a user registration
+ * 
+ * Updates user metadata in Clerk and creates user record in database,
+ * then sends approval email.
+ * 
+ * @param userId - The Clerk user ID to approve
+ * @returns ActionResult<null> - Success or error result
+ */
+export async function approveUser(userId: string): Promise<ActionResult<null>> {
+  return handleAsyncOperation(async () => {
+    await connectDB();
 
-export async function approveUser(
-  userId: string
-): Promise<ApproveUserResult> {
-  await connectDB();
-  try {
     // Clerkben metaadatok frissítése
     const clerk = await clerkClient();
     await clerk.users.updateUserMetadata(userId, {
@@ -44,14 +50,16 @@ export async function approveUser(
     }
 
     // Email küldés a usernek a jóváhagyásról
-    await sendEmail({
+    const emailResult = await sendEmail({
       to: user.emailAddresses?.[0]?.emailAddress ?? "",
       type: "user-approved",
       username: `${user.lastName} ${user.firstName}`,
     });
 
-    return { success: true };
-  } catch (error) {
-    return { success: false, error: (error as Error).message };
-  }
+    if (!emailResult.success) {
+      console.warn("Email sending failed, but user was approved:", emailResult.error);
+    }
+
+    return null;
+  }, ErrorMessages.USER.APPROVAL_FAILED);
 }

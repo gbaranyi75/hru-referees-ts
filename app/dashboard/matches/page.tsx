@@ -1,7 +1,7 @@
-import MatchesNew from "@/components/MatchesNew";
+import MatchesNew from "@/components/matches/MatchesNew";
 import PageLayout from "@/components/common/PageLayout";
 import PageTitle from "@/components/common/PageTitle";
-import MatchesEdit from "@/components/MatchesEdit";
+import MatchesEdit from "@/components/matches/MatchesEdit";
 export const dynamic = "force-dynamic";
 
 const MatchesPage = () => {

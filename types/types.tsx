@@ -104,6 +104,13 @@ export type Result<T> =
   | { success: true; data: T }
   | { success: false; error: string };
 
+/**
+ * Server Action response type
+ * Unified type for all server actions to ensure consistency
+ * @template T - The type of data returned on success
+ */
+export type ActionResult<T> = Result<T>;
+
 export type ClerkUser = {
   id: string;
   emailAddresses: { emailAddress: string }[];

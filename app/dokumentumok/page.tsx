@@ -1,4 +1,4 @@
-import Documents from "@/components/Documents";
+import { Documents } from "@/components/documents";
 import PageLayout from "@/components/common/PageLayout";
 import PageTitle from "@/components/common/PageTitle";
 import { checkRole } from "@/lib/utils/roles";

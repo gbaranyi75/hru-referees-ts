@@ -1,7 +1,7 @@
 import PageLayout from "@/components/common/PageLayout";
 import PageTitle from "@/components/common/PageTitle";
-import CalendarNew from "@/components/CalendarNew";
-import CalendarEdit from "@/components/CalendarEdit";
+import { CalendarNew } from "@/components/calendars";
+import { CalendarEdit } from "@/components/calendars";
 export const dynamic = "force-dynamic";
 
 const CalendarPage = () => {

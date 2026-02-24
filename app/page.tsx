@@ -1,9 +1,11 @@
-import Hero from "@/components/Hero";
-import InfoBoxes from "@/components/InfoBoxes";
-import NextMatchInfoBox from "@/components/NextMatchInfoBox";
-import CommitteeBoard from "@/components/CommitteeBoard";
+import {
+  Hero,
+  InfoBoxes,
+  NextMatchInfoBox,
+  CommitteeBoard,
+} from "@/components/main";
 
-export const dynamic = 'force-dynamic';
+export const dynamic = "force-dynamic";
 
 const HomePage = () => {
   return (
