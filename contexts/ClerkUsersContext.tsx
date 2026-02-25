@@ -1,7 +1,9 @@
 "use client";
-import React, { createContext, useContext, useEffect, useState } from "react";
-import { fetchClerkUserList } from "@/lib/actions/fetchClerkUserList";
+
+import React, { createContext, useContext } from "react";
+import { fetchClerkUserList } from "@/lib/actions/clerkActions";
 import { ClerkUser } from "@/types/models";
+import { useRefreshableResource } from "@/hooks/useRefreshableResource";
 
 type ClerkUsersContextType = {
   clerkUsers: ClerkUser[] | null;
@@ -17,36 +19,27 @@ const ClerkUsersContext = createContext<ClerkUsersContextType>({
   refreshClerkUsers: async () => {},
 });
 
+const FETCH_ERROR = "Nem sikerült lekérni a felhasználókat.";
+const REQUEST_ERROR = "Hiba történt a lekérés során.";
+
 export const ClerkUsersProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
-  const [clerkUsers, setClerkUsers] = useState<ClerkUser[] | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-
-  const refreshClerkUsers = async () => {
-    setLoading(true);
-    try {
-      const result = await fetchClerkUserList();
-      if (result.success) {
-        setClerkUsers(result.data);
-        setError(null);
-      } else {
-        setError("Nem sikerült lekérni a felhasználókat.");
-      }
-    } catch {
-      setError("Hiba történt a lekérés során.");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    refreshClerkUsers();
-  }, []);
+  const { data, loading, error, refresh } = useRefreshableResource({
+    fetcherAction: fetchClerkUserList,
+    fetchErrorMessage: FETCH_ERROR,
+    requestErrorMessage: REQUEST_ERROR,
+  });
 
   return (
-    <ClerkUsersContext.Provider value={{ clerkUsers, loading, error, refreshClerkUsers }}>
+    <ClerkUsersContext.Provider
+      value={{
+        clerkUsers: data ?? null,
+        loading,
+        error,
+        refreshClerkUsers: refresh,
+      }}
+    >
       {children}
     </ClerkUsersContext.Provider>
   );

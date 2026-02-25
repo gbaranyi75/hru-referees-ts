@@ -19,7 +19,7 @@ import { useModal } from "@/hooks/useModal";
 import {
   fetchMatchesCount,
   fetchMatchById,
-} from "@/lib/actions/fetchMatches";
+} from "@/lib/actions/matchActions";
 import { useMatches } from "@/hooks/useMatches";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { Route } from "next";

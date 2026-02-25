@@ -1,8 +1,10 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { fetchCalendars } from "@/lib/actions/fetchCalendars";
-import { createNewCalendar } from "@/lib/actions/createCalendar";
-import { updateCalendar } from "@/lib/actions/updateCalendar";
-import { deleteCalendar } from "@/lib/actions/deleteCalendar";
+import {
+  fetchCalendars,
+  createNewCalendar,
+  updateCalendar,
+  deleteCalendar,
+} from "@/lib/actions/calendarActions";
 import { Calendar } from "@/types/models";
 
 /**

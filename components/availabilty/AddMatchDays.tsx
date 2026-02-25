@@ -3,8 +3,8 @@ import { useEffect, useState } from "react";
 import AddMatchDaysItem from "./AddMatchDaysItem";
 import Skeleton from "../common/Skeleton";
 import { User, UserSelection } from "@/types/models";
-import { fetchProfile } from "@/lib/actions/fetchProfile";
-import { fetchUserSelections } from "@/lib/actions/fetchUserSelections";
+import { fetchProfile } from "@/lib/actions/profileActions";
+import { fetchUserSelections } from "@/lib/actions/userSelectionActions";
 import { useCalendars } from "@/hooks/useCalendars";
 
 /**

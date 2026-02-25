@@ -13,7 +13,7 @@ import {
 import { Media } from "@/types/models";
 import { useModal } from "@/hooks/useModal";
 import { Icon } from "@iconify/react";
-import { fetchMedia } from "@/lib/actions/fetchMedia";
+import { fetchMedia } from "@/lib/actions/mediaActions";
 import { formatDate } from "@/lib/utils/formatUtils";
 import Link from "next/link";
 import { Route } from "next";

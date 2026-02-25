@@ -3,7 +3,7 @@
 import React, { useCallback, useEffect, useState } from "react";
 import ProfileInfoCard from "./ProfileInfoCard";
 import ProfileMetaCard from "./ProfileMetaCard";
-import { fetchProfile } from "@/lib/actions/fetchProfile";
+import { fetchProfile } from "@/lib/actions/profileActions";
 import { User } from "@/types/models";
 import Skeleton from "../common/Skeleton";
 import { toast } from "react-toastify";

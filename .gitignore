@@ -54,3 +54,5 @@ next-env.d.ts
 .github*
 .user-stories
 .qodo
+.cursorignore
+.cursor

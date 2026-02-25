@@ -12,7 +12,7 @@ import {
 import Skeleton from "../common/Skeleton";
 import Input from "../common/InputField";
 import { GuestUser, User, ClerkUser } from "@/types/models";
-import { updateProfileStatusAndTitle } from "@/lib/actions/updateProfileStatusAndTitle";
+import { updateProfileStatusAndTitle } from "@/lib/actions/userActions";
 import { useUsers } from "@/contexts/UsersContext";
 import { useClerkUsers } from "@/contexts/ClerkUsersContext";
 import { useGuestUsers } from "@/contexts/GuestUsersContext";

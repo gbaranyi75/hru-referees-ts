@@ -7,7 +7,7 @@ import DisabledButton from "@/components/common/DisabledButton";
 import PrimaryButton from "@/components/common/PrimaryButton";
 import MatchDayCalendar from "./MatchDayCalendar";
 import Skeleton from "../common/Skeleton";
-import { saveUserSelection } from "@/lib/actions/saveUserSelection";
+import { saveUserSelection } from "@/lib/actions/userSelectionActions";
 import { Calendar, User, UserSelection } from "@/types/models";
 
 const AddMatchDaysItem = ({

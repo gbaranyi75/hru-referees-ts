@@ -1,14 +1,10 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-
-type FetchResult<T> = {
-  success: boolean;
-  data: T;
-};
+import { Result } from "@/types/result";
 
 type UseRefreshableResourceParams<T> = {
-  fetcherAction: () => Promise<FetchResult<T>>;
+  fetcherAction: () => Promise<Result<T>>;
   fetchErrorMessage: string;
   requestErrorMessage: string;
 };
@@ -24,7 +20,6 @@ export const useRefreshableResource = <T>({
 
   const refresh = useCallback(async () => {
     setLoading(true);
-
     try {
       const result = await fetcherAction();
       if (result.success) {
