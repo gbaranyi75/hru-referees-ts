@@ -3,7 +3,7 @@
 import connectDB from "@/config/database";
 import Team from "@/models/Team";
 import { Team as TeamType } from "@/types/models";
-import { Result } from "@/types/result";
+import { ActionResult } from "@/types/result";
 import { handleAsyncOperation } from "@/lib/utils/errorHandling";
 import { ErrorMessages } from "@/constants/messages";
 
@@ -12,7 +12,7 @@ import { ErrorMessages } from "@/constants/messages";
  * @returns {Promise<Result<TeamType[]>>} A promise that resolves to a result object containing the teams or an error message
  */
 
-export const fetchTeams = async (): Promise<Result<TeamType[]>> => {
+export const fetchTeams = async (): Promise<ActionResult<TeamType[]>> => {
   return handleAsyncOperation(async () => {
     await connectDB();
     const teams = await Team.find().lean();
@@ -25,7 +25,7 @@ export const fetchTeams = async (): Promise<Result<TeamType[]>> => {
  * @param {TeamType} teamData - The data for the new team
  * @returns {Promise<Result<TeamType>>} A promise that resolves to a result object containing the created team or an error message
  */
-export const createTeam = async (teamData: TeamType): Promise<Result<TeamType>> => {
+export const createTeam = async (teamData: TeamType): Promise<ActionResult<TeamType>> => {
   return handleAsyncOperation(async () => {
     await connectDB();
     const newTeam = new Team(teamData);
@@ -44,7 +44,7 @@ export const createTeam = async (teamData: TeamType): Promise<Result<TeamType>> 
  * @param {string} [email] - The email address (optional)
  * @returns {Promise<Result<TeamType>>} A promise that resolves to a result object containing the updated team or an error message
  */
-export const updateTeam = async (teamId: string | undefined, name: string, city?: string, teamLeader?: string, phone?: string, email?: string): Promise<Result<TeamType>> => {
+export const updateTeam = async (teamId: string | undefined, name: string, city?: string, teamLeader?: string, phone?: string, email?: string): Promise<ActionResult<TeamType>> => {
   return handleAsyncOperation(async () => {
     if (!teamId) {
       throw new Error(ErrorMessages.TEAM.ID_REQUIRED);
@@ -81,7 +81,7 @@ export const updateTeam = async (teamId: string | undefined, name: string, city?
  * @param {string} teamId - The ID of the team to delete
  * @returns {Promise<Result<TeamType>>} A promise that resolves to a result object containing the deleted team or an error message
  */
-export const deleteTeam = async (teamId: string): Promise<Result<TeamType>> => {
+export const deleteTeam = async (teamId: string): Promise<ActionResult<TeamType>> => {
   return handleAsyncOperation(async () => {
     if (!teamId) {
       throw new Error(ErrorMessages.TEAM.ID_REQUIRED);

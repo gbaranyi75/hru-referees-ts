@@ -6,7 +6,7 @@ import { Route } from "next";
 import clsx from "clsx";
 import Skeleton from "../common/Skeleton";
 import { Match } from "@/types/models";
-import { fetchMatches } from "@/lib/actions/fetchMatches";
+import { fetchMatches } from "@/lib/actions/matchActions";
 
 const NextMatchInfoBox = () => {
   const [matches, setMatches] = useState<Match[]>([]);

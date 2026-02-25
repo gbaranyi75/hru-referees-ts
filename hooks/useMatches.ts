@@ -1,6 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { createMatch } from "@/lib/actions/createMatch";
-import { fetchMatches } from "@/lib/actions/fetchMatches";
+import { createMatch, fetchMatches } from "@/lib/actions/matchActions";
 
 /**
  * Hook for fetching matches using server action

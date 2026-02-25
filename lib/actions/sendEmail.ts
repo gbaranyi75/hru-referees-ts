@@ -61,7 +61,7 @@ export async function sendEmail(
     }
 
     await resend.emails.send({
-      from: "MRGSZ Játékvezetői Bizottság <info@hru-referees.hu>",
+      from: "MRGSZ Játékvezetői Bizottság <noreply@hru-referees.hu>",
       to,
       subject: subject ?? "Értesítés",
       react: reactComponent,

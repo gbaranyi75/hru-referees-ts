@@ -12,7 +12,7 @@ import {
   TableCell,
   TableBody,
 } from "@/components/common/DefaultTable";
-import { updateMedia } from "@/lib/actions/updateMedia";
+import { updateMedia } from "@/lib/actions/mediaActions";
 import { formatDate } from "@/lib/utils/formatUtils";
 
 export default function MediaEditList({

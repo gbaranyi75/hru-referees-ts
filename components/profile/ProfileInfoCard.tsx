@@ -7,7 +7,7 @@ import Label from "../common/Label";
 import PrimaryButton from "../common/PrimaryButton";
 import OutlinedButton from "../common/OutlinedButton";
 import { Address, User } from "@/types/models";
-import { updateProfileContactData } from "@/lib/actions/updateProfileContactData";
+import { updateProfileContactData } from "@/lib/actions/profileActions";
 import { toast } from "react-toastify";
 
 type Props = {

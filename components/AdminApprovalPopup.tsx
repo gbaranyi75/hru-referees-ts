@@ -1,12 +1,8 @@
 "use client";
 import { useEffect, useState } from "react";
 import { useUser } from "@clerk/nextjs";
-import {
-  fetchPendingUsers,
-  PendingUser,
-} from "@/lib/actions/fetchPendingUsers";
-import { approveUser } from "@/lib/actions/approveUser";
-import { rejectUser } from "@/lib/actions/rejectUser";
+import { fetchPendingUsers, PendingUser } from "@/lib/actions/clerkActions";
+import { approveUser, rejectUser } from "@/lib/actions/userActions";
 
 export default function AdminApprovalPopup() {
   const { user } = useUser();

@@ -7,7 +7,7 @@ import type { User as ClerkUser } from "@clerk/nextjs/server";
 import { sendEmail } from "@/lib/actions/sendEmail";
 import { createNotification } from "@/lib/actions/notificationActions";
 import { User as UserType } from "@/types/models";
-import { Result } from "@/types/result";
+import { ActionResult } from "@/types/result";
 
 type NavbarData = {
   user: UserType | null;
@@ -23,7 +23,7 @@ type NavbarData = {
  * - one DB lookup for the navbar user payload
  * - optimized for the common case of logged-in users (DB lookup only for them, not for every visitor)
  */
-export const fetchNavbarData = async (): Promise<Result<NavbarData>> => {
+export const fetchNavbarData = async (): Promise<ActionResult<NavbarData>> => {
   try {
     await connectDB();
 

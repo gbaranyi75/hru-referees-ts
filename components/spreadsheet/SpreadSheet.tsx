@@ -2,7 +2,7 @@
 import { useState, useEffect } from "react";
 import { useCalendars } from "@/hooks/useCalendars";
 import { useUsers } from "@/contexts/UsersContext";
-import { fetchAllUserSelections } from "@/lib/actions/fetchAllUserSelections";
+import { fetchAllUserSelections } from "@/lib/actions/userSelectionActions";
 import { Calendar, User, UserSelection } from "@/types/models";
 import SpreadSheetItem from "./SpreadSheetItem";
 import Skeleton from "../common/Skeleton";

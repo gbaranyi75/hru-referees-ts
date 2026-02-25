@@ -9,8 +9,7 @@ import OutlinedButton from "../common/OutlinedButton";
 import PrimaryButton from "../common/PrimaryButton";
 import Checkbox from "../common/Checkbox";
 import RefereesEditTable from "./RefereesEditTable";
-import { createGuestUser } from "@/lib/actions/createGuestUser";
-import { fetchGuestUsers } from "@/lib/actions/fetchGuestUser";
+import { createGuestUser, fetchGuestUsers } from "@/lib/actions/userActions";
 import { Address } from "@/types/models";
 
 const RefereesEdit = () => {

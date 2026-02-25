@@ -9,8 +9,7 @@ import DisabledButton from "../common/DisabledButton";
 import OutlinedButton from "../common/OutlinedButton";
 import Skeleton from "../common/Skeleton";
 import PrimaryButton from "../common/PrimaryButton";
-import { createNewMediaLink } from "@/lib/actions/createNewMediaLink";
-import { fetchMedia } from "@/lib/actions/fetchMedia";
+import { createNewMediaLink, fetchMedia } from "@/lib/actions/mediaActions";
 import { Media } from "@/types/models";
 
 export default function MediaEdit() {

@@ -5,7 +5,7 @@ import {
   Notification as NotificationType,
   NotificationPosition,
 } from "@/types/models";
-import { Result } from "@/types/result";
+import { ActionResult } from "@/types/result";
 import { handleAsyncOperation } from "@/lib/utils/errorHandling";
 import { currentUser } from "@clerk/nextjs/server";
 
@@ -21,11 +21,11 @@ interface CreateNotificationParams {
  * Creates a new notification for a user
  *
  * @param params - The notification parameters
- * @returns Result with the created notification or error
+ * @returns ActionResult with the created notification or error
  */
 export const createNotification = async (
   params: CreateNotificationParams,
-): Promise<Result<NotificationType>> => {
+): Promise<ActionResult<NotificationType>> => {
   return handleAsyncOperation(async () => {
     await connectDB();
     const notification = await Notification.create(params);
@@ -37,11 +37,11 @@ export const createNotification = async (
  * Creates multiple notifications at once (for batch assignments)
  *
  * @param notifications - Array of notification parameters
- * @returns Result with the created notifications or error
+ * @returns ActionResult with the created notifications or error
  */
 export const createNotifications = async (
   notifications: CreateNotificationParams[],
-): Promise<Result<NotificationType[]>> => {
+): Promise<ActionResult<NotificationType[]>> => {
   return handleAsyncOperation(async () => {
     await connectDB();
     const createdNotifications = await Notification.insertMany(notifications);
@@ -57,13 +57,13 @@ export const createNotifications = async (
  * @param clerkUserId - The Clerk user ID
  * @param limit - Maximum number of notifications to fetch (default: 20)
  * @param unreadOnly - If true, only fetches unread notifications
- * @returns Result with array of notifications or error
+ * @returns ActionResult with array of notifications or error
  */
 export const fetchNotifications = async (
   clerkUserId: string,
   limit: number = 20,
   unreadOnly: boolean = false,
-): Promise<Result<NotificationType[]>> => {
+): Promise<ActionResult<NotificationType[]>> => {
   return handleAsyncOperation(async () => {
     const user = await currentUser();
     if (!user || user.id !== clerkUserId) {
@@ -89,11 +89,11 @@ export const fetchNotifications = async (
  * Gets the count of unread notifications for a user
  *
  * @param clerkUserId - The Clerk user ID
- * @returns Result with the count or error
+ * @returns ActionResult with the count or error
  */
 export const getUnreadNotificationCount = async (
   clerkUserId: string,
-): Promise<Result<number>> => {
+): Promise<ActionResult<number>> => {
   return handleAsyncOperation(async () => {
     const user = await currentUser();
     if (!user || user.id !== clerkUserId) {
@@ -114,11 +114,11 @@ export const getUnreadNotificationCount = async (
  * Marks a single notification as read
  *
  * @param notificationId - The notification ID
- * @returns Result with success status or error
+ * @returns ActionResult with success status or error
  */
 export const markNotificationAsRead = async (
   notificationId: string,
-): Promise<Result<boolean>> => {
+): Promise<ActionResult<boolean>> => {
   return handleAsyncOperation(async () => {
     const user = await currentUser();
     if (!user) {
@@ -148,11 +148,11 @@ export const markNotificationAsRead = async (
  * Marks all notifications as read for a user
  *
  * @param clerkUserId - The Clerk user ID
- * @returns Result with success status or error
+ * @returns ActionResult with success status or error
  */
 export const markAllNotificationsAsRead = async (
   clerkUserId: string,
-): Promise<Result<boolean>> => {
+): Promise<ActionResult<boolean>> => {
   return handleAsyncOperation(async () => {
     const user = await currentUser();
     if (!user || user.id !== clerkUserId) {
@@ -174,11 +174,11 @@ export const markAllNotificationsAsRead = async (
  * Can be called by a cron job or admin action
  *
  * @param daysOld - Delete notifications older than this many days (default: 90)
- * @returns Result with the number of deleted notifications or error
+ * @returns ActionResult with the number of deleted notifications or error
  */
 export const deleteOldNotifications = async (
   daysOld: number = 90,
-): Promise<Result<number>> => {
+): Promise<ActionResult<number>> => {
   return handleAsyncOperation(async () => {
     await connectDB();
     const cutoffDate = new Date();

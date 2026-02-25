@@ -16,7 +16,7 @@ import VenueAutocomplete from "../common/VenueAutocomplete";
 import { DayPicker, getDefaultClassNames } from "react-day-picker";
 import { hu } from "react-day-picker/locale";
 import "react-day-picker/dist/style.css";
-import updateMatch from "@/lib/actions/updateMatch";
+import { updateMatch } from "@/lib/actions/matchActions";
 import {
   validateNonSingleMatch,
   validateSingleMatch,

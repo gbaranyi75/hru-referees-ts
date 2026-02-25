@@ -1,7 +1,9 @@
 "use client";
-import React, { createContext, useContext, useEffect, useState } from "react";
-import { fetchUsers } from "@/lib/actions/fetchUsers";
+
+import React, { createContext, useContext } from "react";
+import { fetchUsers } from "@/lib/actions/userActions";
 import { User } from "@/types/models";
+import { useRefreshableResource } from "@/hooks/useRefreshableResource";
 
 type UsersContextType = {
   users: User[] | null;
@@ -17,36 +19,22 @@ const UsersContext = createContext<UsersContextType>({
   refreshUsers: async () => {},
 });
 
+const FETCH_ERROR = "Nem sikerült lekérni a felhasználókat.";
+const REQUEST_ERROR = "Hiba történt a lekérés során.";
+
 export const UsersProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
-  const [users, setUsers] = useState<User[] | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-
-  const refreshUsers = async () => {
-    setLoading(true);
-    try {
-      const result = await fetchUsers();
-      if (result.success) {
-        setUsers(result.data);
-        setError(null);
-      } else {
-        setError("Nem sikerült lekérni a felhasználókat.");
-      }
-    } catch {
-      setError("Hiba történt a lekérés során.");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    refreshUsers();
-  }, []);
+  const { data, loading, error, refresh } = useRefreshableResource({
+    fetcherAction: fetchUsers,
+    fetchErrorMessage: FETCH_ERROR,
+    requestErrorMessage: REQUEST_ERROR,
+  });
 
   return (
-    <UsersContext.Provider value={{ users, loading, error, refreshUsers }}>
+    <UsersContext.Provider
+      value={{ users: data ?? null, loading, error, refreshUsers: refresh }}
+    >
       {children}
     </UsersContext.Provider>
   );

@@ -1,6 +1,6 @@
 "use server";
 
-import { Result } from "@/types/result";
+import { ActionResult } from "@/types/result";
 
 interface GeoNamesResult {
   geonameId: number;
@@ -50,7 +50,7 @@ interface GeoNamesResult {
  */
 export const searchVenues = async (
   query: string
-): Promise<Result<GeoNamesResult[]>> => {
+): Promise<ActionResult<GeoNamesResult[]>> => {
   if (!query || query.length < 2) {
     return { success: true, data: [] };
   }
