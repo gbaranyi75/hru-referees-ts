@@ -1,9 +1,7 @@
-import { Resend } from "resend";
 import { NextRequest, NextResponse } from "next/server";
 import { ContactMessageEmail } from "@/components/emails/ContactMessageEmail";
 import React from "react";
-
-const resend = new Resend(process.env.RESEND_API_KEY);
+import { throttledResendSend } from "@/lib/utils/resendThrottle";
 
 // Rate limiting konstansok
 const RATE_LIMIT = {
@@ -155,10 +153,9 @@ export async function POST(request: NextRequest) {
       message: message.trim(),
     };
 
-    const { error } = await resend.emails.send({
+    const { error } = await throttledResendSend({
       from: `Kapcsolatfelvétel <info@hru-referees.hu>`,
       to: "rugbyreferee.hungary@gmail.com",
-      //to: "bgabor91@gmail.com", //for test
       subject: "Új kapcsolatfelvételi üzenet",
       react: ContactMessageEmail(sanitizedData) as React.ReactNode,
     });
