@@ -19,20 +19,21 @@ function isRateLimitError(err: unknown): boolean {
 
 let lastSendTime = 0;
 type ResendSendResult = Awaited<ReturnType<Resend["emails"]["send"]>>;
-let sendChain: Promise<ResendSendResult> = Promise.resolve(
-  undefined as unknown as ResendSendResult
-);
+/** Serializes sends; only used for ordering, not for passing results. */
+let sendChain: Promise<void> = Promise.resolve();
 
 /**
  * Sends an email via Resend with:
  * - Throttle (550ms between sends) when multiple sends happen in the same process.
- * - Retry on 429: if Resend returns rate_limit_exceeded, wait 1.1s and retry (up to MAX_RETRIES).
+ * - Retry on 429: if Resend returns rate_limit_exceeded, wait 1.1s and retry (up to MAX_RETRIES total attempts, i.e. 1 initial + MAX_RETRIES-1 retries).
  *   This handles serverless where each request can be a different instance and throttle is not shared.
+ * - Queue recovery: if a send throws (e.g. transient network/API failure), the shared chain is caught and reset
+ *   so subsequent throttledResendSend calls in this process still run; the caller that triggered the failure still receives the rejection.
  */
 export async function throttledResendSend(
   options: Parameters<Resend["emails"]["send"]>[0]
 ): Promise<ResendSendResult> {
-  sendChain = sendChain.then(async () => {
+  const thisSend = sendChain.then(async () => {
     const now = Date.now();
     const elapsed = now - lastSendTime;
     if (elapsed < MIN_INTERVAL_MS) {
@@ -58,5 +59,11 @@ export async function throttledResendSend(
 
     return lastResult;
   });
-  return sendChain;
+  // If this send rejects, don’t leave sendChain rejected so later sends still run.
+  sendChain = thisSend
+    .catch((error) => {
+      console.error("throttledResendSend failed:", error);
+    })
+    .then(() => undefined);
+  return thisSend;
 }
