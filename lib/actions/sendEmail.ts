@@ -1,15 +1,13 @@
 "use server";
 
 import React from "react";
-import { Resend } from "resend";
 import { ActionResult } from "@/types/result";
 import { handleAsyncOperation } from "@/lib/utils/errorHandling";
 import { ErrorMessages } from "@/constants/messages";
 import AdminNewUserEmail from "@/components/emails/AdminNewUserEmail";
 import UserApprovedEmail from "@/components/emails/UserApprovedEmail";
 import UserRejectedEmail from "@/components/emails/UserRejectedEmail";
-
-const resend = new Resend(process.env.RESEND_API_KEY);
+import { throttledResendSend } from "@/lib/utils/resendThrottle";
 
 type EmailType = "admin-new-user" | "user-approved" | "user-rejected";
 
@@ -60,7 +58,7 @@ export async function sendEmail(
         throw new Error(ErrorMessages.EMAIL.UNKNOWN_TYPE);
     }
 
-    await resend.emails.send({
+    await throttledResendSend({
       from: "MRGSZ Játékvezetői Bizottság <noreply@hru-referees.hu>",
       to,
       subject: subject ?? "Értesítés",

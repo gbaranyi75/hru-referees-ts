@@ -1,9 +1,7 @@
-import { Resend } from "resend";
 import { NextRequest, NextResponse } from "next/server";
 import { RefereeNotificationEmail } from "@/components/emails/RefereeNotificationEmail";
 import React from "react";
-
-const resend = new Resend(process.env.RESEND_API_KEY);
+import { throttledResendSend } from "@/lib/utils/resendThrottle";
 
 // Játékvezetői értesítés email küldése
 // Ez az endpoint csak hitelesített felhasználók számára elérhető (Clerk auth szükséges)
@@ -20,7 +18,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const { error } = await resend.emails.send({
+    const { error } = await throttledResendSend({
       from: "MRGSZ Játékvezetői Bizottság <info@hru-referees.hu>",
       to: [email],
       subject: subject,
