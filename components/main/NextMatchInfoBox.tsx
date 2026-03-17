@@ -7,6 +7,7 @@ import clsx from "clsx";
 import Skeleton from "../common/Skeleton";
 import { Match } from "@/types/models";
 import { fetchMatches } from "@/lib/actions/matchActions";
+import { isInCurrentWeek } from "@/lib/utils/matchHighlight";
 
 const NextMatchInfoBox = () => {
   const [matches, setMatches] = useState<Match[]>([]);
@@ -18,19 +19,11 @@ const NextMatchInfoBox = () => {
     const result = await fetchMatches();
     if (!result.success) return setNoMatch(true);
 
-    const firstDay = new Date();
-    const nextWeek = new Date(firstDay.getTime() + 7 * 24 * 60 * 60 * 1000);
+    const arr: Match[] = result.data.filter((match: Match) =>
+      isInCurrentWeek(match.date)
+    );
 
-    const arr: Match[] = [];
-    result.data.forEach((match: Match) => {
-      if (
-        new Date(match.date) < nextWeek &&
-        new Date(match.date) >= new Date()
-      ) {
-        arr.push(match);
-        setMatches(arr);
-      }
-    });
+    setMatches(arr);
     if (arr.length === 0) setNoMatch(true);
     setLoading(false);
   };

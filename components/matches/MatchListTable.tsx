@@ -22,6 +22,7 @@ import {
 } from "@/lib/actions/matchActions";
 import { useMatches } from "@/hooks/useMatches";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { isInCurrentWeek } from "@/lib/utils/matchHighlight";
 import { Route } from "next";
 
 
@@ -97,18 +98,6 @@ const MatchListTable = () => {
     params.delete("matchId");
     router.replace(`${pathName}?${params}` as Route);
   };
-
-  // Megnézi, hogy a kapott dátum a mai nap és a következő 7 nap között van-e (beleértve a mai napot is)
-  const isWithinNext7Days = (dateString: string): boolean => {
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-
-    const target = new Date(dateString);
-    target.setHours(0, 0, 0, 0);
-
-    const diff = target.getTime() - today.getTime();
-    return diff >= 0 && diff <= 7 * 24 * 60 * 60 * 1000;
-  }
 
   // Lekérjük a meccsek számát tabonként
   useEffect(() => {
@@ -251,9 +240,9 @@ const MatchListTable = () => {
                   className={clsx(
                     "text-center text-sm",
                     {
-                      // Kiemelés a következő 7 napban lévő meccsekre
-                      "bg-yellow-50 border-l-6 border-yellow-500 shadow-md":
-                        isWithinNext7Days(m.date),
+                      // Kiemelés az aktuális héten lévő meccsekre
+                      "bg-yellow-50/70 border-l-8 border-yellow-300 shadow-md":
+                        isInCurrentWeek(m.date),
                     }
                   )}
                 >

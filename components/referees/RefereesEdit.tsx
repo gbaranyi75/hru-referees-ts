@@ -11,6 +11,7 @@ import Checkbox from "../common/Checkbox";
 import RefereesEditTable from "./RefereesEditTable";
 import { createGuestUser, fetchGuestUsers } from "@/lib/actions/userActions";
 import { Address } from "@/types/models";
+import AdminComponentWrapper from "../common/AdminComponentWrapper";
 
 const RefereesEdit = () => {
   const [editModeOpen, setEditModeOpen] = useState<boolean>(false);
@@ -88,7 +89,7 @@ const RefereesEdit = () => {
   }, [userName, address, isGuest, status, resetToDefault, toggleCreateNew]);
 
   return (
-    <div className="rounded-2xl border border-gray-200 bg-white p-5 mt-5">
+    <AdminComponentWrapper>
       <div className="flex flex-col mb-5">
         <div className="flex flex-col gap-5 xl:flex-row xl:items-center xl:justify-end">
           <button
@@ -155,7 +156,7 @@ const RefereesEdit = () => {
         )}
       </div>
       <RefereesEditTable key={keyValue}/>
-    </div>
+    </AdminComponentWrapper>
   );
 };
 export default RefereesEdit;
