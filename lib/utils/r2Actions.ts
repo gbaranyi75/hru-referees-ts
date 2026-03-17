@@ -53,7 +53,10 @@ export async function getSignedUrlForUpload(
 export async function getSignedUrlForDownload(key: string): Promise<string> {
     const command = new GetObjectCommand({
         Bucket: process.env.CLOUDFLARE_R2_BUCKET_NAME,
-        Key: key
+        Key: key,
+        ResponseContentDisposition: `attachment; filename="${encodeURIComponent(
+            key.split("/").pop() || key
+        )}"`,
     })
 
     try {
