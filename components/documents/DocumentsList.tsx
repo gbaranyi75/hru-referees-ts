@@ -68,7 +68,10 @@ const DocumentsList = ({
   const downloadFile = async (key: string) => {
     // Mobile Safari/Chrome may block window.open if it happens
     // after an async boundary (await). Open the tab immediately.
-    const newTab = window.open("", "_blank");
+    const newTab = window.open("", "_blank", "noopener,noreferrer");
+    if (newTab) {
+      newTab.opener = null;
+    }
     try {
       const endpoint = "/api/r2/files";
       const response = await fetch(endpoint, {
@@ -79,7 +82,11 @@ const DocumentsList = ({
       if (!response.ok) {
         throw new Error("Nem sikerült letöltési linket generálni.");
       }
-      const { signedUrl } = await response.json();
+      const data = await response.json();
+      const signedUrl = data?.signedUrl;
+      if (typeof signedUrl !== "string" || !signedUrl.trim()) {
+        throw new Error("A letöltési link formátuma érvénytelen.");
+      }
       if (newTab) {
         newTab.location.href = signedUrl;
         newTab.focus();

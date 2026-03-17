@@ -1,5 +1,10 @@
 import { NextResponse, NextRequest } from "next/server";
-import { listFiles, deleteFile, getSignedUrlForDownload } from "@/lib/utils/r2Actions";
+import {
+  listFiles,
+  deleteFile,
+  getSignedUrlForDownload,
+  BadRequestError,
+} from "@/lib/utils/r2Actions";
 
 // List all available files
 export async function GET() {
@@ -43,7 +48,10 @@ export async function POST(request: NextRequest) {
   try {
     const signedUrl = await getSignedUrlForDownload(key)
     return NextResponse.json({ signedUrl })
-  } catch {
+  } catch (error) {
+    if (error instanceof BadRequestError) {
+      return NextResponse.json({ error: error.message }, { status: 400 })
+    }
     return NextResponse.json(
       { error: 'Error generating download URL' },
       { status: 500 }
