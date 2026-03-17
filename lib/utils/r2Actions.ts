@@ -15,6 +15,15 @@ export interface FileObject {
     StorageClass?: string
 }
 
+export class BadRequestError extends Error {
+    statusCode: number
+    constructor(message: string) {
+        super(message)
+        this.name = "BadRequestError"
+        this.statusCode = 400
+    }
+}
+
 export async function uploadFile(file: Buffer, key: string) {
     const command = new PutObjectCommand({
         Bucket: process.env.CLOUDFLARE_R2_BUCKET_NAME,
@@ -51,9 +60,16 @@ export async function getSignedUrlForUpload(
 }
 
 export async function getSignedUrlForDownload(key: string): Promise<string> {
+    if (typeof key !== "string" || key.length === 0) {
+        throw new BadRequestError('Invalid "key" parameter for download')
+    }
+    const filename = key.split("/").pop() || key
+    const asciiFilename = filename.replace(/[^\x20-\x7E]+/g, "_")
+    const encodedFilename = encodeURIComponent(filename)
     const command = new GetObjectCommand({
         Bucket: process.env.CLOUDFLARE_R2_BUCKET_NAME,
-        Key: key
+        Key: key,
+        ResponseContentDisposition: `attachment; filename="${asciiFilename}"; filename*=UTF-8''${encodedFilename}`,
     })
 
     try {

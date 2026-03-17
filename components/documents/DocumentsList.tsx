@@ -66,6 +66,12 @@ const DocumentsList = ({
   };
 
   const downloadFile = async (key: string) => {
+    // Mobile Safari/Chrome may block window.open if it happens
+    // after an async boundary (await). Open the tab immediately.
+    const newTab = window.open("", "_blank", "noopener,noreferrer");
+    if (newTab) {
+      newTab.opener = null;
+    }
     try {
       const endpoint = "/api/r2/files";
       const response = await fetch(endpoint, {
@@ -73,11 +79,25 @@ const DocumentsList = ({
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ key: key }),
       });
-      const { signedUrl } = await response.json();
-      window.open(signedUrl, "_blank");
+      if (!response.ok) {
+        throw new Error("Nem sikerült letöltési linket generálni.");
+      }
+      const data = await response.json();
+      const signedUrl = data?.signedUrl;
+      if (typeof signedUrl !== "string" || !signedUrl.trim()) {
+        throw new Error("A letöltési link formátuma érvénytelen.");
+      }
+      if (newTab) {
+        newTab.location.href = signedUrl;
+        newTab.focus();
+      } else {
+        // Fallback if the popup was blocked anyway
+        window.location.href = signedUrl;
+      }
     } catch (error) {
       console.error("Hiba a fájl letöltésekor: ", error);
       alert("Hiba a fájl letöltésekor: " + error);
+      if (newTab) newTab.close();
     }
   };
 
