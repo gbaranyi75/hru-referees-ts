@@ -41,6 +41,8 @@ export type Match = {
   _id?: string;
   home: string;
   away: string;
+  homeTeamId?: string;
+  awayTeamId?: string;
   type: string;
   gender: string;
   age: string;
@@ -104,6 +106,11 @@ export type Notification = {
 export type Team = {
   _id?: string;
   name: string;
+  slug?: string;
+  kind: "club" | "country";
+  competitions: ("NB_I" | "EXTRA_LIGA" | "INTERNATIONAL")[];
+  countryCode?: string;
+  aliases: string[];
   city?: string;
   teamLeader?: string;
   phone?: string;

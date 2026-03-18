@@ -7,6 +7,16 @@ import { ActionResult } from "@/types/result";
 import { handleAsyncOperation } from "@/lib/utils/errorHandling";
 import { ErrorMessages } from "@/constants/messages";
 
+const slugifyTeamName = (name: string) =>
+  name
+    .trim()
+    .toLowerCase()
+    .replace(/\s+/g, "-")
+    // Keep unicode letters/numbers so Hungarian diacritics stay in the slug
+    .replace(/[^\p{L}\p{N}\-]/gu, "")
+    .replace(/\-+/g, "-")
+    .replace(/^\-|\-$/g, "");
+
 /**
  * Fetches teams from the database
  * @returns {Promise<Result<TeamType[]>>} A promise that resolves to a result object containing the teams or an error message
@@ -16,7 +26,33 @@ export const fetchTeams = async (): Promise<ActionResult<TeamType[]>> => {
   return handleAsyncOperation(async () => {
     await connectDB();
     const teams = await Team.find().lean();
-    return JSON.parse(JSON.stringify(teams));
+    const normalized = (teams ?? []).map((t: TeamType) => ({
+      ...t,
+      kind: (t.kind ?? "club") as TeamType["kind"],
+      competitions: (t.competitions ?? []) as TeamType["competitions"],
+      aliases: (t.aliases ?? []) as TeamType["aliases"],
+    }));
+    return JSON.parse(JSON.stringify(normalized));
+  });
+};
+
+export const fetchTeamsByCompetition = async (
+  competition: "NB_I" | "EXTRA_LIGA" | "INTERNATIONAL"
+): Promise<ActionResult<TeamType[]>> => {
+  return handleAsyncOperation(async () => {
+    await connectDB();
+    const teams = await Team.find({
+      competitions: { $in: [competition] },
+    })
+      .sort({ name: 1 })
+      .lean();
+    const normalized = (teams ?? []).map((t: TeamType) => ({
+      ...t,
+      kind: (t.kind ?? "club") as TeamType["kind"],
+      competitions: (t.competitions ?? []) as TeamType["competitions"],
+      aliases: (t.aliases ?? []) as TeamType["aliases"],
+    }));
+    return JSON.parse(JSON.stringify(normalized));
   });
 };
 
@@ -28,7 +64,16 @@ export const fetchTeams = async (): Promise<ActionResult<TeamType[]>> => {
 export const createTeam = async (teamData: TeamType): Promise<ActionResult<TeamType>> => {
   return handleAsyncOperation(async () => {
     await connectDB();
-    const newTeam = new Team(teamData);
+    const slugBase = teamData.slug?.trim() || slugifyTeamName(teamData.name);
+    const finalSlug = slugBase || `team-${Date.now()}`;
+    const teamPayload: TeamType = {
+      ...teamData,
+      slug: finalSlug,
+      kind: teamData.kind ?? "club",
+      competitions: teamData.competitions ?? [],
+      aliases: teamData.aliases ?? [],
+    };
+    const newTeam = new Team(teamPayload);
     await newTeam.save();
     return JSON.parse(JSON.stringify(newTeam));
   });
@@ -36,36 +81,25 @@ export const createTeam = async (teamData: TeamType): Promise<ActionResult<TeamT
 
 /**
  * Updates an existing team in the database
- * @param {string|undefined} teamId - The ID of the team to update
- * @param {string} name - The name of the team
- * @param {string} [city] - The city of the team (optional)
- * @param {string} [teamLeader] - The team leader's name (optional)
- * @param {string} [phone] - The phone number (optional)
- * @param {string} [email] - The email address (optional)
- * @returns {Promise<Result<TeamType>>} A promise that resolves to a result object containing the updated team or an error message
  */
-export const updateTeam = async (teamId: string | undefined, name: string, city?: string, teamLeader?: string, phone?: string, email?: string): Promise<ActionResult<TeamType>> => {
+export const updateTeam = async (
+  teamId: string | undefined,
+  updates: Partial<TeamType>
+): Promise<ActionResult<TeamType>> => {
   return handleAsyncOperation(async () => {
     if (!teamId) {
       throw new Error(ErrorMessages.TEAM.ID_REQUIRED);
     }
     await connectDB();
     
-    const updateData: Partial<Pick<TeamType, "name" | "city" | "teamLeader" | "phone" | "email">> = {};
-    if (name !== undefined) {
-      updateData.name = name;
+    const updateData: Partial<TeamType> = { ...updates };
+    if (updateData.name !== undefined) updateData.name = updateData.name.trim();
+    if (updateData.slug !== undefined) updateData.slug = updateData.slug.trim().toLowerCase();
+    if (updateData.kind !== undefined && !["club", "country"].includes(updateData.kind)) {
+      throw new Error(ErrorMessages.TEAM.INVALID_KIND);
     }
-    if (city !== undefined) {
-      updateData.city = city;
-    }
-    if (teamLeader !== undefined) {
-      updateData.teamLeader = teamLeader;
-    }
-    if (phone !== undefined) {
-      updateData.phone = phone;
-    }
-    if (email !== undefined) {
-      updateData.email = email;
+    if (updateData.competitions !== undefined && !Array.isArray(updateData.competitions)) {
+      throw new Error(ErrorMessages.TEAM.INVALID_COMPETITIONS);
     }
     
     const updatedTeam = await Team.findByIdAndUpdate(teamId, updateData, { new: true }).lean();

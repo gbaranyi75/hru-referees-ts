@@ -8,9 +8,8 @@ import { hu } from "react-day-picker/locale";
 import { useCreateMatch } from "@/hooks/useMatches";
 import { useUsers } from "@/contexts/UsersContext";
 import { useGuestUsers } from "@/contexts/GuestUsersContext";
-import { GuestUser, Match, MatchOfficial, User } from "@/types/models";
+import { GuestUser, Match, MatchOfficial, Team, User } from "@/types/models";
 import { hours } from "@/constants/matchUtils";
-import teams from "@/constants/matchData/teams.json";
 import types from "@/constants/matchData/matchTypes.json";
 import genderOptions from "@/constants/matchData/genderOptions.json";
 import ages from "@/constants/matchData/ages.json";
@@ -24,6 +23,7 @@ import {
   validateSingleMatch,
   validateNonSingleMatch,
 } from "@/lib/utils/matchValidation";
+import { fetchTeams } from "@/lib/actions/teamActions";
 
 const defaultFormFields = {
   type: "" as string,
@@ -85,6 +85,7 @@ const MatchesNew = () => {
   const [calendarOpen, setCalendarOpen] = useState<boolean>(false);
   const [isSingleMatch, setIsSingleMatch] = useState<boolean>(true);
   const [referees, setReferees] = useState<(User | GuestUser)[]>([]);
+  const [teams, setTeams] = useState<Team[]>([]);
   const { type = "" } = formFields || {};
   const { mutate: createMatch, isPending } = useCreateMatch();
 
@@ -109,6 +110,36 @@ const MatchesNew = () => {
       }));
     }
   }, [selected, transformDateFormat]);
+
+  useEffect(() => {
+    const loadTeams = async () => {
+      const res = await fetchTeams();
+      if (res instanceof Error || !res.success) return;
+      setTeams(res.data);
+    };
+    loadTeams();
+  }, []);
+
+  const teamsForMatch = (() => {
+    if (!teams.length) return [];
+    if (type === "Válogatott") {
+      const filtered = teams.filter(
+        (t) => t.kind === "country" || (t.competitions || []).includes("INTERNATIONAL")
+      );
+      return filtered.length ? filtered : teams;
+    }
+    if (type === "NB I") {
+      const filtered = teams.filter((t) => (t.competitions || []).includes("NB_I"));
+      return filtered.length ? filtered : teams;
+    }
+    if (type === "Extra Liga") {
+      const filtered = teams.filter((t) => (t.competitions || []).includes("EXTRA_LIGA"));
+      return filtered.length ? filtered : teams;
+    }
+    // Default: show domestic clubs (if not tagged yet, fall back to everything)
+    const tagged = teams.filter((t) => (t.competitions || []).length > 0);
+    return tagged.length > 0 ? tagged : teams;
+  })();
 
   const handleCalendarOpen = () => {
     setCalendarOpen((state) => !state);
@@ -401,9 +432,10 @@ const MatchesNew = () => {
                     <div className="col-span-2 lg:col-span-1">
                       <Label>Hazai:</Label>
                       <Select
-                        options={teams.map((n) => ({
-                          label: n.name,
-                          value: n.name,
+                        options={teamsForMatch.map((t) => ({
+                          label: t.name,
+                          value: t.name,
+                          id: t._id,
                           name: "home",
                         }))}
                         placeholder="--Válassz csapatot--"
@@ -412,6 +444,7 @@ const MatchesNew = () => {
                           setFormFields((prev) => ({
                             ...prev,
                             home: String(o === undefined ? "" : o?.value),
+                            homeTeamId: o?.id ?? undefined,
                           }));
                         }}
                         value={homeValue}
@@ -420,9 +453,10 @@ const MatchesNew = () => {
                     <div className="col-span-2 lg:col-span-1">
                       <Label>Vendég:</Label>
                       <Select
-                        options={teams.map((n) => ({
-                          label: n.name,
-                          value: n.name,
+                        options={teamsForMatch.map((t) => ({
+                          label: t.name,
+                          value: t.name,
+                          id: t._id,
                           name: "away",
                         }))}
                         placeholder="--Válassz csapatot--"
@@ -431,6 +465,7 @@ const MatchesNew = () => {
                           setFormFields((prev) => ({
                             ...prev,
                             away: String(o === undefined ? "" : o?.value),
+                            awayTeamId: o?.id ?? undefined,
                           }));
                         }}
                         value={awayValue}

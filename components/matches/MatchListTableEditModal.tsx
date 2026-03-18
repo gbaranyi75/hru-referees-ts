@@ -3,9 +3,8 @@ import { useState, useEffect, useCallback } from "react";
 import Select, { SelectOption } from "../common/Select";
 import { toast } from "react-toastify";
 import { Icon } from "@iconify/react";
-import { GuestUser, Match, MatchOfficial, User } from "@/types/models";
+import { GuestUser, Match, MatchOfficial, Team, User } from "@/types/models";
 import { hours } from "@/constants/matchUtils";
-import teams from "@/constants/matchData/teams.json";
 import types from "@/constants/matchData/matchTypes.json";
 import genderOptions from "@/constants/matchData/genderOptions.json";
 import ages from "@/constants/matchData/ages.json";
@@ -17,6 +16,7 @@ import { DayPicker, getDefaultClassNames } from "react-day-picker";
 import { hu } from "react-day-picker/locale";
 import "react-day-picker/dist/style.css";
 import { updateMatch } from "@/lib/actions/matchActions";
+import { fetchTeams } from "@/lib/actions/teamActions";
 import {
   validateNonSingleMatch,
   validateSingleMatch,
@@ -37,6 +37,8 @@ const MatchItemEditModal = ({
     type: selectedMatch?.type as string,
     home: selectedMatch?.home as string,
     away: selectedMatch?.away as string,
+    homeTeamId: selectedMatch?.homeTeamId,
+    awayTeamId: selectedMatch?.awayTeamId,
     gender: selectedMatch?.gender as string,
     age: selectedMatch?.age as string,
     venue: selectedMatch?.venue as string,
@@ -114,6 +116,7 @@ const MatchItemEditModal = ({
   );
 
   const { type = "" } = formFields || {};
+  const [teams, setTeams] = useState<Team[]>([]);
 
   /* const dateFormatOptions: Intl.DateTimeFormatOptions = {
     year: "numeric",
@@ -145,6 +148,35 @@ const MatchItemEditModal = ({
       }));
     }
   }, [selected, transformDateFormat]);
+
+  useEffect(() => {
+    const loadTeams = async () => {
+      const res = await fetchTeams();
+      if (res instanceof Error || !res.success) return;
+      setTeams(res.data);
+    };
+    loadTeams();
+  }, []);
+
+  const teamsForMatch = (() => {
+    if (!teams.length) return [];
+    if (type === "Válogatott") {
+      const filtered = teams.filter(
+        (t) => t.kind === "country" || (t.competitions || []).includes("INTERNATIONAL")
+      );
+      return filtered.length ? filtered : teams;
+    }
+    if (type === "NB I") {
+      const filtered = teams.filter((t) => (t.competitions || []).includes("NB_I"));
+      return filtered.length ? filtered : teams;
+    }
+    if (type === "Extra Liga") {
+      const filtered = teams.filter((t) => (t.competitions || []).includes("EXTRA_LIGA"));
+      return filtered.length ? filtered : teams;
+    }
+    const tagged = teams.filter((t) => (t.competitions || []).length > 0);
+    return tagged.length > 0 ? tagged : teams;
+  })();
 
   const handleCalendarOpen = () => {
     setCalendarOpen((state) => !state);
@@ -390,9 +422,10 @@ const MatchItemEditModal = ({
               <div className="col-span-2 lg:col-span-1">
                 <Label>Hazai:</Label>
                 <Select
-                  options={teams.map((n) => ({
-                    label: n.name,
-                    value: n.name,
+                  options={teamsForMatch.map((t) => ({
+                    label: t.name,
+                    value: t.name,
+                    id: t._id,
                     name: "home",
                   }))}
                   placeholder="--Válassz csapatot--"
@@ -401,6 +434,7 @@ const MatchItemEditModal = ({
                     setFormFields({
                       ...formFields,
                       home: String(o === undefined ? "" : o?.value),
+                          homeTeamId: o?.id ?? undefined,
                     });
                   }}
                   value={homeValue}
@@ -409,9 +443,10 @@ const MatchItemEditModal = ({
               <div className="col-span-2 lg:col-span-1">
                 <Label>Vendég:</Label>
                 <Select
-                  options={teams.map((n) => ({
-                    label: n.name,
-                    value: n.name,
+                  options={teamsForMatch.map((t) => ({
+                    label: t.name,
+                    value: t.name,
+                    id: t._id,
                     name: "away",
                   }))}
                   placeholder="--Válassz csapatot--"
@@ -420,6 +455,7 @@ const MatchItemEditModal = ({
                     setFormFields({
                       ...formFields,
                       away: String(o === undefined ? "" : o?.value),
+                          awayTeamId: o?.id ?? undefined,
                     });
                   }}
                   value={awayValue}

@@ -2,6 +2,7 @@
 
 import connectDB from "@/config/database";
 import Match from "@/models/Match";
+import Team from "@/models/Team";
 import {
   Match as MatchType,
   MatchOfficial,
@@ -164,6 +165,8 @@ export const fetchMatchById = async (
 export interface MatchData {
   home: string;
   away: string;
+  homeTeamId?: string;
+  awayTeamId?: string;
   type: string;
   gender: string;
   age: string;
@@ -189,9 +192,27 @@ export const createMatch = async (data: MatchData): Promise<ActionResult<null>> 
       return { success: false, error: "Not logged in" };
     }
 
+    const homeTeamIdRaw = data.homeTeamId?.trim();
+    const homeTeamId =
+      homeTeamIdRaw && Types.ObjectId.isValid(homeTeamIdRaw)
+        ? homeTeamIdRaw
+        : undefined;
+    const awayTeamIdRaw = data.awayTeamId?.trim();
+    const awayTeamId =
+      awayTeamIdRaw && Types.ObjectId.isValid(awayTeamIdRaw)
+        ? awayTeamIdRaw
+        : undefined;
+
+    const resolvedHome =
+      homeTeamId ? (await Team.findById(homeTeamId).lean()) : null;
+    const resolvedAway =
+      awayTeamId ? (await Team.findById(awayTeamId).lean()) : null;
+
     const newMatch = new Match({
-      home: data.home,
-      away: data.away,
+      home: resolvedHome?.name ?? data.home,
+      away: resolvedAway?.name ?? data.away,
+      homeTeamId,
+      awayTeamId,
       type: data.type,
       gender: data.gender,
       age: data.age,
@@ -291,6 +312,22 @@ export const updateMatch = async (
       return { success: false, error: "Not logged in" };
     }
 
+    const homeTeamIdRaw = data.homeTeamId?.trim();
+    const homeTeamId =
+      homeTeamIdRaw && Types.ObjectId.isValid(homeTeamIdRaw)
+        ? homeTeamIdRaw
+        : undefined;
+    const awayTeamIdRaw = data.awayTeamId?.trim();
+    const awayTeamId =
+      awayTeamIdRaw && Types.ObjectId.isValid(awayTeamIdRaw)
+        ? awayTeamIdRaw
+        : undefined;
+
+    const resolvedHome =
+      homeTeamId ? (await Team.findById(homeTeamId).lean()) : null;
+    const resolvedAway =
+      awayTeamId ? (await Team.findById(awayTeamId).lean()) : null;
+
     const existingMatch = (await Match.findById(matchId)
       .lean()
       .exec()) as MatchType | null;
@@ -325,8 +362,10 @@ export const updateMatch = async (
     await Match.findOneAndUpdate(
       { _id: matchId },
       {
-        home: data.home,
-        away: data.away,
+        home: resolvedHome?.name ?? data.home,
+        away: resolvedAway?.name ?? data.away,
+        homeTeamId,
+        awayTeamId,
         type: data.type,
         gender: data.gender,
         age: data.age,

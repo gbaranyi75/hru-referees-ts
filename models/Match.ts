@@ -6,6 +6,16 @@ const MatchSchema = new Schema(
       type: String,
     },
     away: { type: String },
+    homeTeamId: {
+      type: Schema.Types.ObjectId,
+      ref: "Team",
+      required: false,
+    },
+    awayTeamId: {
+      type: Schema.Types.ObjectId,
+      ref: "Team",
+      required: false,
+    },
     type: { type: String, required: true },
     gender: { type: String, required: true },
     age: { type: String, required: true },
