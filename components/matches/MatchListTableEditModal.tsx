@@ -150,61 +150,83 @@ const MatchItemEditModal = ({
     setCalendarOpen((state) => !state);
   };
 
+  type PositionKey = "referee" | "assist1" | "assist2" | "controller" | "referees";
+
+  const buildUserPositionMap = (match: Match | null) => {
+    const map = new Map<
+      string,
+      { positions: Set<PositionKey>; username: string; email: string | undefined }
+    >();
+
+    if (!match) return map;
+
+    const add = (
+      official: MatchOfficial | undefined | null,
+      position: PositionKey
+    ) => {
+      if (!official?.clerkUserId) return;
+      const existing = map.get(official.clerkUserId);
+      if (existing) {
+        existing.positions.add(position);
+        if (!existing.username && official.username) {
+          existing.username = official.username;
+        }
+        if (!existing.email && official.email) {
+          existing.email = official.email;
+        }
+      } else {
+        map.set(official.clerkUserId, {
+          positions: new Set<PositionKey>([position]),
+          username: official.username,
+          email: official.email,
+        });
+      }
+    };
+
+    add(match.referee as MatchOfficial, "referee");
+    add(match.assist1 as MatchOfficial, "assist1");
+    add(match.assist2 as MatchOfficial, "assist2");
+
+    (match.controllers || []).forEach((controller) =>
+      add(controller as MatchOfficial, "controller")
+    );
+    (match.referees || []).forEach((ref) =>
+      add(ref as MatchOfficial, "referees")
+    );
+
+    return map;
+  };
+
   const handleEmailSend = async () => {
+    const previousMap = buildUserPositionMap(selectedMatch);
+    const currentMap = buildUserPositionMap(formFields);
+
     const list: {
       username: string;
       clerkUserId: string;
       email: string | undefined;
       messageData: Match;
     }[] = [];
-    if (formFields.referee.clerkUserId) {
-      list.push({
-        username: formFields.referee.username,
-        clerkUserId: formFields.referee.clerkUserId,
-        email: formFields.referee.email,
-        messageData: formFields,
-      });
-    }
-    if (formFields.assist1.clerkUserId) {
-      list.push({
-        username: formFields.assist1.username,
-        clerkUserId: formFields.assist1.clerkUserId,
-        email: formFields.assist1.email,
-        messageData: formFields,
-      });
-    }
-    if (formFields.assist2.clerkUserId) {
-      list.push({
-        username: formFields.assist2.username,
-        clerkUserId: formFields.assist2.clerkUserId,
-        email: formFields.assist2.email,
-        messageData: formFields,
-      });
-    }
-    if (formFields.controllers.length > 0) {
-      formFields.controllers.forEach((controller) => {
-        if (controller.clerkUserId) {
-          list.push({
-            username: controller.username,
-            clerkUserId: controller.clerkUserId,
-            email: controller.email,
-            messageData: formFields,
-          });
-        }
-      });
-    }
-    if (formFields.referees.length > 0) {
-      formFields.referees.forEach((refereeItem) => {
-        if (refereeItem.clerkUserId) {
-          list.push({
-            username: refereeItem.username,
-            clerkUserId: refereeItem.clerkUserId,
-            email: refereeItem.email,
-            messageData: formFields,
-          });
-        }
-      });
-    }
+
+    currentMap.forEach((current, clerkUserId) => {
+      const prev = previousMap.get(clerkUserId);
+      const prevPositions = prev?.positions ?? new Set<PositionKey>();
+
+      const sameSize = prevPositions.size === current.positions.size;
+      const sameMembers =
+        sameSize &&
+        [...current.positions].every((pos) => prevPositions.has(pos));
+
+      // Only send email if this user's own positions actually changed
+      if (!sameMembers) {
+        list.push({
+          username: current.username,
+          clerkUserId,
+          email: current.email,
+          messageData: formFields,
+        });
+      }
+    });
 
     const results = await Promise.allSettled(
       list.map(async (l) => {

@@ -7,6 +7,7 @@ import clsx from "clsx";
 import Skeleton from "../common/Skeleton";
 import { Match } from "@/types/models";
 import { fetchMatches } from "@/lib/actions/matchActions";
+import { isInCurrentWeek, isOnOrAfterToday } from "@/lib/utils/matchHighlight";
 
 const NextMatchInfoBox = () => {
   const [matches, setMatches] = useState<Match[]>([]);
@@ -15,24 +16,23 @@ const NextMatchInfoBox = () => {
 
   const loadMatches = async () => {
     setLoading(true);
-    const result = await fetchMatches();
-    if (!result.success) return setNoMatch(true);
-
-    const firstDay = new Date();
-    const nextWeek = new Date(firstDay.getTime() + 7 * 24 * 60 * 60 * 1000);
-
-    const arr: Match[] = [];
-    result.data.forEach((match: Match) => {
-      if (
-        new Date(match.date) < nextWeek &&
-        new Date(match.date) >= new Date()
-      ) {
-        arr.push(match);
-        setMatches(arr);
+    try {
+      const result = await fetchMatches();
+      if (!result.success) {
+        setNoMatch(true);
+        return;
       }
-    });
-    if (arr.length === 0) setNoMatch(true);
-    setLoading(false);
+
+      const arr: Match[] = result.data.filter(
+        (match: Match) =>
+          isInCurrentWeek(match.date) && isOnOrAfterToday(match.date)
+      );
+
+      setMatches(arr);
+      if (arr.length === 0) setNoMatch(true);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const checkType = (m: Match) => {
@@ -109,7 +109,7 @@ const NextMatchInfoBox = () => {
           ) : (
             <div className="flex flex-col w-full h-full justify-center items-center">
               <p className="text-xl font-semibold text-gray-600">
-                A következő 7 napban nem lesz mérkőzés.
+                A héten már nincs több mérkőzés.
               </p>
               <p className="mt-4 text-lg text-gray-600">
                 Ha kíváncsi vagy a későbbi meccsekre, kattints a linkre:
