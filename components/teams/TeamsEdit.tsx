@@ -127,6 +127,7 @@ const TeamsEdit = () => {
 				competitions: competition
 					? ([competition.value] as Team["competitions"])
 					: ([] as Team["competitions"]),
+				aliases: [],
 				countryCode: countryCode || undefined,
 			});
 			const success = res instanceof Error ? false : res.success;
