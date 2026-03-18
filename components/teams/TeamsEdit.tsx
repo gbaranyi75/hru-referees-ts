@@ -12,6 +12,17 @@ import Skeleton from "../common/Skeleton";
 import { Team } from "@/types/models";
 import { createTeam, fetchTeams } from "../../lib/actions/teamActions";
 import TeamsEditList from "./TeamsEditList";
+import Select, { SelectOption } from "../common/Select";
+
+const competitionOptions: SelectOption[] = [
+  { label: "NB I", value: "NB_I" },
+  { label: "Extra Liga", value: "EXTRA_LIGA" },
+  { label: "International", value: "INTERNATIONAL" },
+];
+const kindOptions: SelectOption[] = [
+  { label: "Klub", value: "club" },
+  { label: "Ország", value: "country" },
+];
 
 const TeamsEdit = () => {
 	const [loading, setLoading] = useState<boolean>(true);
@@ -22,6 +33,9 @@ const TeamsEdit = () => {
 	const [teamLeader, setTeamLeader] = useState<string>("");
 	const [phone, setPhone] = useState<string>("");
 	const [email, setEmail] = useState<string>("");
+	const [kind, setKind] = useState<Team["kind"]>("club");
+	const [competition, setCompetition] = useState<SelectOption | undefined>(undefined);
+	const [countryCode, setCountryCode] = useState<string>("");
 	const [teamList, setTeamList] = useState<Team[]>([]);
 
 	const handleTeamNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -59,6 +73,33 @@ const TeamsEdit = () => {
 		setEmail(e.target.value);
 	};
 
+	const handleKindChange = (o?: SelectOption) => {
+		setEdited(true);
+		setKind((o?.value as Team["kind"]) || "club");
+	};
+
+	const handleCompetitionChange = (o: SelectOption | undefined) => {
+		setEdited(true);
+		setCompetition(o);
+	};
+
+	const handleCountryCodeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+		setEdited(true);
+		setCountryCode(e.target.value);
+	};
+
+	const resetToDefault = useCallback(() => {
+		setEdited(false);
+		setTeamName("");
+		setCity("");
+		setTeamLeader("");
+		setPhone("");
+		setEmail("");
+		setKind("club");
+		setCompetition(undefined);
+		setCountryCode("");
+	}, []);
+
 	const toggleEditMode = () => {
 		setEditModeOpen(!editModeOpen);
 		resetToDefault();
@@ -67,16 +108,7 @@ const TeamsEdit = () => {
 	const toggleCreateNew = useCallback(() => {
 		setEditModeOpen(!editModeOpen);
 		resetToDefault();
-	}, [editModeOpen]);
-
-	const resetToDefault = () => {
-		setEdited(false);
-		setTeamName("");
-		setCity("");
-		setTeamLeader("");
-		setPhone("");
-		setEmail("");
-	};
+	}, [editModeOpen, resetToDefault]);
 
 	const handleSave = useCallback(async () => {
 		if (!teamName.trim()) {
@@ -85,7 +117,18 @@ const TeamsEdit = () => {
 		}
 		try {
 			setLoading(true);
-			const res = await createTeam({ name: teamName, city, teamLeader, phone, email });
+			const res = await createTeam({
+				name: teamName,
+				city,
+				teamLeader,
+				phone,
+				email,
+				kind,
+				competitions: competition
+					? ([competition.value] as Team["competitions"])
+					: ([] as Team["competitions"]),
+				countryCode: countryCode || undefined,
+			});
 			const success = res instanceof Error ? false : res.success;
 			if (!success) {
 				throw new Error("Hiba történt a mentés során.");
@@ -102,7 +145,18 @@ const TeamsEdit = () => {
 		} finally {
 			setLoading(false);
 		}
-	}, [teamName, city, toggleCreateNew, resetToDefault]);
+	}, [
+		teamName,
+		city,
+		teamLeader,
+		phone,
+		email,
+		kind,
+		competition,
+		countryCode,
+		toggleCreateNew,
+		resetToDefault,
+	]);
 
 
 	const getTeams = async () => {
@@ -111,7 +165,6 @@ const TeamsEdit = () => {
 			const result = await fetchTeams();
 			if (!result.success) return null;
 			setTeamList(result.data);
-			console.log(result.data);
 			return result.data;
 		} catch (error) {
 			console.error(error);
@@ -198,6 +251,38 @@ const TeamsEdit = () => {
 									onChange={handleEmailChange}
 								/>
 							</div>
+							<div className="col-span-2 lg:col-span-1">
+								<Label>Típus:</Label>
+								<Select
+									options={kindOptions.map((o) => ({ ...o, name: "kind" }))}
+									placeholder="--Típus--"
+									onChange={handleKindChange}
+									value={{
+										value: kind,
+										label: kindOptions.find((k) => k.value === kind)?.label,
+									} as SelectOption}
+								/>
+							</div>
+							<div className="col-span-2 lg:col-span-1">
+								<Label>Versenyek:</Label>
+								<Select
+									options={competitionOptions.map((o) => ({ ...o, name: "competitions" }))}
+									placeholder="--Versenyek--"
+									onChange={handleCompetitionChange}
+									value={competition}
+								/>
+							</div>
+							{kind === "country" && (
+								<div className="col-span-2 lg:col-span-1">
+									<Label htmlFor="countryCode">Országkód (pl. HU):</Label>
+									<Input
+										type="text"
+										id="countryCode"
+										defaultValue={""}
+										onChange={handleCountryCodeChange}
+									/>
+								</div>
+							)}
 						</div>
 						<div className="flex items-center gap-3 px-2 mt-6 justify-center lg:justify-end">
 							<div className="px-4 py-3 text-center sm:px-6">
