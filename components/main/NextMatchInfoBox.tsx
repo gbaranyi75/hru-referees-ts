@@ -7,7 +7,7 @@ import clsx from "clsx";
 import Skeleton from "../common/Skeleton";
 import { Match } from "@/types/models";
 import { fetchMatches } from "@/lib/actions/matchActions";
-import { isInCurrentWeek } from "@/lib/utils/matchHighlight";
+import { isInCurrentWeek, isOnOrAfterToday } from "@/lib/utils/matchHighlight";
 
 const NextMatchInfoBox = () => {
   const [matches, setMatches] = useState<Match[]>([]);
@@ -16,16 +16,23 @@ const NextMatchInfoBox = () => {
 
   const loadMatches = async () => {
     setLoading(true);
-    const result = await fetchMatches();
-    if (!result.success) return setNoMatch(true);
+    try {
+      const result = await fetchMatches();
+      if (!result.success) {
+        setNoMatch(true);
+        return;
+      }
 
-    const arr: Match[] = result.data.filter((match: Match) =>
-      isInCurrentWeek(match.date)
-    );
+      const arr: Match[] = result.data.filter(
+        (match: Match) =>
+          isInCurrentWeek(match.date) && isOnOrAfterToday(match.date)
+      );
 
-    setMatches(arr);
-    if (arr.length === 0) setNoMatch(true);
-    setLoading(false);
+      setMatches(arr);
+      if (arr.length === 0) setNoMatch(true);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const checkType = (m: Match) => {
@@ -102,7 +109,7 @@ const NextMatchInfoBox = () => {
           ) : (
             <div className="flex flex-col w-full h-full justify-center items-center">
               <p className="text-xl font-semibold text-gray-600">
-                A következő 7 napban nem lesz mérkőzés.
+                A héten már nincs több mérkőzés.
               </p>
               <p className="mt-4 text-lg text-gray-600">
                 Ha kíváncsi vagy a későbbi meccsekre, kattints a linkre:

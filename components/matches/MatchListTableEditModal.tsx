@@ -168,6 +168,12 @@ const MatchItemEditModal = ({
       const existing = map.get(official.clerkUserId);
       if (existing) {
         existing.positions.add(position);
+        if (!existing.username && official.username) {
+          existing.username = official.username;
+        }
+        if (!existing.email && official.email) {
+          existing.email = official.email;
+        }
       } else {
         map.set(official.clerkUserId, {
           positions: new Set<PositionKey>([position]),
