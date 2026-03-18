@@ -37,6 +37,8 @@ const MatchItemEditModal = ({
     type: selectedMatch?.type as string,
     home: selectedMatch?.home as string,
     away: selectedMatch?.away as string,
+    homeTeamId: selectedMatch?.homeTeamId,
+    awayTeamId: selectedMatch?.awayTeamId,
     gender: selectedMatch?.gender as string,
     age: selectedMatch?.age as string,
     venue: selectedMatch?.venue as string,
@@ -432,7 +434,7 @@ const MatchItemEditModal = ({
                     setFormFields({
                       ...formFields,
                       home: String(o === undefined ? "" : o?.value),
-                      homeTeamId: o?.id || "",
+                          homeTeamId: o?.id ?? undefined,
                     });
                   }}
                   value={homeValue}
@@ -453,7 +455,7 @@ const MatchItemEditModal = ({
                     setFormFields({
                       ...formFields,
                       away: String(o === undefined ? "" : o?.value),
-                      awayTeamId: o?.id || "",
+                          awayTeamId: o?.id ?? undefined,
                     });
                   }}
                   value={awayValue}

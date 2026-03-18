@@ -20,6 +20,8 @@ export const ErrorMessages = {
     ID_REQUIRED: "A csapat azonosító megadása kötelező",
     NOT_FOUND: "A csapat nem található",
     NOT_FOUND_OR_DELETED: "A csapat nem található vagy már törölve lett",
+    INVALID_KIND: "A csapat típusa érvénytelen",
+    INVALID_COMPETITIONS: "A csapat versenyeinek formátuma érvénytelen",
   },
   EMAIL: {
     SEND_FAILED: "Email küldési hiba",

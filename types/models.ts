@@ -107,10 +107,10 @@ export type Team = {
   _id?: string;
   name: string;
   slug?: string;
-  kind?: "club" | "country";
-  competitions?: ("NB_I" | "EXTRA_LIGA" | "INTERNATIONAL")[];
+  kind: "club" | "country";
+  competitions: ("NB_I" | "EXTRA_LIGA" | "INTERNATIONAL")[];
   countryCode?: string;
-  aliases?: string[];
+  aliases: string[];
   city?: string;
   teamLeader?: string;
   phone?: string;

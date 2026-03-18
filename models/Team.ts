@@ -17,9 +17,8 @@ const TeamSchema = new Schema(
     },
     slug: {
       type: String,
-      required: true,
-      unique: true,
       index: true,
+      required: false,
       lowercase: true,
       trim: true,
     },
@@ -68,6 +67,7 @@ const TeamSchema = new Schema(
   }
 );
 
+TeamSchema.index({ slug: 1 }, { unique: true, sparse: true });
 TeamSchema.index({ kind: 1, competitions: 1 });
 
 const Team = models.Team || model("Team", TeamSchema);

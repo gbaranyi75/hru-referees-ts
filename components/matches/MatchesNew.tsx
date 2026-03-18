@@ -444,7 +444,7 @@ const MatchesNew = () => {
                           setFormFields((prev) => ({
                             ...prev,
                             home: String(o === undefined ? "" : o?.value),
-                            homeTeamId: o?.id || "",
+                            homeTeamId: o?.id ?? undefined,
                           }));
                         }}
                         value={homeValue}
@@ -465,7 +465,7 @@ const MatchesNew = () => {
                           setFormFields((prev) => ({
                             ...prev,
                             away: String(o === undefined ? "" : o?.value),
-                            awayTeamId: o?.id || "",
+                            awayTeamId: o?.id ?? undefined,
                           }));
                         }}
                         value={awayValue}

@@ -26,7 +26,13 @@ export const fetchTeams = async (): Promise<ActionResult<TeamType[]>> => {
   return handleAsyncOperation(async () => {
     await connectDB();
     const teams = await Team.find().lean();
-    return JSON.parse(JSON.stringify(teams));
+    const normalized = (teams ?? []).map((t: TeamType) => ({
+      ...t,
+      kind: (t.kind ?? "club") as TeamType["kind"],
+      competitions: (t.competitions ?? []) as TeamType["competitions"],
+      aliases: (t.aliases ?? []) as TeamType["aliases"],
+    }));
+    return JSON.parse(JSON.stringify(normalized));
   });
 };
 
@@ -40,7 +46,13 @@ export const fetchTeamsByCompetition = async (
     })
       .sort({ name: 1 })
       .lean();
-    return JSON.parse(JSON.stringify(teams));
+    const normalized = (teams ?? []).map((t: TeamType) => ({
+      ...t,
+      kind: (t.kind ?? "club") as TeamType["kind"],
+      competitions: (t.competitions ?? []) as TeamType["competitions"],
+      aliases: (t.aliases ?? []) as TeamType["aliases"],
+    }));
+    return JSON.parse(JSON.stringify(normalized));
   });
 };
 
@@ -53,9 +65,10 @@ export const createTeam = async (teamData: TeamType): Promise<ActionResult<TeamT
   return handleAsyncOperation(async () => {
     await connectDB();
     const slugBase = teamData.slug?.trim() || slugifyTeamName(teamData.name);
+    const finalSlug = slugBase || `team-${Date.now()}`;
     const teamPayload: TeamType = {
       ...teamData,
-      slug: slugBase || undefined,
+      slug: finalSlug,
       kind: teamData.kind ?? "club",
       competitions: teamData.competitions ?? [],
       aliases: teamData.aliases ?? [],
@@ -83,10 +96,10 @@ export const updateTeam = async (
     if (updateData.name !== undefined) updateData.name = updateData.name.trim();
     if (updateData.slug !== undefined) updateData.slug = updateData.slug.trim().toLowerCase();
     if (updateData.kind !== undefined && !["club", "country"].includes(updateData.kind)) {
-      throw new Error("Invalid team kind");
+      throw new Error(ErrorMessages.TEAM.INVALID_KIND);
     }
     if (updateData.competitions !== undefined && !Array.isArray(updateData.competitions)) {
-      throw new Error("Invalid competitions");
+      throw new Error(ErrorMessages.TEAM.INVALID_COMPETITIONS);
     }
     
     const updatedTeam = await Team.findByIdAndUpdate(teamId, updateData, { new: true }).lean();
