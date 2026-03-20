@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Icon } from "@iconify/react";
 import { toast } from "react-toastify";
 import Skeleton from "../common/Skeleton";
@@ -37,9 +37,12 @@ const DocumentsList = ({
   const [files, setFiles] = useState<FileProps[]>([]);
   const [fileToDelete, setFileToDelete] = useState<FileProps>({} as FileProps);
   const [isDeleting, setIsDeleting] = useState<boolean>(false);
+  const deleteInFlightRef = useRef(false);
   const { isOpen, openModal, closeModal } = useModal();
 
   const removeFile = async (file: FileProps) => {
+    if (deleteInFlightRef.current) return;
+    deleteInFlightRef.current = true;
     setIsDeleting(true);
     try {
       const endpoint = "/api/r2/files";
@@ -59,6 +62,7 @@ const DocumentsList = ({
     } catch {
       toast.error("A fájlt nem sikerült törölni");
     } finally {
+      deleteInFlightRef.current = false;
       setIsDeleting(false);
     }
   };

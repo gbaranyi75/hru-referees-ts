@@ -1,7 +1,7 @@
 "use client";
 
 import type { ReactNode } from "react";
-import { useCallback, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import {
   ConfirmDialog,
   ConfirmDialogVariant,
@@ -23,27 +23,47 @@ export type RequestConfirmOptions = {
  * const ok = await requestConfirm({ title: "Törlés?", message: "..." });
  * if (ok) { ... }
  * return (<>{confirmDialog}<div>...</div></>);
+ *
+ * Re-entry: if a confirm is already open, the same Promise is returned (e.g. double-click)
+ * so the first await is not left hanging. On unmount, any pending Promise resolves to false.
  */
 export function useConfirmDialog() {
   const resolverRef = useRef<((value: boolean) => void) | null>(null);
+  const pendingPromiseRef = useRef<Promise<boolean> | null>(null);
   const [open, setOpen] = useState(false);
   const [options, setOptions] = useState<RequestConfirmOptions>({
     title: "",
   });
 
-  const requestConfirm = useCallback((opts: RequestConfirmOptions) => {
-    return new Promise<boolean>((resolve) => {
-      resolverRef.current = resolve;
-      setOptions(opts);
-      setOpen(true);
-    });
+  useEffect(() => {
+    return () => {
+      const resolve = resolverRef.current;
+      resolverRef.current = null;
+      pendingPromiseRef.current = null;
+      resolve?.(false);
+    };
   }, []);
 
   const finish = useCallback((value: boolean) => {
     const resolve = resolverRef.current;
     resolverRef.current = null;
+    pendingPromiseRef.current = null;
     setOpen(false);
     resolve?.(value);
+  }, []);
+
+  const requestConfirm = useCallback((opts: RequestConfirmOptions) => {
+    if (resolverRef.current !== null && pendingPromiseRef.current !== null) {
+      return pendingPromiseRef.current;
+    }
+
+    const promise = new Promise<boolean>((resolve) => {
+      resolverRef.current = resolve;
+      setOptions(opts);
+      setOpen(true);
+    });
+    pendingPromiseRef.current = promise;
+    return promise;
   }, []);
 
   const handleClose = useCallback(() => finish(false), [finish]);

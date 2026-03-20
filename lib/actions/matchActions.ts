@@ -485,7 +485,7 @@ export const deleteMatch = async (
     console.error("Error deleting match:", error);
     return {
       success: false,
-      error: error instanceof Error ? error.message : ErrorMessages.MATCH.DELETE_FAILED,
+      error: ErrorMessages.MATCH.DELETE_FAILED,
     };
   }
 };
