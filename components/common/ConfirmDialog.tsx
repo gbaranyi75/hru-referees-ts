@@ -1,6 +1,7 @@
 "use client";
 
 import type { ReactNode } from "react";
+import { useId } from "react";
 import { Modal } from "@/components/common/Modal";
 import OutlinedButton from "@/components/common/OutlinedButton";
 import PrimaryButton from "@/components/common/PrimaryButton";
@@ -48,6 +49,9 @@ export function ConfirmDialog({
   showCloseButton = false,
   className = "max-w-md p-6 lg:p-8",
 }: ConfirmDialogProps) {
+  const titleId = useId();
+  const messageId = useId();
+  const hasMessage = message != null && message !== "";
   const resolvedConfirmText =
     confirmText ??
     (variant === "danger" ? defaultConfirmDanger : defaultConfirmPrimary);
@@ -59,13 +63,21 @@ export function ConfirmDialog({
       showCloseButton={showCloseButton}
       className={className}
       rootClassName="!z-[200000]"
+      ariaLabelledBy={titleId}
+      ariaDescribedBy={hasMessage ? messageId : undefined}
     >
       <div className="flex flex-col px-1 pt-2">
-        <h2 className="text-center text-xl font-semibold text-gray-700">
+        <h2
+          id={titleId}
+          className="text-center text-xl font-semibold text-gray-700">
           {title}
         </h2>
-        {message != null && message !== "" && (
-          <div className="mt-3 text-center text-sm text-gray-600">{message}</div>
+        {hasMessage && (
+          <div
+            id={messageId}
+            className="mt-3 text-center text-sm text-gray-600">
+            {message}
+          </div>
         )}
         <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
           <OutlinedButton

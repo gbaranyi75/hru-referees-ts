@@ -1,5 +1,20 @@
 "use client";
-import React, { useRef, useEffect } from "react";
+import React, { useRef, useEffect, useCallback } from "react";
+
+const FOCUSABLE_SELECTOR = [
+  'a[href]:not([disabled])',
+  'button:not([disabled])',
+  'input:not([disabled])',
+  'select:not([disabled])',
+  'textarea:not([disabled])',
+  '[tabindex]:not([tabindex="-1"]):not([disabled])',
+].join(", ");
+
+function getFocusableElements(container: HTMLElement): HTMLElement[] {
+  return Array.from(
+    container.querySelectorAll<HTMLElement>(FOCUSABLE_SELECTOR)
+  ).filter((el) => !el.closest('[aria-hidden="true"]'));
+}
 
 interface ModalProps {
   isOpen: boolean;
@@ -10,6 +25,12 @@ interface ModalProps {
   children: React.ReactNode;
   showCloseButton?: boolean; // New prop to control close button visibility
   isFullscreen?: boolean; // Default to false for backwards compatibility
+  /** Prefer over ariaLabel when a visible heading has this id */
+  ariaLabelledBy?: string;
+  /** Fallback accessible name when ariaLabelledBy is not used */
+  ariaLabel?: string;
+  /** Optional id of descriptive content inside the dialog */
+  ariaDescribedBy?: string;
 }
 
 export const Modal: React.FC<ModalProps> = ({
@@ -20,16 +41,22 @@ export const Modal: React.FC<ModalProps> = ({
   rootClassName = "",
   showCloseButton = true, // Default to true for backwards compatibility
   isFullscreen = false,
+  ariaLabelledBy,
+  ariaLabel,
+  ariaDescribedBy,
 }) => {
   const modalRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
-    const handleEscape = (event: KeyboardEvent) => {
+  const handleEscape = useCallback(
+    (event: KeyboardEvent) => {
       if (event.key === "Escape") {
         onClose();
       }
-    };
+    },
+    [onClose]
+  );
 
+  useEffect(() => {
     if (isOpen) {
       document.addEventListener("keydown", handleEscape);
     }
@@ -37,7 +64,7 @@ export const Modal: React.FC<ModalProps> = ({
     return () => {
       document.removeEventListener("keydown", handleEscape);
     };
-  }, [isOpen, onClose]);
+  }, [isOpen, handleEscape]);
 
   useEffect(() => {
     if (isOpen) {
@@ -51,30 +78,111 @@ export const Modal: React.FC<ModalProps> = ({
     };
   }, [isOpen]);
 
+  /** Move focus into the dialog when opened; restore previous focus on close. */
+  useEffect(() => {
+    if (!isOpen) return;
+
+    const previous = document.activeElement as HTMLElement | null;
+
+    const frameId = requestAnimationFrame(() => {
+      const root = modalRef.current;
+      if (!root) return;
+      const focusables = getFocusableElements(root);
+      if (focusables.length > 0) {
+        focusables[0].focus();
+      } else {
+        if (!root.hasAttribute("tabindex")) {
+          root.setAttribute("tabindex", "-1");
+        }
+        root.focus();
+      }
+    });
+
+    return () => {
+      cancelAnimationFrame(frameId);
+      if (
+        previous &&
+        typeof previous.focus === "function" &&
+        document.body.contains(previous)
+      ) {
+        previous.focus();
+      }
+    };
+  }, [isOpen]);
+
+  /** Keep keyboard focus inside the modal while open. */
+  useEffect(() => {
+    if (!isOpen) return;
+
+    const handleTab = (e: KeyboardEvent) => {
+      if (e.key !== "Tab") return;
+      const root = modalRef.current;
+      if (!root) return;
+      const focusables = getFocusableElements(root);
+      if (focusables.length === 0) return;
+
+      const first = focusables[0];
+      const last = focusables[focusables.length - 1];
+      const active = document.activeElement as HTMLElement | null;
+
+      if (!active || !root.contains(active)) {
+        e.preventDefault();
+        first.focus();
+        return;
+      }
+
+      if (e.shiftKey && active === first) {
+        e.preventDefault();
+        last.focus();
+      } else if (!e.shiftKey && active === last) {
+        e.preventDefault();
+        first.focus();
+      }
+    };
+
+    document.addEventListener("keydown", handleTab);
+    return () => document.removeEventListener("keydown", handleTab);
+  }, [isOpen]);
+
   if (!isOpen) return null;
 
   const contentClasses = isFullscreen
     ? "w-full h-full"
     : "relative w-full rounded-3xl bg-white";
 
+  const hasLabelledBy =
+    typeof ariaLabelledBy === "string" && ariaLabelledBy.trim() !== "";
+  const dialogAriaLabel = hasLabelledBy ? undefined : (ariaLabel ?? "Dialógus");
+
   return (
     <div
       className={`fixed inset-0 flex items-center justify-center overflow-y-auto modal z-99999 ${rootClassName}`.trim()}
+      role="presentation"
     >
       {!isFullscreen && (
         <div
           className="fixed inset-0 h-full w-full bg-gray-400/50 backdrop-blur-md"
+          aria-hidden="true"
           onClick={onClose}
-        ></div>
+        />
       )}
       <div
         ref={modalRef}
+        role="dialog"
+        aria-modal="true"
+        aria-label={dialogAriaLabel}
+        aria-labelledby={hasLabelledBy ? ariaLabelledBy : undefined}
+        aria-describedby={
+          ariaDescribedBy && ariaDescribedBy !== "" ? ariaDescribedBy : undefined
+        }
         className={`${contentClasses}  ${className}`}
         onClick={(e) => e.stopPropagation()}
       >
         {showCloseButton && (
           <button
+            type="button"
             onClick={onClose}
+            aria-label="Bezárás"
             className="absolute right-3 top-3 z-999 flex h-9.5 w-9.5 items-center justify-center rounded-full bg-gray-100 text-gray-400 transition-colors hover:bg-gray-200 hover:text-gray-700 sm:right-6 sm:top-6 sm:h-11 sm:w-11"
           >
             <svg
@@ -83,6 +191,7 @@ export const Modal: React.FC<ModalProps> = ({
               viewBox="0 0 24 24"
               fill="none"
               xmlns="http://www.w3.org/2000/svg"
+              aria-hidden="true"
             >
               <path
                 fillRule="evenodd"
