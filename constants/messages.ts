@@ -47,6 +47,8 @@ export const ErrorMessages = {
     UPDATE_FAILED: "Error updating match",
     DELETE_FAILED: "Error deleting match",
     NOT_LOGGED_IN: "Not logged in",
+    INVALID_MATCH_ID: "Érvénytelen mérkőzés azonosító",
+    NOT_FOUND: "A mérkőzés nem található",
   },
   DATABASE: {
     CONNECTION_FAILED: "Adatbázis kapcsolat sikertelen",

@@ -11,6 +11,7 @@ import DeleteButton from "../common/DeleteButton";
 import Input from "@/components/common/InputField";
 import Label from "@/components/common/Label";
 import { useUpdateCalendar, useDeleteCalendar } from "@/hooks/useCalendars";
+import { useConfirmDialog } from "@/hooks/useConfirmDialog";
 import { Calendar } from "@/types/models";
 
 const DATE_FORMAT_OPTIONS: Intl.DateTimeFormatOptions = {
@@ -41,6 +42,7 @@ const CalendarItem = ({
   // React Query mutations
   const updateMutation = useUpdateCalendar();
   const deleteMutation = useDeleteCalendar();
+  const { requestConfirm, confirmDialog } = useConfirmDialog();
 
   const defaultClassNames = getDefaultClassNames();
 
@@ -88,6 +90,12 @@ const CalendarItem = ({
 
   const handleDeleteCalendar = async (e?: React.MouseEvent<HTMLButtonElement>) => {
     e?.preventDefault();
+    const confirmed = await requestConfirm({
+      title: "Esemény törlése",
+      message:
+        "Biztosan törlöd ezt az eseményt? Ez a művelet nem vonható vissza.",
+    });
+    if (!confirmed) return;
     try {
       await deleteMutation.mutateAsync(calendarId);
       toggleEditMode();
@@ -127,117 +135,120 @@ const CalendarItem = ({
   };
 
   return (
-    <div className="flex flex-col border mt-4 overflow-hidden rounded-xl border-gray-200 bg-white text-gray-600 text-center justify-center z-0">
-      <div
-        className={`flex md:px-6 py-6 items-center justify-between ${isOpen ? "bg-gray-100" : "bg-white"}`}
-      >
-        <span className="ml-6">
-          <h2 className="text-lg mr-1 font-semibold">{eventName}</h2>
-        </span>
-        <span
-          className="my-auto mr-6 p-2 rounded-full bg-gray-200 cursor-pointer"
-          onClick={handleOpenCalendar}
+    <>
+      {confirmDialog}
+      <div className="flex flex-col border mt-4 overflow-hidden rounded-xl border-gray-200 bg-white text-gray-600 text-center justify-center z-0">
+        <div
+          className={`flex md:px-6 py-6 items-center justify-between ${isOpen ? "bg-gray-100" : "bg-white"}`}
         >
-          {!isOpen ? (
-            <MdOutlineExpandMore size={24} />
-          ) : (
-            <MdOutlineExpandLess size={24} />
-          )}
-        </span>
-      </div>
+          <span className="ml-6">
+            <h2 className="text-lg mr-1 font-semibold">{eventName}</h2>
+          </span>
+          <span
+            className="my-auto mr-6 p-2 rounded-full bg-gray-200 cursor-pointer"
+            onClick={handleOpenCalendar}
+          >
+            {!isOpen ? (
+              <MdOutlineExpandMore size={24} />
+            ) : (
+              <MdOutlineExpandLess size={24} />
+            )}
+          </span>
+        </div>
 
-      {isOpen && (
-        <form className="flex flex-col px-4">
-          <div className="mt-8">
-            <div className="grid grid-cols-1 gap-x-10 gap-y-5 xl:grid-cols-2">
-              <div className="col-span-2 lg:col-span-1">
-                <Label htmlFor="eventName">Esemény neve</Label>
-                <Input
-                  type="text"
-                  defaultValue={calendar.name}
-                  onChange={handleEventNameChange}
-                />
+        {isOpen && (
+          <form className="flex flex-col px-4">
+            <div className="mt-8">
+              <div className="grid grid-cols-1 gap-x-10 gap-y-5 xl:grid-cols-2">
+                <div className="col-span-2 lg:col-span-1">
+                  <Label htmlFor="eventName">Esemény neve</Label>
+                  <Input
+                    type="text"
+                    defaultValue={calendar.name}
+                    onChange={handleEventNameChange}
+                  />
 
-                {showErrorName && (
-                  <div className="flex flex-col md:justify-center">
-                    <p className="mt-2 text-sm text-center text-red-600">
-                      Kérlek, add meg a nevet
-                    </p>
+                  {showErrorName && (
+                    <div className="flex flex-col md:justify-center">
+                      <p className="mt-2 text-sm text-center text-red-600">
+                        Kérlek, add meg a nevet
+                      </p>
+                    </div>
+                  )}
+                </div>
+                <div className="flex flex-col col-span-2 lg:col-span-1 items-center justify-center overflow-y-hidden">
+                  <Label>Időpontok kiválasztása:</Label>
+
+                  <div className="flex justify-center mx-auto mb-6 overscroll-x-auto text-sm font-medium text-gray-700">
+                    <DayPicker
+                      locale={hu}
+                      mode="multiple"
+                      animate
+                      navLayout="around"
+                      timeZone="Europe/Budapest"
+                      showOutsideDays={true}
+                      className={"p-3"}
+                      selected={selected}
+                      onSelect={setSelected}
+                      classNames={{
+                        root: `${defaultClassNames.root} border border-gray-200 rounded-xl p-5`,
+                        caption_label: `${defaultClassNames.caption_label} text-base font-medium capitalize`,
+                        weekday: `${defaultClassNames.weekday} uppercase text-sm`,
+                        today: "border border-amber-500",
+                        selected:
+                          "bg-amber-500  rounded rounded-full text-white bg-primary text-primary-foreground hover:bg-primary hover:text-primary-foreground focus:bg-primary focus:text-primary-foreground",
+                      }}
+                    />
                   </div>
+                </div>
+              </div>
+              <div className="grid grid-cols-1 gap-x-10 gap-y-5 mt-5">
+                <div className="flex flex-row flex-wrap justify-center">
+                  {dates.map((day, idx) => {
+                    return (
+                      <div className="flex my-1" key={idx}>
+                        <span className="inline-flex items-center px-3 py-1 me-2 text-sm text-white bg-amber-500 rounded-full">
+                          {day}
+                        </span>
+                      </div>
+                    );
+                  })}
+                </div>
+                {showErrorDate && (
+                  <p className="mt-2 text-sm text-center text-red-600">
+                    Kérlek, add meg a dátumokat!
+                  </p>
                 )}
               </div>
-              <div className="flex flex-col col-span-2 lg:col-span-1 items-center justify-center overflow-y-hidden">
-                <Label>Időpontok kiválasztása:</Label>
 
-                <div className="flex justify-center mx-auto mb-6 overscroll-x-auto text-sm font-medium text-gray-700">
-                  <DayPicker
-                    locale={hu}
-                    mode="multiple"
-                    animate
-                    navLayout="around"
-                    timeZone="Europe/Budapest"
-                    showOutsideDays={true}
-                    className={"p-3"}
-                    selected={selected}
-                    onSelect={setSelected}
-                    classNames={{
-                      root: `${defaultClassNames.root} border border-gray-200 rounded-xl p-5`,
-                      caption_label: `${defaultClassNames.caption_label} text-base font-medium capitalize`,
-                      weekday: `${defaultClassNames.weekday} uppercase text-sm`,
-                      today: "border border-amber-500",
-                      selected:
-                        "bg-amber-500  rounded rounded-full text-white bg-primary text-primary-foreground hover:bg-primary hover:text-primary-foreground focus:bg-primary focus:text-primary-foreground",
-                    }}
+              <div className="flex flex-col-reverse lg:flex-row lg:justify-around my-5">
+                <div className="px-4 py-3 text-center sm:px-6">
+                  <DeleteButton
+                    type={"button"}
+                    onClick={handleDeleteCalendar}
+                    text={"Esemény törlése"}
                   />
+                </div>
+                <div className="px-4 py-3 text-center sm:px-6">
+                  <OutlinedButton
+                    text={"Mégse"}
+                    type={"button"}
+                    onClick={toggleEditMode}
+                  />
+                </div>
+                <div className="px-4 py-3 text-center sm:px-6">
+                  {edited ? (
+                    <PrimaryButton onClick={handleUpdate} text="Módosítás" />
+                  ) : (
+                    <DisabledButton text={"Módosítás"} />
+                  )}
                 </div>
               </div>
             </div>
-            <div className="grid grid-cols-1 gap-x-10 gap-y-5 mt-5">
-              <div className="flex flex-row flex-wrap justify-center">
-                {dates.map((day, idx) => {
-                  return (
-                    <div className="flex my-1" key={idx}>
-                      <span className="inline-flex items-center px-3 py-1 me-2 text-sm text-white bg-amber-500 rounded-full">
-                        {day}
-                      </span>
-                    </div>
-                  );
-                })}
-              </div>
-              {showErrorDate && (
-                <p className="mt-2 text-sm text-center text-red-600">
-                  Kérlek, add meg a dátumokat!
-                </p>
-              )}
-            </div>
-
-            <div className="flex flex-col-reverse lg:flex-row lg:justify-around my-5">
-              <div className="px-4 py-3 text-center sm:px-6">
-                <DeleteButton
-                  type={"button"}
-                  onClick={handleDeleteCalendar}
-                  text={"Esemény törlése"}
-                />
-              </div>
-              <div className="px-4 py-3 text-center sm:px-6">
-                <OutlinedButton
-                  text={"Mégse"}
-                  type={"button"}
-                  onClick={toggleEditMode}
-                />
-              </div>
-              <div className="px-4 py-3 text-center sm:px-6">
-                {edited ? (
-                  <PrimaryButton onClick={handleUpdate} text="Módosítás" />
-                ) : (
-                  <DisabledButton text={"Módosítás"} />
-                )}
-              </div>
-            </div>
-          </div>
-        </form>
-      )}
-    </div>
+          </form>
+        )}
+      </div>
+    </>
   );
 };
 

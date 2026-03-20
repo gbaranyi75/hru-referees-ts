@@ -14,6 +14,7 @@ import { Types, PipelineStage } from "mongoose";
 import { currentUser } from "@clerk/nextjs/server";
 import { revalidatePath } from "next/cache";
 import { createNotifications } from "./notificationActions";
+import { ErrorMessages } from "@/constants/messages";
 
 interface IFetchMatchesProps {
   limit?: number;
@@ -448,6 +449,43 @@ export const updateMatch = async (
     return {
       success: false,
       error: error instanceof Error ? error.message : "Error updating match",
+    };
+  }
+};
+
+/**
+ * Deletes a match by ID (admin/dashboard use)
+ */
+export const deleteMatch = async (
+  matchId: string | undefined
+): Promise<ActionResult<null>> => {
+  try {
+    await connectDB();
+    const user = await currentUser();
+
+    if (!user) {
+      return { success: false, error: ErrorMessages.MATCH.NOT_LOGGED_IN };
+    }
+
+    if (!matchId || !Types.ObjectId.isValid(matchId)) {
+      return {
+        success: false,
+        error: ErrorMessages.MATCH.INVALID_MATCH_ID,
+      };
+    }
+
+    const deleted = await Match.findByIdAndDelete(matchId).lean().exec();
+    if (!deleted) {
+      return { success: false, error: ErrorMessages.MATCH.NOT_FOUND };
+    }
+
+    revalidatePath("/dashboard/matches");
+    return { success: true, data: null };
+  } catch (error) {
+    console.error("Error deleting match:", error);
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : ErrorMessages.MATCH.DELETE_FAILED,
     };
   }
 };

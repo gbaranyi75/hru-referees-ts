@@ -4,10 +4,7 @@ import { useEffect, useState } from "react";
 import { Icon } from "@iconify/react";
 import { toast } from "react-toastify";
 import Skeleton from "../common/Skeleton";
-import { Modal } from "../common/Modal";
-import OutlinedButton from "../common/OutlinedButton";
-import PrimaryButton from "../common/PrimaryButton";
-import DisabledButton from "../common/DisabledButton";
+import { ConfirmDialog } from "../common/ConfirmDialog";
 import { useModal } from "../../hooks/useModal";
 import {
   Table,
@@ -43,8 +40,8 @@ const DocumentsList = ({
   const { isOpen, openModal, closeModal } = useModal();
 
   const removeFile = async (file: FileProps) => {
+    setIsDeleting(true);
     try {
-      setIsDeleting(true);
       const endpoint = "/api/r2/files";
       const response = await fetch(endpoint, {
         method: "DELETE",
@@ -57,11 +54,12 @@ const DocumentsList = ({
         return;
       }
       fetchFiles();
-      setIsDeleting(false);
       closeModal();
       toast.success("A fájl sikeresen törölve");
     } catch {
       toast.error("A fájlt nem sikerült törölni");
+    } finally {
+      setIsDeleting(false);
     }
   };
 
@@ -96,7 +94,10 @@ const DocumentsList = ({
       }
     } catch (error) {
       console.error("Hiba a fájl letöltésekor: ", error);
-      alert("Hiba a fájl letöltésekor: " + error);
+      toast.error(
+        "Hiba a fájl letöltésekor: " +
+          (error instanceof Error ? error.message : String(error))
+      );
       if (newTab) newTab.close();
     }
   };
@@ -216,31 +217,24 @@ const DocumentsList = ({
         </Table>
       </div>
 
-      <Modal
+      <ConfirmDialog
         isOpen={isOpen}
         onClose={closeModal}
-        showCloseButton={true}
-        className="max-w-125 p-5 lg:p-8">
-        <div className="flex justify-center pt-4 px-2">
-          <h6 className="mb-2 text-xl font-semibold text-gray-600 ">
-            Biztosan törlöd ezt a fájlt?
-          </h6>
-        </div>
-        <div className="flex items-center gap-3 px-2 pt-8 justify-around">
-          <OutlinedButton
-            onClick={closeModal}
-            text="Mégsem"
-          />
-          {isDeleting ? (
-            <DisabledButton text="Törlés..." />
-          ) : (
-            <PrimaryButton
-              onClick={handleDelete}
-              text="Törlés"
-            />
-          )}
-        </div>
-      </Modal>
+        onConfirm={handleDelete}
+        title="Biztosan törlöd ezt a fájlt?"
+        message={
+          fileToDelete.Key ? (
+            <span className="block max-w-full break-all text-left">
+              {fileToDelete.Key}
+            </span>
+          ) : undefined
+        }
+        variant="danger"
+        confirmText="Törlés"
+        cancelText="Mégsem"
+        isLoading={isDeleting}
+        loadingConfirmText="Törlés…"
+      />
     </div>
   );
 };

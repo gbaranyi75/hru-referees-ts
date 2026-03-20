@@ -5,6 +5,8 @@ interface ModalProps {
   isOpen: boolean;
   onClose: () => void;
   className?: string;
+  /** Extra classes on the outer fixed overlay (e.g. higher z-index for nested confirms) */
+  rootClassName?: string;
   children: React.ReactNode;
   showCloseButton?: boolean; // New prop to control close button visibility
   isFullscreen?: boolean; // Default to false for backwards compatibility
@@ -15,6 +17,7 @@ export const Modal: React.FC<ModalProps> = ({
   onClose,
   children,
   className,
+  rootClassName = "",
   showCloseButton = true, // Default to true for backwards compatibility
   isFullscreen = false,
 }) => {
@@ -55,10 +58,12 @@ export const Modal: React.FC<ModalProps> = ({
     : "relative w-full rounded-3xl bg-white";
 
   return (
-    <div className="fixed inset-0 flex items-center justify-center overflow-y-auto modal z-99999">
+    <div
+      className={`fixed inset-0 flex items-center justify-center overflow-y-auto modal z-99999 ${rootClassName}`.trim()}
+    >
       {!isFullscreen && (
         <div
-          className="fixed inset-0 h-full w-full bg-gray-400/50 backdrop-blur-[12px]"
+          className="fixed inset-0 h-full w-full bg-gray-400/50 backdrop-blur-md"
           onClick={onClose}
         ></div>
       )}
