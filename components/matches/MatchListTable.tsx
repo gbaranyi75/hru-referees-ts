@@ -245,7 +245,7 @@ const MatchListTable = () => {
           />
           <Select
             options={refereeOptions}
-            placeholder="Fő játékvezető"
+            placeholder="Játékvezető"
             value={selectedRefereeOption}
             onChange={(o) =>
               updateQueryParams({
