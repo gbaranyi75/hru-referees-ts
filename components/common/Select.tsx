@@ -132,21 +132,24 @@ const Select = ({
             ? value.label
             : placeholder}
       </span>
-      {!multiple && (
-        <button
-          type="button"
-          onClick={(e) => {
-            clearOptions(e);
-            //selectOption({ label: "", value: ""});
-          }}
-          className="cursor-pointer text text-gray-300"
-        >
-          &times;
-        </button>
-      )}
-      <div className="bg-gray-300 self-stretch w-0.5 ml-2.5"></div>
-      <div className="flex my-auto items-center text-gray-300 pl-2 pt-0.5">
-        <Icon icon="lucide:chevron-down" width="20" height="20" />
+      <div className="ml-2.5 flex shrink-0 items-center">
+        {!multiple && (
+          <button
+            type="button"
+            onClick={(e) => {
+              clearOptions(e);
+              //selectOption({ label: "", value: ""});
+            }}
+            aria-label="Kijelölés törlése"
+            className="flex h-5 w-5 items-center justify-center text-gray-300"
+          >
+            &times;
+          </button>
+        )}
+        <div className="mx-2 h-full w-px self-stretch bg-gray-300"></div>
+        <div className="flex items-center text-gray-300">
+          <Icon icon="lucide:chevron-down" width="20" height="20" />
+        </div>
       </div>
       {isOpen && (
         <ul className="absolute overscroll-auto overflow-auto border border-gray-400 max-h-60 rounded bg-gray-400 -left-2 top-2 w-full list-none z-3000">

@@ -9,6 +9,10 @@ export function useMatches(params?: {
   skip?: number;
   sortOrder?: 'asc' | 'desc';
   dateFilter?: 'upcoming' | 'past';
+  type?: string;
+  dateFrom?: string;
+  dateTo?: string;
+  mainReferee?: string;
 }) {
   return useQuery({
     queryKey: ["matches", params],

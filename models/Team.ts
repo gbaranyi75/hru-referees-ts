@@ -17,7 +17,6 @@ const TeamSchema = new Schema(
     },
     slug: {
       type: String,
-      index: true,
       required: false,
       lowercase: true,
       trim: true,
