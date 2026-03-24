@@ -16,6 +16,8 @@ import MatchListTableModal from "./MatchListTableModal";
 import { smoothScrollTo } from "@/lib/utils/scrollUtils";
 import { Match } from "@/types/models";
 import { useModal } from "@/hooks/useModal";
+import Select, { SelectOption } from "@/components/common/Select";
+import Input from "@/components/common/InputField";
 import {
   fetchMatchesCount,
   fetchMatchById,
@@ -24,15 +26,22 @@ import { useMatches } from "@/hooks/useMatches";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { isInCurrentWeek } from "@/lib/utils/matchHighlight";
 import { Route } from "next";
+import types from "@/constants/matchData/matchTypes.json";
+import { useUsers } from "@/contexts/UsersContext";
 
 
 const LOAD_COUNT = 12;
 
 const MatchListTable = () => {
-  const [activeTab, setActiveTab] = useState<'upcoming' | 'past'>('upcoming');
   const searchParams = useSearchParams();
   const router = useRouter();
   const pathName = usePathname();
+  const [activeTab, setActiveTab] = useState<"upcoming" | "past">("upcoming");
+  const [typeFilter, setTypeFilter] = useState<string>("");
+  const [mainRefereeFilter, setMainRefereeFilter] = useState<string>("");
+  const [dateFromFilter, setDateFromFilter] = useState<string>("");
+  const [dateToFilter, setDateToFilter] = useState<string>("");
+  const { users } = useUsers();
   const { isOpen, openModal, closeModal } = useModal();
   const [selectedMatch, setSelectedMatch] = useState<Match | null>(null);
   const [count, setCount] = useState<number>(0);
@@ -44,6 +53,37 @@ const MatchListTable = () => {
   const processedMatchIdRef = useRef<string | null>(null);
   const loadMoreRef = useRef<HTMLDivElement>(null);
   const shouldScrollRef = useRef(false);
+  const refereeOptions: SelectOption[] = (users ?? [])
+    .filter((u) => Boolean(u.username))
+    .map((u) => ({
+      label: u.username,
+      value: u.username,
+    }));
+
+  const updateQueryParams = (updates: Record<string, string | undefined>) => {
+    const params = new URLSearchParams(searchParams.toString());
+    Object.entries(updates).forEach(([key, value]) => {
+      if (!value) {
+        params.delete(key);
+        return;
+      }
+      params.set(key, value);
+    });
+    const queryString = params.toString();
+    router.replace(
+      (queryString ? `${pathName}?${queryString}` : pathName) as Route
+    );
+  };
+
+  useEffect(() => {
+    const tabParam = searchParams.get("tab");
+    const nextTab: "upcoming" | "past" = tabParam === "past" ? "past" : "upcoming";
+    setActiveTab(nextTab);
+    setTypeFilter(searchParams.get("type") ?? "");
+    setMainRefereeFilter(searchParams.get("ref") ?? "");
+    setDateFromFilter(searchParams.get("from") ?? "");
+    setDateToFilter(searchParams.get("to") ?? "");
+  }, [searchParams]);
   // Smooth scroll a lista aljára load more után
   const handleLoadMore = () => {
     shouldScrollRef.current = true;
@@ -54,14 +94,18 @@ const MatchListTable = () => {
   const { data: matches = [], isLoading: loading, isFetching } = useMatches({
     limit: LOAD_COUNT,
     skip,
-    sortOrder: 'asc',
+    sortOrder: "asc",
     dateFilter: activeTab, // 'upcoming' vagy 'past'
+    type: typeFilter || undefined,
+    dateFrom: dateFromFilter || undefined,
+    dateTo: dateToFilter || undefined,
+    mainReferee: mainRefereeFilter || undefined,
   });
   // Tab váltáskor reseteljük a skip-et és az allMatches-t
   useEffect(() => {
     setSkip(0);
     setAllMatches([]);
-  }, [activeTab]);
+  }, [activeTab, typeFilter, mainRefereeFilter, dateFromFilter, dateToFilter]);
   // Új adag betöltésekor hozzáfűzzük az allMatches-hez
   useEffect(() => {
     if (matches.length > 0) {
@@ -83,9 +127,7 @@ const MatchListTable = () => {
     setSelectedMatch(match);
     openModal();
     // Add matchId to URL
-    const params = new URLSearchParams(searchParams.toString());
-    params.set("matchId", match._id as string);
-    router.replace(`${pathName}?${params}` as Route);
+    updateQueryParams({ matchId: match._id as string });
   };
 
   const handleCloseModal = () => {
@@ -94,9 +136,7 @@ const MatchListTable = () => {
     // Reset processed matchId so the same match can be opened again from URL
     processedMatchIdRef.current = null;
     // Remove matchId from URL but keep page
-    const params = new URLSearchParams(searchParams.toString());
-    params.delete("matchId");
-    router.replace(`${pathName}?${params}` as Route);
+    updateQueryParams({ matchId: undefined });
   };
 
   // Lekérjük a meccsek számát tabonként
@@ -105,7 +145,13 @@ const MatchListTable = () => {
       setIsCountLoading(true);
       setCount(0);
       try {
-        const countData = await fetchMatchesCount(activeTab);
+        const countData = await fetchMatchesCount({
+          dateFilter: activeTab,
+          type: typeFilter || undefined,
+          dateFrom: dateFromFilter || undefined,
+          dateTo: dateToFilter || undefined,
+          mainReferee: mainRefereeFilter || undefined,
+        });
         if (typeof countData === "number") {
           setCount(countData);
         }
@@ -114,7 +160,7 @@ const MatchListTable = () => {
       }
     };
     loadCount();
-  }, [activeTab]);
+  }, [activeTab, typeFilter, mainRefereeFilter, dateFromFilter, dateToFilter]);
 
   // Open modal if matchId is in URL
   useEffect(() => {
@@ -166,16 +212,83 @@ const MatchListTable = () => {
       <div className="flex gap-2 mb-2">
         <button
           className={`px-4 py-2 rounded-md cursor-pointer bg-white border-b-2 ${activeTab === 'upcoming' ? 'border-blue-400 font-bold text-blue-400' : 'border-gray-200 text-gray-600'}`}
-          onClick={() => setActiveTab('upcoming')}
+          onClick={() => updateQueryParams({ tab: "upcoming" })}
         >
           Következő mérkőzések
         </button>
         <button
           className={`px-4 py-2 rounded-md cursor-pointer bg-white border-b-2 ${activeTab === 'past' ? 'border-blue-400 font-bold text-blue-400' : 'border-gray-200 text-gray-600'}`}
-          onClick={() => setActiveTab('past')}
+          onClick={() => updateQueryParams({ tab: "past" })}
         >
           Múltbeli mérkőzések
         </button>
+      </div>
+      <div className="mb-3 rounded-xl border border-gray-200 bg-white p-3">
+        <div className="grid grid-cols-1 gap-2 md:grid-cols-2 xl:grid-cols-5">
+          <Select
+            options={types.map((t) => ({ label: t.name, value: t.name }))}
+            placeholder="Típus szűrés"
+            value={
+              typeFilter
+                ? ({ label: typeFilter, value: typeFilter } as SelectOption)
+                : undefined
+            }
+            onChange={(o) =>
+              updateQueryParams({
+                type: o?.value ? String(o.value) : undefined,
+              })
+            }
+          />
+          <Select
+            options={refereeOptions}
+            placeholder="Fő játékvezető"
+            value={
+              mainRefereeFilter
+                ? ({
+                    label: mainRefereeFilter,
+                    value: mainRefereeFilter,
+                  } as SelectOption)
+                : undefined
+            }
+            onChange={(o) =>
+              updateQueryParams({
+                ref: o?.value ? String(o.value) : undefined,
+              })
+            }
+          />
+          <Input
+            type="date"
+            value={dateFromFilter}
+            onChange={(e) =>
+              updateQueryParams({
+                from: e.target.value || undefined,
+              })
+            }
+          />
+          <Input
+            type="date"
+            value={dateToFilter}
+            onChange={(e) =>
+              updateQueryParams({
+                to: e.target.value || undefined,
+              })
+            }
+          />
+          <button
+            type="button"
+            className="rounded-lg border border-blue-600 bg-blue-600 px-4 py-2.5 text-sm font-medium text-white shadow-sm hover:bg-blue-700"
+            onClick={() =>
+              updateQueryParams({
+                type: undefined,
+                ref: undefined,
+                from: undefined,
+                to: undefined,
+              })
+            }
+          >
+            Szűrők törlése
+          </button>
+        </div>
       </div>
       <div className="overflow-hidden rounded-xl mt-1 border border-gray-200 bg-white">
         <div className="overflow-x-auto">

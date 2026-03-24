@@ -21,7 +21,26 @@ interface IFetchMatchesProps {
   skip?: number;
   sortOrder?: "asc" | "desc";
   dateFilter?: "upcoming" | "past";
+  type?: string;
+  dateFrom?: string;
+  dateTo?: string;
+  mainReferee?: string;
 }
+
+const parseDateBoundary = (
+  dateString: string | undefined,
+  boundary: "start" | "end"
+): Date | null => {
+  if (!dateString) return null;
+  const parsed = new Date(dateString);
+  if (Number.isNaN(parsed.getTime())) return null;
+  if (boundary === "start") {
+    parsed.setHours(0, 0, 0, 0);
+  } else {
+    parsed.setHours(23, 59, 59, 999);
+  }
+  return parsed;
+};
 
 /**
  * Fetches matches from the database with pagination
@@ -31,6 +50,10 @@ export const fetchMatches = async ({
   skip = 0,
   sortOrder = "desc",
   dateFilter,
+  type,
+  dateFrom,
+  dateTo,
+  mainReferee,
 }: IFetchMatchesProps = {}): Promise<ActionResult<MatchType[]>> => {
   return handleAsyncOperation(async () => {
     await connectDB();
@@ -61,7 +84,17 @@ export const fetchMatches = async ({
       },
     ];
 
-    if (dateFilter) {
+    const fromDate = parseDateBoundary(dateFrom, "start");
+    const toDate = parseDateBoundary(dateTo, "end");
+
+    if (fromDate || toDate) {
+      const dateRange: { $gte?: Date; $lte?: Date } = {};
+      if (fromDate) dateRange.$gte = fromDate;
+      if (toDate) dateRange.$lte = toDate;
+      pipeline.push({
+        $match: { dateParsed: dateRange },
+      } as PipelineStage);
+    } else if (dateFilter) {
       const today = new Date();
       today.setHours(0, 0, 0, 0);
       pipeline.push({
@@ -69,6 +102,18 @@ export const fetchMatches = async ({
           dateParsed:
             dateFilter === "upcoming" ? { $gte: today } : { $lt: today },
         },
+      } as PipelineStage);
+    }
+
+    if (type) {
+      pipeline.push({
+        $match: { type },
+      } as PipelineStage);
+    }
+
+    if (mainReferee) {
+      pipeline.push({
+        $match: { "referee.username": mainReferee },
       } as PipelineStage);
     }
 
@@ -91,7 +136,16 @@ export const fetchMatches = async ({
 };
 
 export const fetchMatchesCount = async (
-  dateFilter?: "upcoming" | "past"
+  {
+    dateFilter,
+    type,
+    dateFrom,
+    dateTo,
+    mainReferee,
+  }: Pick<
+    IFetchMatchesProps,
+    "dateFilter" | "type" | "dateFrom" | "dateTo" | "mainReferee"
+  > = {}
 ): Promise<number> => {
   await connectDB();
   try {
@@ -122,7 +176,17 @@ export const fetchMatchesCount = async (
       },
     ];
 
-    if (dateFilter) {
+    const fromDate = parseDateBoundary(dateFrom, "start");
+    const toDate = parseDateBoundary(dateTo, "end");
+
+    if (fromDate || toDate) {
+      const dateRange: { $gte?: Date; $lte?: Date } = {};
+      if (fromDate) dateRange.$gte = fromDate;
+      if (toDate) dateRange.$lte = toDate;
+      pipeline.push({
+        $match: { dateParsed: dateRange },
+      } as PipelineStage);
+    } else if (dateFilter) {
       const today = new Date();
       today.setHours(0, 0, 0, 0);
       pipeline.push({
@@ -130,6 +194,18 @@ export const fetchMatchesCount = async (
           dateParsed:
             dateFilter === "upcoming" ? { $gte: today } : { $lt: today },
         },
+      } as PipelineStage);
+    }
+
+    if (type) {
+      pipeline.push({
+        $match: { type },
+      } as PipelineStage);
+    }
+
+    if (mainReferee) {
+      pipeline.push({
+        $match: { "referee.username": mainReferee },
       } as PipelineStage);
     }
 
