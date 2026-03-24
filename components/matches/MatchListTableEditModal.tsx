@@ -25,6 +25,33 @@ import {
 } from "@/lib/utils/matchValidation";
 import { useConfirmDialog } from "@/hooks/useConfirmDialog";
 
+const emptyOfficial: MatchOfficial = {
+  username: "",
+  clerkUserId: "",
+  email: "",
+};
+
+const toOfficial = (option: SelectOption | undefined): MatchOfficial => {
+  if (!option) return { ...emptyOfficial };
+  return {
+    username: String(option.value ?? ""),
+    clerkUserId: option.id || "",
+    email: option.email || "",
+  };
+};
+
+const toSingleOfficialOption = (
+  official: MatchOfficial | undefined
+): SelectOption | undefined => {
+  if (!official?.username) return undefined;
+  return {
+    value: official.username,
+    label: official.username,
+    id: official.clerkUserId || "",
+    email: official.email || "",
+  };
+};
+
 const MatchItemEditModal = ({
   referees,
   closeModal,
@@ -45,10 +72,10 @@ const MatchItemEditModal = ({
     gender: selectedMatch?.gender as string,
     age: selectedMatch?.age as string,
     venue: selectedMatch?.venue as string,
-    referee: (selectedMatch?.referee as MatchOfficial) || "",
+    referee: (selectedMatch?.referee as MatchOfficial) || { ...emptyOfficial },
     referees: (selectedMatch?.referees as MatchOfficial[]) || [],
-    assist1: (selectedMatch?.assist1 as MatchOfficial) || "",
-    assist2: (selectedMatch?.assist2 as MatchOfficial) || "",
+    assist1: (selectedMatch?.assist1 as MatchOfficial) || { ...emptyOfficial },
+    assist2: (selectedMatch?.assist2 as MatchOfficial) || { ...emptyOfficial },
     controllers: (selectedMatch?.controllers as MatchOfficial[]) || [],
     date: selectedMatch?.date as string,
     time: selectedMatch?.time as string,
@@ -77,18 +104,15 @@ const MatchItemEditModal = ({
   const [venueValue, setVenueValue] = useState<string>(
     selectedMatch?.venue as string
   );
-  const [refereeValue, setRefereeValue] = useState<SelectOption | undefined>({
-    value: selectedMatch?.referee?.username,
-    label: selectedMatch?.referee?.username,
-  } as SelectOption);
-  const [assist1Value, setAssist1Value] = useState<SelectOption | undefined>({
-    value: selectedMatch?.assist1?.username,
-    label: selectedMatch?.assist1?.username,
-  } as SelectOption);
-  const [assist2Value, setAssist2Value] = useState<SelectOption | undefined>({
-    value: selectedMatch?.assist2?.username,
-    label: selectedMatch?.assist2?.username,
-  } as SelectOption);
+  const [refereeValue, setRefereeValue] = useState<SelectOption | undefined>(
+    toSingleOfficialOption(selectedMatch?.referee as MatchOfficial | undefined)
+  );
+  const [assist1Value, setAssist1Value] = useState<SelectOption | undefined>(
+    toSingleOfficialOption(selectedMatch?.assist1 as MatchOfficial | undefined)
+  );
+  const [assist2Value, setAssist2Value] = useState<SelectOption | undefined>(
+    toSingleOfficialOption(selectedMatch?.assist2 as MatchOfficial | undefined)
+  );
   const [controllersValue, setControllersValue] = useState<SelectOption[]>(
     selectedMatch?.controllers?.map((controller) => ({
       value: controller.username || undefined,
@@ -518,11 +542,7 @@ const MatchItemEditModal = ({
                       setRefereeValue(o);
                       setFormFields({
                         ...formFields,
-                        referee: {
-                          username: String(o === undefined ? "" : o?.value),
-                          clerkUserId: o?.id || "",
-                          email: o?.email || "",
-                        },
+                        referee: toOfficial(o),
                       });
                     }}
                     value={refereeValue}
@@ -543,11 +563,7 @@ const MatchItemEditModal = ({
                       setAssist1Value(o);
                       setFormFields({
                         ...formFields,
-                        assist1: {
-                          username: String(o === undefined ? "" : o?.value),
-                          clerkUserId: o?.id || "",
-                          email: o?.email || "",
-                        },
+                        assist1: toOfficial(o),
                       });
                     }}
                     value={assist1Value}
@@ -568,11 +584,7 @@ const MatchItemEditModal = ({
                       setAssist2Value(o);
                       setFormFields({
                         ...formFields,
-                        assist2: {
-                          username: String(o === undefined ? "" : o?.value),
-                          clerkUserId: o?.id || "",
-                          email: o?.email || "",
-                        },
+                        assist2: toOfficial(o),
                       });
                     }}
                     value={assist2Value}
