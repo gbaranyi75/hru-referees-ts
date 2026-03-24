@@ -116,6 +116,7 @@ const Select = ({
         {multiple
           ? value.map((v) => (
               <button
+                type="button"
                 key={v.value}
                 onClick={(e) => {
                   e.stopPropagation();
@@ -133,6 +134,7 @@ const Select = ({
       </span>
       {!multiple && (
         <button
+          type="button"
           onClick={(e) => {
             clearOptions(e);
             //selectOption({ label: "", value: ""});
