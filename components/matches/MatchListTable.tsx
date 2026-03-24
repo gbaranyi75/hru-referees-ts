@@ -53,12 +53,20 @@ const MatchListTable = () => {
   const processedMatchIdRef = useRef<string | null>(null);
   const loadMoreRef = useRef<HTMLDivElement>(null);
   const shouldScrollRef = useRef(false);
+  const typeOptions: SelectOption[] = types.map((t) => ({
+    label: t.name,
+    value: t.name,
+  }));
   const refereeOptions: SelectOption[] = (users ?? [])
     .filter((u) => Boolean(u.username))
     .map((u) => ({
       label: u.username,
       value: u.username,
     }));
+  const selectedTypeOption = typeOptions.find((o) => o.value === typeFilter);
+  const selectedRefereeOption = refereeOptions.find(
+    (o) => o.value === mainRefereeFilter
+  );
 
   const updateQueryParams = (updates: Record<string, string | undefined>) => {
     const params = new URLSearchParams(searchParams.toString());
@@ -226,13 +234,9 @@ const MatchListTable = () => {
       <div className="mb-3 rounded-xl border border-gray-200 bg-white p-3">
         <div className="grid grid-cols-1 gap-2 md:grid-cols-2 xl:grid-cols-5">
           <Select
-            options={types.map((t) => ({ label: t.name, value: t.name }))}
+            options={typeOptions}
             placeholder="Típus szűrés"
-            value={
-              typeFilter
-                ? ({ label: typeFilter, value: typeFilter } as SelectOption)
-                : undefined
-            }
+            value={selectedTypeOption}
             onChange={(o) =>
               updateQueryParams({
                 type: o?.value ? String(o.value) : undefined,
@@ -242,14 +246,7 @@ const MatchListTable = () => {
           <Select
             options={refereeOptions}
             placeholder="Fő játékvezető"
-            value={
-              mainRefereeFilter
-                ? ({
-                    label: mainRefereeFilter,
-                    value: mainRefereeFilter,
-                  } as SelectOption)
-                : undefined
-            }
+            value={selectedRefereeOption}
             onChange={(o) =>
               updateQueryParams({
                 ref: o?.value ? String(o.value) : undefined,

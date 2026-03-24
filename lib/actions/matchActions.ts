@@ -27,19 +27,128 @@ interface IFetchMatchesProps {
   mainReferee?: string;
 }
 
+type MatchFilterParams = Pick<
+  IFetchMatchesProps,
+  "dateFilter" | "type" | "dateFrom" | "dateTo" | "mainReferee"
+>;
+
 const parseDateBoundary = (
   dateString: string | undefined,
   boundary: "start" | "end"
 ): Date | null => {
   if (!dateString) return null;
-  const parsed = new Date(dateString);
-  if (Number.isNaN(parsed.getTime())) return null;
-  if (boundary === "start") {
-    parsed.setHours(0, 0, 0, 0);
-  } else {
-    parsed.setHours(23, 59, 59, 999);
+  const parts = dateString.split("-");
+  if (parts.length !== 3) return null;
+
+  const [yearStr, monthStr, dayStr] = parts;
+  const year = Number(yearStr);
+  const month = Number(monthStr);
+  const day = Number(dayStr);
+
+  if (
+    !Number.isInteger(year) ||
+    !Number.isInteger(month) ||
+    !Number.isInteger(day)
+  ) {
+    return null;
   }
+
+  const parsed =
+    boundary === "start"
+      ? new Date(year, month - 1, day, 0, 0, 0, 0)
+      : new Date(year, month - 1, day, 23, 59, 59, 999);
+
+  if (Number.isNaN(parsed.getTime())) return null;
   return parsed;
+};
+
+const buildPreDateMatchStage = ({
+  type,
+  mainReferee,
+}: Pick<IFetchMatchesProps, "type" | "mainReferee">): PipelineStage | null => {
+  if (!type && !mainReferee) return null;
+
+  const preDateMatch: Record<string, string> = {};
+  if (type) preDateMatch.type = type;
+  if (mainReferee) preDateMatch["referee.username"] = mainReferee;
+
+  return { $match: preDateMatch } as PipelineStage;
+};
+
+const buildDateParsedFieldStage = (): PipelineStage =>
+  ({
+    $addFields: {
+      dateParsed: {
+        $ifNull: [
+          {
+            $dateFromString: {
+              dateString: "$date",
+              format: "%Y. %m. %d.",
+              onError: null,
+              onNull: null,
+            },
+          },
+          {
+            $dateFromString: {
+              dateString: "$date",
+              format: "%Y.%m.%d.",
+              onError: null,
+              onNull: null,
+            },
+          },
+        ],
+      },
+    },
+  }) as PipelineStage;
+
+const buildDateFilterMatchStage = ({
+  dateFilter,
+  dateFrom,
+  dateTo,
+}: Pick<IFetchMatchesProps, "dateFilter" | "dateFrom" | "dateTo">): PipelineStage | null => {
+  const fromDate = parseDateBoundary(dateFrom, "start");
+  const toDate = parseDateBoundary(dateTo, "end");
+
+  if (fromDate || toDate) {
+    const dateRange: { $gte?: Date; $lte?: Date } = {};
+    if (fromDate) dateRange.$gte = fromDate;
+    if (toDate) dateRange.$lte = toDate;
+    return { $match: { dateParsed: dateRange } } as PipelineStage;
+  }
+
+  if (!dateFilter) return null;
+
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  return {
+    $match: {
+      dateParsed: dateFilter === "upcoming" ? { $gte: today } : { $lt: today },
+    },
+  } as PipelineStage;
+};
+
+const buildCommonMatchFilterPipeline = ({
+  dateFilter,
+  type,
+  dateFrom,
+  dateTo,
+  mainReferee,
+}: MatchFilterParams): PipelineStage[] => {
+  const pipeline: PipelineStage[] = [];
+
+  const preDateStage = buildPreDateMatchStage({ type, mainReferee });
+  if (preDateStage) pipeline.push(preDateStage);
+
+  pipeline.push(buildDateParsedFieldStage());
+
+  const dateFilterStage = buildDateFilterMatchStage({
+    dateFilter,
+    dateFrom,
+    dateTo,
+  });
+  if (dateFilterStage) pipeline.push(dateFilterStage);
+
+  return pipeline;
 };
 
 /**
@@ -57,65 +166,13 @@ export const fetchMatches = async ({
 }: IFetchMatchesProps = {}): Promise<ActionResult<MatchType[]>> => {
   return handleAsyncOperation(async () => {
     await connectDB();
-    const pipeline: PipelineStage[] = [
-      {
-        $addFields: {
-          dateParsed: {
-            $ifNull: [
-              {
-                $dateFromString: {
-                  dateString: "$date",
-                  format: "%Y. %m. %d.",
-                  onError: null,
-                  onNull: null,
-                },
-              },
-              {
-                $dateFromString: {
-                  dateString: "$date",
-                  format: "%Y.%m.%d.",
-                  onError: null,
-                  onNull: null,
-                },
-              },
-            ],
-          },
-        },
-      },
-    ];
-
-    const fromDate = parseDateBoundary(dateFrom, "start");
-    const toDate = parseDateBoundary(dateTo, "end");
-
-    if (fromDate || toDate) {
-      const dateRange: { $gte?: Date; $lte?: Date } = {};
-      if (fromDate) dateRange.$gte = fromDate;
-      if (toDate) dateRange.$lte = toDate;
-      pipeline.push({
-        $match: { dateParsed: dateRange },
-      } as PipelineStage);
-    } else if (dateFilter) {
-      const today = new Date();
-      today.setHours(0, 0, 0, 0);
-      pipeline.push({
-        $match: {
-          dateParsed:
-            dateFilter === "upcoming" ? { $gte: today } : { $lt: today },
-        },
-      } as PipelineStage);
-    }
-
-    if (type) {
-      pipeline.push({
-        $match: { type },
-      } as PipelineStage);
-    }
-
-    if (mainReferee) {
-      pipeline.push({
-        $match: { "referee.username": mainReferee },
-      } as PipelineStage);
-    }
+    const pipeline: PipelineStage[] = buildCommonMatchFilterPipeline({
+      dateFilter,
+      type,
+      dateFrom,
+      dateTo,
+      mainReferee,
+    });
 
     pipeline.push({
       $sort: { dateParsed: sortOrder === "asc" ? 1 : -1 },
@@ -149,65 +206,13 @@ export const fetchMatchesCount = async (
 ): Promise<number> => {
   await connectDB();
   try {
-    const pipeline: PipelineStage[] = [
-      {
-        $addFields: {
-          dateParsed: {
-            $ifNull: [
-              {
-                $dateFromString: {
-                  dateString: "$date",
-                  format: "%Y. %m. %d.",
-                  onError: null,
-                  onNull: null,
-                },
-              },
-              {
-                $dateFromString: {
-                  dateString: "$date",
-                  format: "%Y.%m.%d.",
-                  onError: null,
-                  onNull: null,
-                },
-              },
-            ],
-          },
-        },
-      },
-    ];
-
-    const fromDate = parseDateBoundary(dateFrom, "start");
-    const toDate = parseDateBoundary(dateTo, "end");
-
-    if (fromDate || toDate) {
-      const dateRange: { $gte?: Date; $lte?: Date } = {};
-      if (fromDate) dateRange.$gte = fromDate;
-      if (toDate) dateRange.$lte = toDate;
-      pipeline.push({
-        $match: { dateParsed: dateRange },
-      } as PipelineStage);
-    } else if (dateFilter) {
-      const today = new Date();
-      today.setHours(0, 0, 0, 0);
-      pipeline.push({
-        $match: {
-          dateParsed:
-            dateFilter === "upcoming" ? { $gte: today } : { $lt: today },
-        },
-      } as PipelineStage);
-    }
-
-    if (type) {
-      pipeline.push({
-        $match: { type },
-      } as PipelineStage);
-    }
-
-    if (mainReferee) {
-      pipeline.push({
-        $match: { "referee.username": mainReferee },
-      } as PipelineStage);
-    }
+    const pipeline: PipelineStage[] = buildCommonMatchFilterPipeline({
+      dateFilter,
+      type,
+      dateFrom,
+      dateTo,
+      mainReferee,
+    });
 
     pipeline.push({ $count: "count" } as PipelineStage);
 

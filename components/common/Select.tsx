@@ -140,6 +140,7 @@ const Select = ({
               clearOptions(e);
               //selectOption({ label: "", value: ""});
             }}
+            aria-label="Kijelölés törlése"
             className="flex h-5 w-5 items-center justify-center text-gray-300"
           >
             &times;
