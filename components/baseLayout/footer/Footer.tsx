@@ -1,3 +1,5 @@
+import { FooterLegalLinks } from "@/components/legal/FooterLegalLinks";
+
 const Footer = () => {
   const year = new Date().getFullYear();
 
@@ -7,6 +9,7 @@ const Footer = () => {
         <h6 className="text-sm mb-0.5 font-semibold">Magyar Rögbi Szövetség</h6>
         <h6 className="text-xs mb-0.5">Játékvezetői Bizottság</h6>
       </div>
+      <FooterLegalLinks />
       <div className="flex text-center justify-center">
         <p className="text-xs">{`© ${year} Developed by BG`}</p>
       </div>

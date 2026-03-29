@@ -3,7 +3,6 @@ import { Outfit } from "next/font/google";
 import { huHU } from "@clerk/localizations";
 import { ClerkProvider } from "@clerk/nextjs";
 import { ToastContainer } from "react-toastify";
-import { Analytics } from "@vercel/analytics/next";
 import { Providers } from "./providers";
 import NavbarMobileMenuWrapper from "@/components/baseLayout/topNavigation/NavbarMobileMenuWrapper";
 import Navbar from "@/components/baseLayout/topNavigation/Navbar";
@@ -50,7 +49,6 @@ export default function RootLayout({
                 <main className="bg-gray-100 p-4 mx-auto max-w-screen-2xl md:p-6 text-gray-600">
                   {children}
                 </main>
-                <Analytics />
               </div>
               <ToastContainer
                 position="top-right"
