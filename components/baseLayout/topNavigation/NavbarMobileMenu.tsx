@@ -14,6 +14,7 @@ import { NavItem } from "@/types/ui";
 import { Icon } from "@iconify/react";
 import { useUser } from "@clerk/nextjs";
 import { Route } from "next";
+import { LegalLinksBlock } from "@/components/legal/LegalLinksBlock";
 
 const sidebar: Variants = {
   open: (height = 1000) => ({
@@ -233,6 +234,21 @@ const NavbarMobileMenu = ({ isAdmin }: { isAdmin: boolean }) => {
             })}
           </>
         )}
+
+        <motion.li
+          variants={MenuItemVariants}
+          className="border-t border-gray-200 pt-4 mt-2 list-none">
+          <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-gray-500">
+            Jogi információk
+          </p>
+          <LegalLinksBlock
+            className="flex flex-col gap-1 text-sm"
+            showSeparators={false}
+            linkClassName="rounded-lg px-1 py-2 text-indigo-700 underline underline-offset-2 hover:bg-zinc-100 hover:text-indigo-900"
+            onCookieSettingsOpened={() => toggleOpen()}
+            onNavigate={() => toggleOpen()}
+          />
+        </motion.li>
       </motion.ul>
       <MenuToggle toggle={toggleOpen} />
     </motion.nav>
