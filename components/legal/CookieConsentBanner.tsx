@@ -24,7 +24,7 @@ export function CookieConsentBanner() {
           <h2
             id="cookie-banner-title"
             className="mb-1 font-semibold text-gray-900">
-            {isSettings ? "Cookie beállítások" : "Sütik és mérés"}
+            {isSettings ? "Cookie beállítások" : "Sütibeállításokkal kapcsolatos információk"}
           </h2>
           <p>
             A működéshez szükséges (pl. bejelentkezés) sütik mellett opcionálisan
