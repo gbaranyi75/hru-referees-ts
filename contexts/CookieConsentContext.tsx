@@ -14,8 +14,11 @@ import {
 } from "@/constants/cookieConsent";
 
 type CookieConsentContextValue = {
-  /** null = még nincs döntés (banner látható lehet) */
-  consent: CookieConsentStored | null;
+  /**
+   * undefined = tároló még nem olvasott (hydration előtt; ne mutass banner „üres” állapotot)
+   * null = nincs érvényes tárolt választás → első látogatás / döntés szükséges
+   */
+  consent: CookieConsentStored | null | undefined;
   setConsent: (analytics: boolean) => void;
   /** Cookie banner megnyitása (beállítások) */
   openCookieSettings: () => void;
@@ -47,7 +50,9 @@ export function CookieConsentProvider({
 }: {
   children: React.ReactNode;
 }) {
-  const [consent, setConsentState] = useState<CookieConsentStored | null>(null);
+  const [consent, setConsentState] = useState<
+    CookieConsentStored | null | undefined
+  >(undefined);
   const [settingsOpen, setSettingsOpen] = useState(false);
 
   useEffect(() => {
@@ -56,7 +61,11 @@ export function CookieConsentProvider({
 
   const setConsent = useCallback((analytics: boolean) => {
     const next: CookieConsentStored = { version: 1, analytics };
-    localStorage.setItem(COOKIE_CONSENT_STORAGE_KEY, JSON.stringify(next));
+    try {
+      localStorage.setItem(COOKIE_CONSENT_STORAGE_KEY, JSON.stringify(next));
+    } catch {
+      // Letiltott tároló, kvóta, privát mód stb. — a választás így is érvényes marad a munkamenetben
+    }
     setConsentState(next);
     setSettingsOpen(false);
   }, []);

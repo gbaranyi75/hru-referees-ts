@@ -11,14 +11,14 @@ export function CookieConsentBanner() {
   const visible = consent === null || settingsOpen;
   if (!visible) return null;
 
-  const isSettings = settingsOpen && consent !== null;
+  /** Csak ha már van tárolt döntés (nem hydration, nem első kérdés) */
+  const isSettings = settingsOpen && consent != null;
 
   return (
     <div
-      role="dialog"
-      aria-modal="true"
+      role="region"
       aria-labelledby="cookie-banner-title"
-      className="fixed bottom-0 left-0 right-0 z-100000 border-t border-indigo-200 bg-white p-4 shadow-[0_-4px_24px_rgba(0,0,0,0.08)] md:p-5">
+      className="fixed bottom-0 left-0 right-0 z-[100000] border-t border-indigo-200 bg-white p-4 shadow-[0_-4px_24px_rgba(0,0,0,0.08)] md:p-5">
       <div className="mx-auto flex max-w-screen-2xl flex-col gap-3 md:flex-row md:items-center md:justify-between md:gap-6">
         <div className="text-sm text-gray-700">
           <h2
