@@ -1,17 +1,15 @@
 "use client";
 import React, { useState } from "react";
+import Link from "next/link";
 import { toast } from "react-toastify";
 import { Icon } from "@iconify/react/dist/iconify.js";
+import { LEGAL_ROUTES } from "@/constants/legalRoutes";
+import { ORG_CONTACT } from "@/constants/contact";
 import InputField from "../common/InputField";
 import DisabledButton from "../common/DisabledButton";
 import PrimaryButton from "../common/PrimaryButton";
 import TextArea from "../common/TextArea";
 import Label from "../common/Label";
-
-const CONTACTS = {
-  phone: "+36304146068",
-  email: "rugbyreferee.hungary@gmail.com",
-};
 
 // Validációs konstansok (egyezzen az API-val)
 const VALIDATION = {
@@ -127,9 +125,9 @@ const ContactForm = () => {
               className="text-blue-500"
             />
             <a
-              href={`tel:${CONTACTS.phone}`}
+              href={`tel:${ORG_CONTACT.phone}`}
               className="text-blue-500 hover:underline">
-              {CONTACTS.phone}
+              {ORG_CONTACT.phone}
             </a>
           </div>
           <p className="mb-2 mt-6 text-gray-600">Email:</p>
@@ -141,9 +139,9 @@ const ContactForm = () => {
               className="text-blue-500"
             />
             <a
-              href={`mailto:${CONTACTS.email}`}
+              href={`mailto:${ORG_CONTACT.email}`}
               className="text-blue-500 hover:underline">
-              {CONTACTS.email}
+              {ORG_CONTACT.email}
             </a>
           </div>
         </div>
@@ -191,6 +189,16 @@ const ContactForm = () => {
                 text="Elküldöm"
               />
             )}
+            <p className="text-xs text-gray-500">
+              Az üzenetet a megkeresés megválaszolásához kezeljük; megőrzési idő
+              és jogosultságok – belső szabály szerint. Részletek:{" "}
+              <Link
+                href={LEGAL_ROUTES.privacy}
+                className="text-indigo-600 underline underline-offset-2 hover:text-indigo-800">
+                adatkezelési tájékoztató
+              </Link>
+              .
+            </p>
           </form>
         </div>
       </div>
