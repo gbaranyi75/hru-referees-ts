@@ -22,10 +22,10 @@ const SideBar = ({ isAdmin }: { isAdmin: boolean }) => {
     <aside className="fixed top-0 left-0 h-screen hidden lg:block overflow-hidden overflow-y-auto lg:w-72.5 bg-white border-gray-300 border-r shadow-lg z-10">
       <nav className="flex flex-col w-full min-h-screen">
         <div className="grow">
-          <div className="flex px-4">
+          <div className="flex px-4 mb-4">
             <NavbarLogo />
           </div>
-          <div className="py-0 mb-4 border-b border-gray-300"></div>
+          {/* <div className="py-0 mb-4 border-b border-gray-300"></div> */}
 
           {/* Public NAV items */}
           <ul className="flex flex-col grow px-4 justify-between gap-1">
